@@ -1,1 +1,4 @@
 .idea
+adapt.egg-info/
+build/
+dist/
