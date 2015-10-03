@@ -8,7 +8,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "adapt",
+    name = "adapt-parser",
     version = "0.0.1",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
