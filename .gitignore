@@ -2,3 +2,4 @@
 adapt.egg-info/
 build/
 dist/
+*.pyc
