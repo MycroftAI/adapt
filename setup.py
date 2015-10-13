@@ -16,7 +16,7 @@ setup(
     license = ("LGPL-3"),
     keywords = "natural language processing",
     url = "https://github.com/MycroftAI/adapt",
-    packages = ["adapt"],
+    packages = ["adapt", "adapt.tools", "adapt.tools.text"],
     long_description=read('README.md'),
     dependency_links = [
         "pyee"
