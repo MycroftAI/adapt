@@ -1,9 +1,9 @@
 import unittest
-from parser import Parser
-from entity_tagger import EntityTagger
-from intent import IntentBuilder
-from tools.text.tokenizer import EnglishTokenizer
-from tools.text.trie import Trie
+from adapt.parser import Parser
+from adapt.entity_tagger import EntityTagger
+from adapt.intent import IntentBuilder
+from adapt.tools.text.tokenizer import EnglishTokenizer
+from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
 

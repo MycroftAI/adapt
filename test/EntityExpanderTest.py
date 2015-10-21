@@ -1,7 +1,7 @@
-from entity_tagger import EntityTagger
-from expander import BronKerboschExpander
-from tools.text.tokenizer import EnglishTokenizer
-from tools.text.trie import Trie
+from adapt.entity_tagger import EntityTagger
+from adapt.expander import BronKerboschExpander
+from adapt.tools.text.tokenizer import EnglishTokenizer
+from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
 
