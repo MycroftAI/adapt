@@ -117,7 +117,7 @@ class BronKerboschExpander(object):
                 tag = {
                     'start_token': start_token,
                     'entities': [entities.get(entity_name)[0]],
-                    'confidence': entities.get(entity_name)[1],
+                    'confidence': entities.get(entity_name)[1] * old_tag.get('confidence', 1.0),
                     'end_token': old_tag.get('end_token'),
                     'match': old_tag.get('entities')[0].get('match'),
                     'key': old_tag.get('entities')[0].get('key')

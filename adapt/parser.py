@@ -1,6 +1,6 @@
 import pyee
 import time
-from expander import BronKerboschExpander
+from adapt.expander import BronKerboschExpander
 
 
 __author__ = 'seanfitz'

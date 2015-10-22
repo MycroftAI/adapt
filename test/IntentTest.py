@@ -1,3 +1,4 @@
+import re
 import unittest
 from adapt.parser import Parser
 from adapt.entity_tagger import EntityTagger
@@ -13,7 +14,8 @@ class IntentTest(unittest.TestCase):
     def setUp(self):
         self.trie = Trie()
         self.tokenizer = EnglishTokenizer()
-        self.tagger = EntityTagger(self.trie, self.tokenizer)
+        self.regex_entities = []
+        self.tagger = EntityTagger(self.trie, self.tokenizer, regex_entities=self.regex_entities)
         self.trie.insert("play", "PlayVerb")
         self.trie.insert("the big bang theory", "Television Show")
         self.trie.insert("the big", "Not a Thing")
@@ -61,3 +63,21 @@ class IntentTest(unittest.TestCase):
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Play Verb') == 'play'
             assert result_intent.get('series') == "the big bang theory"
+
+    def test_intent_with_regex_entity(self):
+        self.trie = Trie()
+        self.tagger = EntityTagger(self.trie, self.tokenizer, self.regex_entities)
+        self.parser = Parser(self.tokenizer, self.tagger)
+        self.trie.insert("theory", "Concept")
+        regex = re.compile(r"the (?P<Event>.*)")
+        self.regex_entities.append(regex)
+        intent = IntentBuilder("mock intent")\
+            .require("Event")\
+            .require("Concept").build()
+
+        for result in self.parser.parse("the big bang theory"):
+            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            assert result_intent.get('confidence') > 0.0
+            assert result_intent.get('Event') == 'big bang'
+            assert result_intent.get('Concept') == "theory"
+
