@@ -80,6 +80,7 @@ class BronKerboschExpander(object):
 
     def _build_graph(self, tags):
         graph = SimpleGraph()
+        tags = sorted(tags, key=lambda x: x['start_token'])
         for tag_index in xrange(len(tags)):
             for entity_index in xrange(len(tags[tag_index].get('entities'))):
                 a_entity_name = graph_key_from_tag(tags[tag_index], entity_index)

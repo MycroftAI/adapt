@@ -1,5 +1,5 @@
 .idea
-adapt.egg-info/
+adapt_parser.egg-info/
 build/
 dist/
 *.pyc
