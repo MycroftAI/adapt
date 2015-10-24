@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name = "adapt-parser",
-    version = "0.0.3",
+    version = "0.0.4",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
     description = ("A text-to-intent parsing framework."),
@@ -17,7 +17,7 @@ setup(
     keywords = "natural language processing",
     url = "https://github.com/MycroftAI/adapt",
     packages = ["adapt", "adapt.tools", "adapt.tools.text"],
-    long_description=read('README.md'),
+    long_description=read('README'),
     dependency_links = [
         "pyee"
     ]
