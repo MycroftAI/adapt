@@ -21,6 +21,11 @@ class EntityTagger(object):
             for end_idx in xrange(start_idx + 1, len(tokens) + 1):
                 yield ' '.join(tokens[start_idx:end_idx]), start_idx
 
+    def _sort_and_merge_tags(self, tags):
+        decorated = [(tag['start_token'], tag['end_token'], tag) for tag in tags]
+        decorated.sort()
+        return [tag for start_token, end_token, tag in decorated]
+
     def tag(self, utterance):
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
@@ -40,6 +45,7 @@ class EntityTagger(object):
                     for e in sub_entity['entities']:
                         e['confidence'] = 0.5
                     entities.append(sub_entity)
+        additional_sort = len(entities) > 0
 
         for i in xrange(len(tokens)):
             part = ' '.join(tokens[i:])
@@ -53,6 +59,9 @@ class EntityTagger(object):
                     'entities': [new_entity],
                     'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1
                 })
+
+        if additional_sort:
+            entities = self._sort_and_merge_tags(entities)
 
         return entities
 
