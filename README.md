@@ -1,4 +1,16 @@
-# Adapt Parser Framework
+Getting Started
+===============
+To take a dependency on Adapt, it's recommended to use virtualenv and pip to install source from from github.
+
+```
+$ virtualenv myvirtualenv
+$ . myvirtualenv/bin/activate
+$ pip install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
+```
+
+Examples
+========
+Executable examples can be found in the [examples folder](https://github.com/MycroftAI/adapt/tree/master/examples).
 
 Overview
 ==================
