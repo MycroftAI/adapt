@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name = "adapt-parser",
-    version = "0.0.5",
+    version = "0.0.6",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
     description = ("A text-to-intent parsing framework."),
