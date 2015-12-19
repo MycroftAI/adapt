@@ -49,7 +49,8 @@ def get_cliques(vertices, graph):
 
 def graph_key_from_tag(tag, entity_index):
     start_token = tag.get('start_token')
-    return str(start_token) + '-' + tag.get('entities', [])[entity_index].get('key')
+    entity = tag.get('entities', [])[entity_index]
+    return str(start_token) + '-' + entity.get('key') + '-' + str(entity.get('confidence'))
 
 
 class Lattice(object):

@@ -62,3 +62,15 @@ class BronKerboschExpanderTest(unittest.TestCase):
         result_parse = ' '.join([','.join(tag.get('entities')[0].get('data')) for tag in parse_results[0]])
 
         assert result_text == 'play season 1 the big bang theory'
+
+    def testExpandWithRegexAndLiteralTokenMatch(self):
+        # two tags for the same token, different confidence, should expand to two cliques
+        tags = [{'end_token': 0, 'start_token': 0, 'key': u'spell', 'match': u'spell',
+                 'entities': [{'confidence': 0.5, 'data': [u'SearchTerms'], 'match': u'spell', 'key': u'spell'}]},
+                {'end_token': 0, 'start_token': 0, 'key': u'spell', 'match': u'spell',
+                 'entities': [{'confidence': 1.0, 'data': [u'SpellingKeyword'], 'match': u'spell', 'key': u'spell'}]}]
+
+        expander = BronKerboschExpander(self.tokenizer)
+
+        cliques = list(expander.sub_expand(tags))
+        assert len(cliques) == 2
