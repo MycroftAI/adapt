@@ -39,6 +39,20 @@ $ pip install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 <p>The Adapt Intent Parser is a flexible and extensible intent definition and determination framework. It is intended to parse natural language text into a structured intent that can then be invoked programatically.</p>
 
 <h1>
+<a id="the-engine" class="anchor" href="#intent-modelling" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Engine</h1>
+
+<p>The engine is the main class that you'll interact with as a user of Adapt. It handles indexing and lookup of entities, regular expressions, and intent parsers, as well as a simple intent determination algorithm.</p>
+
+<p>With the IntentDeterminationEngine</p>
+<pre><code>from adapt.engine import IntentDeterminationEngine as Engine
+    engine = IntentDeterminationEngine()
+    engine.register_entity("Foo Fighters", "Artist")
+    engine.register_regex_entity("in (?P<Location>.*)")
+    engine.register_intent_parser(IntentBuilder("SampleIntent").require("Location").optionally("Artist").build())
+    print next(engine.determine_intent("Are the foo fighters currently in england?"))
+</code></pre>
+<p>The above is a contrived intent, that searches utterances for an artist name and optionally a location.</p>
+<h1>
 <a id="intent-modelling" class="anchor" href="#intent-modelling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intent Modelling</h1>
 
 <p>In this context, an Intent is an action the system should perform. In the context of Pandora, we’ll define two actions: List Stations, and Select Station (aka start playback)</p>
@@ -72,21 +86,18 @@ Song(s) is a Music Keyword</p>
 
 <p>For my Pandora implementation, there is a static set of vocabulary for Browse Music Command, Listen Command, and Music Keyword (defined by me, a native english speaker and all-around good guy). Pandora Station entities are populated via a list stations API call to Pandora. Here’s what the vocabulary registration looks like.</p>
 
-<pre><code>def register_vocab(entity_type, entity_value):
-    # a tiny bit of code 
-
-def register_pandora_vocab(emitter):
+<pre><code>def register_pandora_vocab(emitter):
     for v in ["stations"]:
-        register_vocab('Browse Music Command', v)
+        engine.register_entity(v, 'Browse Music Command')
 
     for v in ["play", "listen", "hear"]:
-        register_vocab('Listen Command', v)
+        engine.register_entity(v, 'Listen Command')
 
     for v in ["music", "radio"]:
-        register_vocab('Music Keyword', v)
+        engine.register_entity(v, 'Music Keyword')
 
     for v in ["Pandora"]:
-        register_vocab('Plugin Name', v)
+        register_entity(v, 'Plugin Name')
 
     station_name_regex = re.compile(r"(.*) Radio")
     p = get_pandora()
@@ -95,7 +106,7 @@ def register_pandora_vocab(emitter):
         if not m:
             continue
         for match in m.groups():
-            register_vocab('Pandora Station', match)
+            engine.register_entity(match, 'Pandora Station')
 </code></pre>
 
       <footer class="site-footer">
