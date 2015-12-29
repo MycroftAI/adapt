@@ -37,7 +37,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
             self.emit("parse_result", result)
             best_intent = self.__best_intent(result)
             if best_intent and best_intent.get('confidence', 0.0) > 0:
-                return best_intent
+                yield best_intent
 
     def register_entity(self, entity_value, entity_type):
         self.trie.insert(entity_value.lower(), data=entity_type)

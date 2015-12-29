@@ -15,11 +15,14 @@ from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 from adapt.intent import IntentBuilder
 from adapt.parser import Parser
+from adapt.engine import IntentDeterminationEngine
 
 tokenizer = EnglishTokenizer()
 trie = Trie()
 tagger = EntityTagger(trie, tokenizer)
 parser = Parser(tokenizer, tagger)
+
+engine = IntentDeterminationEngine()
 
 # define vocabulary
 weather_keyword = [
@@ -27,7 +30,7 @@ weather_keyword = [
 ]
 
 for wk in weather_keyword:
-    trie.insert(wk.lower(), "WeatherKeyword")
+    engine.register_entity(wk, "WeatherKeyword")
 
 weather_types = [
     "snow",
@@ -38,7 +41,7 @@ weather_types = [
 ]
 
 for wt in weather_types:
-    trie.insert(wt.lower(), "WeatherType")
+    engine.register_entity(wt, "WeatherType")
 
 locations = [
     "Seattle",
@@ -47,7 +50,7 @@ locations = [
 ]
 
 for l in locations:
-    trie.insert(l.lower(), "Location")
+    engine.register_entity(l, "Location")
 
 # structure intent
 weather_intent = IntentBuilder("WeatherIntent")\
@@ -68,7 +71,7 @@ artists = [
 ]
 
 for a in artists:
-    trie.insert(a.lower(), "Artist")
+    engine.register_entity(a, "Artist")
 
 music_verbs = [
     "listen",
@@ -77,7 +80,7 @@ music_verbs = [
 ]
 
 for mv in music_verbs:
-    trie.insert(mv.lower(), "MusicVerb")
+    engine.register_entity(mv, "MusicVerb")
 
 music_keywords = [
     "songs",
@@ -85,7 +88,7 @@ music_keywords = [
 ]
 
 for mk in music_keywords:
-    trie.insert(mk, "MusicKeyword")
+    engine.register_entity(mk, "MusicKeyword")
 
 music_intent = IntentBuilder("MusicIntent")\
     .require("MusicVerb")\
@@ -93,18 +96,11 @@ music_intent = IntentBuilder("MusicIntent")\
     .optionally("Artist")\
     .build()
 
-intent_parsers = [
-    weather_intent,
-    music_intent
-]
+engine.register_intent_parser(weather_intent)
+engine.register_intent_parser(music_intent)
+
 
 if __name__ == "__main__":
-    best_intent = None
-    for parse_result in parser.parse(' '.join(sys.argv[1:])):
-        for intent_parser in intent_parsers:
-            intent = intent_parser.validate(parse_result.get('tags'), parse_result.get('confidence'))
-            if not best_intent or intent.get('confidence') > best_intent.get('confidence'):
-                best_intent = intent
-
-    if best_intent and best_intent.get('confidence') > 0:
-        print(json.dumps(parse_result, indent=4))
+    for intent in engine.determine_intent(' '.join(sys.argv[1:])):
+        if intent and intent.get('confidence') > 0:
+            print(json.dumps(intent, indent=4))

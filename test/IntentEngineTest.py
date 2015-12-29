@@ -33,13 +33,13 @@ class IntentEngineTests(unittest.TestCase):
         self.engine.register_entity("tree", "Entity1")
 
         utterance = "go to the tree house"
-        intent = self.engine.determine_intent(utterance)
+        intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser1'
 
         parser2 = IntentBuilder("Parser2").require("Entity1").require("Entity2").build()
         self.engine.register_intent_parser(parser2)
         self.engine.register_entity("house", "Entity2")
-        intent = self.engine.determine_intent(utterance)
+        intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser2'
