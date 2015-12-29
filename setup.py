@@ -3,13 +3,9 @@ __author__ = 'seanfitz'
 import os
 from setuptools import setup
 
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
 setup(
     name = "adapt-parser",
-    version = "0.0.7",
+    version = "0.0.8",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
     description = ("A text-to-intent parsing framework."),
