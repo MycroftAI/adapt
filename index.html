@@ -97,7 +97,7 @@ Song(s) is a Music Keyword</p>
         engine.register_entity(v, 'Music Keyword')
 
     for v in ["Pandora"]:
-        register_entity(v, 'Plugin Name')
+        engine.register_entity(v, 'Plugin Name')
 
     station_name_regex = re.compile(r"(.*) Radio")
     p = get_pandora()
