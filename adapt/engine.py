@@ -9,6 +9,17 @@ __author__ = 'seanfitz'
 
 
 class IntentDeterminationEngine(pyee.EventEmitter):
+    """
+    IntentDeterminationEngine
+
+    The IntentDeterminationEngine is a greedy and naive implementation of intent determination. Given an utterance,
+    it uses the Adapt parsing tools to come up with a sorted collection of tagged parses. A valid parse result contains
+    no overlapping tagged entities, and it's confidence is the sum of the tagged entity confidences, which are
+    weighted based on the percentage of the utterance (per character) that the entity match represents.
+
+    This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of
+    computation.
+    """
     def __init__(self, tokenizer=None, trie=None):
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
@@ -28,6 +39,12 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         return best_intent
 
     def determine_intent(self, utterance, num_results=1):
+        """
+        Given an utterance, provide a valid intent.
+        :param utterance: an ascii or unicode string representing natural language speech
+        :param num_results: a maximum number of results to be returned.
+        :return: A generator the yields dictionaries.
+        """
         parser = Parser(self.tokenizer, self.tagger)
         parser.on('tagged_entities',
                   (lambda result:
@@ -40,10 +57,22 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                 yield best_intent
 
     def register_entity(self, entity_value, entity_type):
+        """
+        Register an entity to be tagged in potential parse results
+        :param entity_value: the value/proper name of an entity instance (Ex: "The Big Bang Theory")
+        :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
+        :return: None
+        """
         self.trie.insert(entity_value.lower(), data=entity_type)
         self.trie.insert(entity_type.lower(), data='Concept')
 
     def register_regex_entity(self, regex_str):
+        """
+        A regular expression making use of python named group expressions.
+        Example: (?P<Artist>.*)
+        :param regex_str: a string representing a regular expression as defined above
+        :return: None
+        """
         if regex_str and regex_str not in self._regex_strings:
             self._regex_strings.add(regex_str)
             self.regular_expressions_entities.append(re.compile(regex_str, re.IGNORECASE))
