@@ -126,7 +126,7 @@ class IntentBuilder(object):
         """
         The intent parser should require one of the provided entity types to validate this clause.
         :param args: *args notation list of entity names
-        :return: None
+        :return: self
         """
         self.at_least_one.append(args)
         return self
@@ -136,7 +136,7 @@ class IntentBuilder(object):
         The intent parser should require an entity of the provided type.
         :param entity_type: string, an entity type
         :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.
-        :return:
+        :return: self
         """
         if not attribute_name:
             attribute_name = entity_type
@@ -148,7 +148,7 @@ class IntentBuilder(object):
         Parsed intents from this parser can optionally include an entity of the provided type.
         :param entity_type: string, an entity type
         :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.
-        :return:
+        :return: self
         """
         if not attribute_name:
             attribute_name = entity_type
