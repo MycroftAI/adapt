@@ -45,11 +45,11 @@ $ pip install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
 <p>With the IntentDeterminationEngine</p>
 <pre><code>from adapt.engine import IntentDeterminationEngine as Engine
-    engine = IntentDeterminationEngine()
-    engine.register_entity("Foo Fighters", "Artist")
-    engine.register_regex_entity("in (?P<Location>.*)")
-    engine.register_intent_parser(IntentBuilder("SampleIntent").require("Location").optionally("Artist").build())
-    print next(engine.determine_intent("Are the foo fighters currently in england?"))
+engine = Engine()
+engine.register_entity("Foo Fighters", "Artist")
+engine.register_regex_entity("in (?P<Location>.*)")
+engine.register_intent_parser(IntentBuilder("SampleIntent").require("Location").optionally("Artist").build())
+print next(engine.determine_intent("Are the foo fighters currently in england?"))
 </code></pre>
 <p>The above is a contrived intent, that searches utterances for an artist name and optionally a location.</p>
 <h1>
