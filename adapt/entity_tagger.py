@@ -1,10 +1,13 @@
-from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
 
 
 class EntityTagger(object):
+    """
+    Known Entity Tagger
+    Given an index of known entities, can efficiently search for those entities within a provided utterance.
+    """
     def __init__(self, trie, tokenizer, regex_entities=[], max_tokens=20):
         self.trie = trie
         self.tokenizer = tokenizer
@@ -27,6 +30,16 @@ class EntityTagger(object):
         return [tag for start_token, end_token, tag in decorated]
 
     def tag(self, utterance):
+        """
+        Tag known entities within the utterance.
+        :param utterance: a string of natural language text
+        :return: dictionary, with the following keys
+            match: str - the proper entity matched
+            key: str - the string that was matched to the entity
+            start_token: int - 0-based index of the first token matched
+            end_token: int - 0-based index of the last token matched
+            entities: list - a list of entity kinds as strings (Ex: Artist, Location)
+        """
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
         if len(self.regex_entities) > 0:
@@ -64,27 +77,3 @@ class EntityTagger(object):
             entities = self._sort_and_merge_tags(entities)
 
         return entities
-
-
-if __name__ == "__main__":
-    tokenizer = EnglishTokenizer()
-    trie = Trie()
-    mypath = '/media/seanfitz/DATA01/facts'
-    from os import listdir
-    from os.path import isfile, join
-    import json
-
-    onlyfiles = [join(mypath, f) for f in listdir(mypath) if isfile(join(mypath, f))]
-
-    for f in onlyfiles:
-        print("Loading facts from %s..." % f)
-        fact_file = open(f)
-        for line in fact_file.readlines():
-            fact = json.loads(line)
-            trie.insert(fact.get('start'))
-            trie.insert(fact.get('end'))
-
-    tagger = EntityTagger(trie, tokenizer)
-    tags = tagger.tag("play season one of falling skies")
-    for tag in tags:
-        print tag

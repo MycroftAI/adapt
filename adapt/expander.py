@@ -76,6 +76,19 @@ class Lattice(object):
 
 
 class BronKerboschExpander(object):
+    """
+    BronKerboschExpander
+    Given a list of tagged entities (from the existing entity tagger implementation or another), expand out
+    valid parse results.
+    A parse result is considered valid if it contains no overlapping spans.
+    Since total confidence of a parse result is based on the sum of confidences of the entities, there is no sense
+    in yielding any potential parse results that are a subset/sequence of a larger valid parse result. By comparing
+    this concept to that of maximal cliques (https://en.wikipedia.org/wiki/Clique_problem), we can use well known
+    solutions to the maximal clique problem like the Bron/Kerbosch algorithm (https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm).
+
+    By considering tagged entities that do not overlap to be "neighbors", BronKerbosch will yield a set of maximal
+    cliques that are also valid parse results.
+    """
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
 

@@ -1,6 +1,6 @@
 __author__ = 'seanfitz'
 
-HUB_CLIENT_ENTITY_NAME = 'Hub Client'
+CLIENT_ENTITY_NAME = 'Client'
 
 def is_entity(tag, entity_name):
     for entity in tag.get('entities'):
@@ -99,7 +99,7 @@ class Intent(object):
 
         total_confidence = intent_confidence / len(tags) * confidence
 
-        target_client = find_first_tag(local_tags, HUB_CLIENT_ENTITY_NAME)
+        target_client = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
