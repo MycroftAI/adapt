@@ -72,5 +72,5 @@ class BronKerboschExpanderTest(unittest.TestCase):
 
         expander = BronKerboschExpander(self.tokenizer)
 
-        cliques = list(expander.sub_expand(tags))
+        cliques = list(expander._sub_expand(tags))
         assert len(cliques) == 2

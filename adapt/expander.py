@@ -78,9 +78,12 @@ class Lattice(object):
 class BronKerboschExpander(object):
     """
     BronKerboschExpander
+
     Given a list of tagged entities (from the existing entity tagger implementation or another), expand out
     valid parse results.
+
     A parse result is considered valid if it contains no overlapping spans.
+
     Since total confidence of a parse result is based on the sum of confidences of the entities, there is no sense
     in yielding any potential parse results that are a subset/sequence of a larger valid parse result. By comparing
     this concept to that of maximal cliques (https://en.wikipedia.org/wiki/Clique_problem), we can use well known
@@ -107,7 +110,7 @@ class BronKerboschExpander(object):
 
         return graph
 
-    def sub_expand(self, tags):
+    def _sub_expand(self, tags):
         entities = {}
         graph = self._build_graph(tags)
 
@@ -153,7 +156,7 @@ class BronKerboschExpander(object):
             if len(overlapping_spans) > 0 and end_token_index() >= tag.get('start_token'):
                 overlapping_spans.append(tag)
             elif len(overlapping_spans) > 1:
-                cliques = list(self.sub_expand(overlapping_spans))
+                cliques = list(self._sub_expand(overlapping_spans))
                 if clique_scoring_func:
                     cliques = sorted(cliques, key=lambda e: -1 * clique_scoring_func(e))
                 lattice.append(cliques)
@@ -162,7 +165,7 @@ class BronKerboschExpander(object):
                 lattice.append(overlapping_spans)
                 overlapping_spans = [tag]
         if len(overlapping_spans) > 1:
-            cliques = list(self.sub_expand(overlapping_spans))
+            cliques = list(self._sub_expand(overlapping_spans))
             if clique_scoring_func:
                     cliques = sorted(cliques, key=lambda e: -1 * clique_scoring_func(e))
             lattice.append(cliques)

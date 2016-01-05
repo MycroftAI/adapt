@@ -17,7 +17,9 @@ class EntityTagger(object):
     def _iterate_subsequences(self, tokens):
         """
         Using regex invokes this function, which significantly impacts performance of adapt. it is an N! operation.
+
         :param tokens:
+
         :return:
         """
         for start_idx in xrange(len(tokens)):
@@ -32,13 +34,20 @@ class EntityTagger(object):
     def tag(self, utterance):
         """
         Tag known entities within the utterance.
+
         :param utterance: a string of natural language text
+
         :return: dictionary, with the following keys
-            match: str - the proper entity matched
-            key: str - the string that was matched to the entity
-            start_token: int - 0-based index of the first token matched
-            end_token: int - 0-based index of the last token matched
-            entities: list - a list of entity kinds as strings (Ex: Artist, Location)
+
+        match: str - the proper entity matched
+
+        key: str - the string that was matched to the entity
+
+        start_token: int - 0-based index of the first token matched
+
+        end_token: int - 0-based index of the last token matched
+
+        entities: list - a list of entity kinds as strings (Ex: Artist, Location)
         """
         tokens = self.tokenizer.tokenize(utterance)
         entities = []

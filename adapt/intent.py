@@ -114,7 +114,9 @@ class IntentBuilder(object):
     def __init__(self, intent_name):
         """
         Constructor
+
         :param intent_name: the name of the intents that this parser parses/validates
+
         :return: an instance of IntentBuilder
         """
         self.at_least_one = []
@@ -125,7 +127,9 @@ class IntentBuilder(object):
     def one_of(self, *args):
         """
         The intent parser should require one of the provided entity types to validate this clause.
+
         :param args: *args notation list of entity names
+
         :return: self
         """
         self.at_least_one.append(args)
@@ -134,8 +138,11 @@ class IntentBuilder(object):
     def require(self, entity_type, attribute_name=None):
         """
         The intent parser should require an entity of the provided type.
+
         :param entity_type: string, an entity type
+
         :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.
+
         :return: self
         """
         if not attribute_name:
@@ -146,8 +153,11 @@ class IntentBuilder(object):
     def optionally(self, entity_type, attribute_name=None):
         """
         Parsed intents from this parser can optionally include an entity of the provided type.
+
         :param entity_type: string, an entity type
+
         :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.
+
         :return: self
         """
         if not attribute_name:
@@ -158,6 +168,7 @@ class IntentBuilder(object):
     def build(self):
         """
         Constructs an intent from the builder's specifications.
+
         :return: an Intent instance.
         """
         return Intent(self.name, self.requires, self.at_least_one, self.optional)

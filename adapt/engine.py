@@ -1,9 +1,9 @@
 import re
 import pyee
-from entity_tagger import EntityTagger
-from parser import Parser
-from tools.text.tokenizer import EnglishTokenizer
-from tools.text.trie import Trie
+from adapt.entity_tagger import EntityTagger
+from adapt.parser import Parser
+from adapt.tools.text.tokenizer import EnglishTokenizer
+from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
 
@@ -41,8 +41,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     def determine_intent(self, utterance, num_results=1):
         """
         Given an utterance, provide a valid intent.
+
         :param utterance: an ascii or unicode string representing natural language speech
+
         :param num_results: a maximum number of results to be returned.
+
         :return: A generator the yields dictionaries.
         """
         parser = Parser(self.tokenizer, self.tagger)
@@ -59,8 +62,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     def register_entity(self, entity_value, entity_type):
         """
         Register an entity to be tagged in potential parse results
+
         :param entity_value: the value/proper name of an entity instance (Ex: "The Big Bang Theory")
+
         :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
+
         :return: None
         """
         self.trie.insert(entity_value.lower(), data=entity_type)
@@ -69,8 +75,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     def register_regex_entity(self, regex_str):
         """
         A regular expression making use of python named group expressions.
+
         Example: (?P<Artist>.*)
+
         :param regex_str: a string representing a regular expression as defined above
+
         :return: None
         """
         if regex_str and regex_str not in self._regex_strings:
@@ -80,8 +89,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     def register_intent_parser(self, intent_parser):
         """
         "Enforce" the intent parser interface at registration time.
+
         :param intent_parser:
+
         :return: None
+
         :raises ValueError on invalid intent
         """
         if hasattr(intent_parser, 'validate') and callable(intent_parser.validate):
