@@ -1,6 +1,6 @@
 Getting Started
 ===============
-To take a dependency on Adapt, it's recommended to use virtualenv and pip to install source from from github.
+To take a dependency on Adapt, it's recommended to use virtualenv and pip to install source from github.
 
 
     $ virtualenv myvirtualenv
@@ -49,7 +49,7 @@ The Big Bang Theory is a Television Show
 Play is a Listen Command
 Song(s) is a Music Keyword
 
-For my Pandora implementation, there is a static set of vocabulary for Browse Music Command, Listen Command, and Music Keyword (defined by me, a native english speaker and all-around good guy). Pandora Station entities are populated via a list stations API call to Pandora. Here’s what the vocabulary registration looks like.
+For my Pandora implementation, there is a static set of vocabulary for the Browse Music Command, Listen Command, and Music Keyword (defined by me, a native english speaker and all-around good guy). Pandora Station entities are populated via a "List Stations" API call to Pandora. Here’s what the vocabulary registration looks like.
 
 
     def register_vocab(entity_type, entity_value):
