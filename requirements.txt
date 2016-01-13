@@ -1,4 +1,3 @@
 argparse==1.2.1
 pyee==0.1.0
 wsgiref==0.1.2
-pdoc==0.3.1
