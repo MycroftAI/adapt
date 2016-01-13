@@ -1,4 +1,4 @@
-from past.builtins import xrange
+from six.moves import xrange
 
 __author__ = 'seanfitz'
 

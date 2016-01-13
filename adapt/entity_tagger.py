@@ -1,5 +1,5 @@
 from adapt.tools.text.trie import Trie
-from past.builtins import xrange
+from six.moves import xrange
 
 __author__ = 'seanfitz'
 
