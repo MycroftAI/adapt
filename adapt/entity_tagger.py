@@ -1,4 +1,5 @@
 from adapt.tools.text.trie import Trie
+from six.moves import xrange
 
 __author__ = 'seanfitz'
 
@@ -57,7 +58,7 @@ class EntityTagger(object):
                 for regex_entity in self.regex_entities:
                     match = regex_entity.match(part)
                     groups = match.groupdict() if match else {}
-                    for key in groups.keys():
+                    for key in list(groups):
                         match_str = groups.get(key)
                         local_trie.insert(match_str, key)
                 sub_tagger = EntityTagger(local_trie, self.tokenizer, max_tokens=self.max_tokens)

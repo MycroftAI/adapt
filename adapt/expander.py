@@ -1,3 +1,5 @@
+from six.moves import xrange
+
 __author__ = 'seanfitz'
 
 
@@ -24,7 +26,7 @@ class SimpleGraph(object):
         return self.adjacency_lists.get(a, set())
 
     def vertex_set(self):
-        return self.adjacency_lists.keys()
+        return list(self.adjacency_lists)
 
 
 def bronk(r, p, x, graph):
@@ -126,7 +128,7 @@ class BronKerboschExpander(object):
                     tag
                 ]
 
-        for clique in get_cliques(entities.keys(), graph):
+        for clique in get_cliques(list(entities), graph):
             result = []
             for entity_name in clique:
                 start_token = int(entity_name.split("-")[0])

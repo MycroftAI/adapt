@@ -42,7 +42,7 @@ class TrieNode(object):
         potential_confidence = float(index - edit_distance + (max_edit_distance - edit_distance)) / \
                                (float(index) + (max_edit_distance - edit_distance)) if index + max_edit_distance - edit_distance > 0 else 0.0
         if edit_distance < max_edit_distance and potential_confidence > match_threshold:
-            for child in self.children.keys():
+            for child in list(self.children):
                 if index >= len(iterable) or child != iterable[index]:
                     # substitution
                     for result in self.children[child]\
