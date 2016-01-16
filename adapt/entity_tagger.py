@@ -60,7 +60,7 @@ class EntityTagger(object):
                     groups = match.groupdict() if match else {}
                     for key in list(groups):
                         match_str = groups.get(key)
-                        local_trie.insert(match_str, key)
+                        local_trie.insert(match_str, (match_str, key))
                 sub_tagger = EntityTagger(local_trie, self.tokenizer, max_tokens=self.max_tokens)
                 for sub_entity in sub_tagger.tag(part):
                     sub_entity['start_token'] += idx

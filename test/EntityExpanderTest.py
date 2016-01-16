@@ -59,7 +59,9 @@ class BronKerboschExpanderTest(unittest.TestCase):
         parse_results = list(expander.expand(tags, clique_scoring_func=score_clique))
         assert len(parse_results) == 6
         result_text = ' '.join([tag.get('entities')[0].get('key') for tag in parse_results[0]])
-        result_parse = ' '.join([','.join(tag.get('entities')[0].get('data')) for tag in parse_results[0]])
+        result_parse = ', '.join(
+            [tag.get('entities')[0].get('data')[0][1] for tag in parse_results[0]]
+        )
 
         assert result_text == 'play season 1 the big bang theory'
 

@@ -59,7 +59,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
             if best_intent and best_intent.get('confidence', 0.0) > 0:
                 yield best_intent
 
-    def register_entity(self, entity_value, entity_type):
+    def register_entity(self, entity_value, entity_type, alias_of=None):
         """
         Register an entity to be tagged in potential parse results
 
@@ -69,8 +69,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         :return: None
         """
-        self.trie.insert(entity_value.lower(), data=entity_type)
-        self.trie.insert(entity_type.lower(), data='Concept')
+        if alias_of:
+            self.trie.insert(entity_value, data=(alias_of, entity_type))
+        else:
+            self.trie.insert(entity_value.lower(), data=(entity_value, entity_type))
+            self.trie.insert(entity_type.lower(), data=(entity_type, 'Concept'))
 
     def register_regex_entity(self, regex_str):
         """

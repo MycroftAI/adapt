@@ -32,4 +32,4 @@ class EntityTaggerTest(unittest.TestCase):
         assert len(event_tags) == 1
         assert len(event_tags[0].get('entities')) == 1
         assert len(event_tags[0].get('entities')[0].get('data')) == 1
-        assert 'Event' in event_tags[0].get('entities')[0].get('data')
+        assert ('big bang', 'Event') in event_tags[0].get('entities')[0].get('data')

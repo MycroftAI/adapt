@@ -16,10 +16,10 @@ class IntentTest(unittest.TestCase):
         self.tokenizer = EnglishTokenizer()
         self.regex_entities = []
         self.tagger = EntityTagger(self.trie, self.tokenizer, regex_entities=self.regex_entities)
-        self.trie.insert("play", "PlayVerb")
-        self.trie.insert("the big bang theory", "Television Show")
-        self.trie.insert("the big", "Not a Thing")
-        self.trie.insert("barenaked ladies", "Radio Station")
+        self.trie.insert("play", ("play", "PlayVerb"))
+        self.trie.insert("the big bang theory", ("the big bang theory", "Television Show"))
+        self.trie.insert("the big", ("the big", "Not a Thing"))
+        self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
         self.parser = Parser(self.tokenizer, self.tagger)
 
     def tearDown(self):
@@ -68,7 +68,7 @@ class IntentTest(unittest.TestCase):
         self.trie = Trie()
         self.tagger = EntityTagger(self.trie, self.tokenizer, self.regex_entities)
         self.parser = Parser(self.tokenizer, self.tagger)
-        self.trie.insert("theory", "Concept")
+        self.trie.insert("theory", ("theory", "Concept"))
         regex = re.compile(r"the (?P<Event>.*)")
         self.regex_entities.append(regex)
         intent = IntentBuilder("mock intent")\

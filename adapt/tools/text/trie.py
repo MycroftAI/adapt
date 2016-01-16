@@ -60,14 +60,12 @@ class TrieNode(object):
                                 edit_distance=edit_distance + 1, max_edit_distance=max_edit_distance, matched_length=matched_length):
                         yield result
 
-
-
-    def insert(self, iterable, index=0, data=None):
+    def insert(self, iterable, index=0, data=None, value=None):
         if index == len(iterable):
             self.is_terminal = True
             self.key = iterable
             if data:
-                self.data.add(data)
+                self.data.add(data) # maintain pairs of value/tag in order to allow for aliasing.
         else:
             if iterable[index] not in self.children:
                 self.children[iterable[index]] = TrieNode()
