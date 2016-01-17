@@ -65,7 +65,7 @@ class TrieNode(object):
             self.is_terminal = True
             self.key = iterable
             if data:
-                self.data.add(data) # maintain pairs of value/tag in order to allow for aliasing.
+                self.data.add(data)
         else:
             if iterable[index] not in self.children:
                 self.children[iterable[index]] = TrieNode()

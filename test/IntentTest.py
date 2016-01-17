@@ -81,3 +81,15 @@ class IntentTest(unittest.TestCase):
             assert result_intent.get('Event') == 'big bang'
             assert result_intent.get('Concept') == "theory"
 
+    def test_intent_using_alias(self):
+        self.trie.insert("big bang", ("the big bang theory", "Television Show"))
+        intent = IntentBuilder("play television intent")\
+            .require("PlayVerb", "Play Verb")\
+            .require("Television Show", "series")\
+            .build()
+        for result in self.parser.parse("play the big bang theory"):
+            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            assert result_intent.get('confidence') > 0.0
+            assert result_intent.get('Play Verb') == 'play'
+            assert result_intent.get('series') == "the big bang theory"
+
