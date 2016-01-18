@@ -1,27 +1,29 @@
-Getting Started
-===============
+# Getting Started
+
 To install all dependencies for Adapt, it's recommended to use virtualenv and
 pip to install the source from github.
 
+~~~
+$ virtualenv myvirtualenv
+$ . myvirtualenv/bin/activate
+$ pip install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
+~~~
 
-    $ virtualenv myvirtualenv
-    $ . myvirtualenv/bin/activate
-    $ pip install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
+## Examples
 
-Examples
-========
 Executable examples can be found in the
 [examples folder](https://github.com/MycroftAI/adapt/tree/master/examples).
 
-Overview
-==================
+
+## Overview
+
 The Adapt Intent Parser is a flexible and extensible intent definition and
 determination framework. It is intended to parse natural language text into a
 structured intent that can then be invoked programatically.
 
-Intent Modelling
-================
+## Intent Modelling
+
 In this context, an Intent is an action the system should perform. In the
 context of Pandora, we will define two actions: "List Stations", and "Select
 Station" (aka start to play).
@@ -46,8 +48,7 @@ play_music_command = IntentBuilder('pandora:select_station')\
     .build()
 ~~~
 
-Entities
-========
+## Entities
 
 Entities are a named value, and work as the building blocks of the intents.
 Some examples could be:
