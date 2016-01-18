@@ -1,7 +1,7 @@
 Getting Started
 ===============
-To take a dependency on Adapt, it's recommended to use virtualenv and pip to
-install source from github.
+To install all dependencies for Adapt, it's recommended to use virtualenv and
+pip to install the source from github.
 
 
     $ virtualenv myvirtualenv
@@ -23,10 +23,11 @@ structured intent that can then be invoked programatically.
 Intent Modelling
 ================
 In this context, an Intent is an action the system should perform. In the
-context of Pandora, we’ll define two actions: List Stations, and Select Station
-(aka start playback)
+context of Pandora, we will define two actions: "List Stations", and "Select
+Station" (aka start to play).
 
-With the Adapt intent builder:
+We are using the Adapt intent builder to define first the "List Stations"
+intent, with a single requirement of a "Browse Music Command" entity.
 
 ~~~ python
 list_stations_intent = IntentBuilder('pandora:list_stations')\
@@ -34,8 +35,8 @@ list_stations_intent = IntentBuilder('pandora:list_stations')\
     .build()
 ~~~
 
-For the above, we are describing a “List Stations” intent, which has a single
-requirement of a “Browse Music Command” entity.
+The more complex "Select Station" intent requires a "Listen Command", a
+"Pandora Station" and optionally a "Music Keyword" entity.
 
 ~~~ python
 play_music_command = IntentBuilder('pandora:select_station')\
@@ -45,24 +46,22 @@ play_music_command = IntentBuilder('pandora:select_station')\
     .build()
 ~~~
 
-For the above, we are describing a “Select Station” (aka start playback)
-intent, which requires a “Listen Command” entity, a “Pandora Station”, and
-optionally a “Music Keyword” entity.
-
 Entities
 ========
 
-Entities are a named value. Examples include:
-Blink 182 is an Artist  
-The Big Bang Theory is a Television Show  
-Play is a Listen Command  
-Song(s) is a Music Keyword  
+Entities are a named value, and work as the building blocks of the intents.
+Some examples could be:
+  
+"Blink 182" is an Artist  
+"The Big Bang Theory" is a Television Show  
+"Play" is a Listen Command  
+"Song(s)" is a Music Keyword  
 
-For my Pandora implementation, there is a static set of vocabulary for the
-Browse Music Command, Listen Command, and Music Keyword (defined by me, a
-native english speaker and all-around good guy). Pandora Station entities are
-populated via a "List Stations" API call to Pandora. Here’s what the vocabulary
-registration looks like.
+For the Pandora example implementation, there is a static set of vocabulary for
+the "Browse Music" Command, "Listen" Command, and "Music Keyword" (defined by
+me, a native english speaker and all-around good guy). Pandora Station entities
+are populated via a "List Stations" API call to Pandora. Here’s what the
+vocabulary registration looks like.
 
 
 ~~~ python
