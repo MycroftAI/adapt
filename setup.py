@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name = "adapt-parser",
-    version = "0.2.0",
+    version = "0.2.1",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
     description = ("A text-to-intent parsing framework."),
@@ -13,6 +13,7 @@ setup(
     url = "https://github.com/MycroftAI/adapt",
     packages = ["adapt", "adapt.tools", "adapt.tools.text"],
     dependency_links = [
-        "pyee"
+        "pyee==0.1.0",
+        "six==1.10.0"
     ]
 )
