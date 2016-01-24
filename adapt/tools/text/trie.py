@@ -42,7 +42,7 @@ class TrieNode(object):
         potential_confidence = float(index - edit_distance + (max_edit_distance - edit_distance)) / \
                                (float(index) + (max_edit_distance - edit_distance)) if index + max_edit_distance - edit_distance > 0 else 0.0
         if edit_distance < max_edit_distance and potential_confidence > match_threshold:
-            for child in self.children.keys():
+            for child in list(self.children):
                 if index >= len(iterable) or child != iterable[index]:
                     # substitution
                     for result in self.children[child]\
@@ -60,9 +60,7 @@ class TrieNode(object):
                                 edit_distance=edit_distance + 1, max_edit_distance=max_edit_distance, matched_length=matched_length):
                         yield result
 
-
-
-    def insert(self, iterable, index=0, data=None):
+    def insert(self, iterable, index=0, data=None, value=None):
         if index == len(iterable):
             self.is_terminal = True
             self.key = iterable

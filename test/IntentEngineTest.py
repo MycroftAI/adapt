@@ -14,7 +14,7 @@ class IntentEngineTests(unittest.TestCase):
         try:
             self.engine.register_intent_parser("NOTAPARSER")
             assert "Did not fail to register invalid intent parser" and False
-        except ValueError, e:
+        except ValueError as e:
             pass
         parser = IntentBuilder("Intent").build()
         self.engine.register_intent_parser(parser)

@@ -2,9 +2,10 @@ __author__ = 'seanfitz'
 
 CLIENT_ENTITY_NAME = 'Client'
 
+
 def is_entity(tag, entity_name):
     for entity in tag.get('entities'):
-        for t in entity.get('data'):
+        for v, t in entity.get('data'):
             if t.lower() == entity_name.lower():
                 return True
     return False
@@ -13,11 +14,11 @@ def is_entity(tag, entity_name):
 def find_first_tag(tags, entity_type, after_index=-1):
     for tag in tags:
         for entity in tag.get('entities'):
-            for t in entity.get('data'):
+            for v, t in entity.get('data'):
                 if t.lower() == entity_type.lower() and tag.get('start_token') > after_index:
-                    return tag
+                    return tag, v
 
-    return None
+    return None, None
 
 
 def find_next_tag(tags, end_index=0):
@@ -46,7 +47,7 @@ def resolve_one_of(tags, at_least_one):
             last_end_index = 0
             if entity_type in resolution:
                 last_end_index = resolution.get[entity_type][-1].get('end_token')
-            tag = find_first_tag(tags, entity_type, after_index=last_end_index)
+            tag, value = find_first_tag(tags, entity_type, after_index=last_end_index)
             if not tag:
                 break
             else:
@@ -71,11 +72,12 @@ class Intent(object):
         intent_confidence = 0.0
         local_tags = tags[:]
         for require_type, attribute_name in self.requires:
-            required_tag = find_first_tag(local_tags, require_type)
+            required_tag, canonical_form = find_first_tag(local_tags, require_type)
             if not required_tag:
                 result['confidence'] = 0.0
                 return result
-            result[attribute_name] = required_tag.get('key')
+
+            result[attribute_name] = canonical_form
             local_tags.remove(required_tag)
             # TODO: use confidence based on edit distance and context
             intent_confidence += 1.0
@@ -87,19 +89,19 @@ class Intent(object):
                 return result
             else:
                 for key in best_resolution:
-                    result[key] = best_resolution[key][0].get('key')
+                    result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
 
         for optional_type, attribute_name in self.optional:
-            optional_tag = find_first_tag(local_tags, optional_type)
+            optional_tag, canonical_form = find_first_tag(local_tags, optional_type)
             if not optional_tag or attribute_name in result:
                 continue
-            result[attribute_name] = optional_tag.get('key')
+            result[attribute_name] = canonical_form
             local_tags.remove(optional_tag)
             intent_confidence += 1.0
 
         total_confidence = intent_confidence / len(tags) * confidence
 
-        target_client = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
+        target_client, canonical_form = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
