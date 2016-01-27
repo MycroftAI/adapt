@@ -77,3 +77,7 @@ For my Pandora implementation, there is a static set of vocabulary for the Brows
             for match in m.groups():
                 register_vocab('Pandora Station', match)
 
+Learn More
+========
+
+Further documentation can be found at https://adapt.mycroft.ai
