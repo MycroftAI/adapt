@@ -44,10 +44,10 @@ Entities
 ========
 
 Entities are a named value. Examples include:
-Blink 182 is an Artist
-The Big Bang Theory is a Television Show
-Play is a Listen Command
-Song(s) is a Music Keyword
+`Blink 182` is an `Artist`
+`The Big Bang Theory` is a `Television Show`
+`Play` is a `Listen Command`
+`Song(s)` is a `Music Keyword`
 
 For my Pandora implementation, there is a static set of vocabulary for the Browse Music Command, Listen Command, and Music Keyword (defined by me, a native english speaker and all-around good guy). Pandora Station entities are populated via a "List Stations" API call to Pandora. Here’s what the vocabulary registration looks like.
 
