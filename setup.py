@@ -12,7 +12,8 @@ setup(
     keywords = "natural language processing",
     url = "https://github.com/MycroftAI/adapt",
     packages = ["adapt", "adapt.tools", "adapt.tools.text"],
-    dependency_links = [
+
+    install_requires = [
         "pyee==0.1.0",
         "six==1.10.0"
     ]
