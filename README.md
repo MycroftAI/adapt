@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/MycroftAI/adapt.png?label=ready&title=Ready)](https://waffle.io/MycroftAI/adapt)
 Getting Started
 ===============
 To take a dependency on Adapt, it's recommended to use virtualenv and pip to install source from github.
