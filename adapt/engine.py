@@ -1,4 +1,5 @@
 import re
+import heapq
 import pyee
 from adapt.entity_tagger import EntityTagger
 from adapt.parser import Parser
@@ -103,3 +104,65 @@ class IntentDeterminationEngine(pyee.EventEmitter):
             self.intent_parsers.append(intent_parser)
         else:
             raise ValueError("%s is not an intent parser" % str(intent_parser))
+
+
+class DomainIntentDeterminationEngine(object):
+    def __init__(self, tokenizer=None, trie=None):
+        self.domains = {}
+
+    def register_domain(self, domain):
+        self.domains[domain] = IntentDeterminationEngine()
+
+    def register_entity(self, entity_value, entity_type, domain, alias_of=None):
+        """
+        Register an entity to be tagged in potential parse results
+
+        :param entity_value: the value/proper name of an entity instance (Ex: "The Big Bang Theory")
+
+        :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
+
+        :return: None
+        """
+        if not domain:
+            self.domains[domain] = None
+        self.domains[domain].register_entity(entity_value=entity_value,
+                                             entity_type=entity_type,
+                                             alias_of=alias_of)
+
+    def register_regex_entity(self, regex_str, domain):
+        """
+        A regular expression making use of python named group expressions.
+
+        Example: (?P<Artist>.*)
+
+        :param regex_str: a string representing a regular expression as defined above
+
+        :return: None
+        """
+        if not domain:
+            self.domains[domain] = None
+        self.domains[domain].register_regex_entity(regex_str=regex_str)
+
+    def determine_intent(self, utterance, num_results=1):
+        """
+        Given an utterance, provide a valid intent.
+
+        :param utterance: an ascii or unicode string representing natural language speech
+
+        :param num_results: a maximum number of results to be returned.
+
+        :return: A generator the yields dictionaries.
+        """
+        intents = []
+        for domain in self.domains:
+            gen = self.domains[domain].determine_intent(
+                utterance=utterance, num_results=num_results)
+            for intent in gen:
+                intents.append(intent)
+        yield heapq.nlargest(len(intents), intents, key=lambda domain: domain['confidence'])
+
+    def register_intent_parser(self, intent_parser, domain):
+        if not domain:
+            self.domains[domain] = None
+        self.domains[domain].register_intent_parser(
+            intent_parser=intent_parser)
