@@ -1,2 +1,1 @@
--r requirements.txt
 xmlrunner==1.7.7
