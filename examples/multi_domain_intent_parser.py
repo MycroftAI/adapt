@@ -34,7 +34,7 @@ weather_keyword = [
 ]
 
 for wk in weather_keyword:
-    engine.register_entity(wk, "WeatherKeyword", 'Domain1')
+    engine.register_entity(wk, "WeatherKeyword", domain='Domain1')
 
 weather_types = [
     "snow",
@@ -45,7 +45,7 @@ weather_types = [
 ]
 
 for wt in weather_types:
-    engine.register_entity(wt, "WeatherType", 'Domain1')
+    engine.register_entity(wt, "WeatherType", domain='Domain1')
 
 locations = [
     "Seattle",
@@ -54,7 +54,7 @@ locations = [
 ]
 
 for l in locations:
-    engine.register_entity(l, "Location", 'Domain1')
+    engine.register_entity(l, "Location", domain='Domain1')
 
 # structure intent
 weather_intent = IntentBuilder("WeatherIntent")\
@@ -75,7 +75,7 @@ artists = [
 ]
 
 for a in artists:
-    engine.register_entity(a, "Artist", 'Domain2')
+    engine.register_entity(a, "Artist", domain='Domain2')
 
 music_verbs = [
     "listen",
@@ -84,7 +84,7 @@ music_verbs = [
 ]
 
 for mv in music_verbs:
-    engine.register_entity(mv, "MusicVerb", 'Domain2')
+    engine.register_entity(mv, "MusicVerb", domain='Domain2')
 
 music_keywords = [
     "songs",
@@ -92,7 +92,7 @@ music_keywords = [
 ]
 
 for mk in music_keywords:
-    engine.register_entity(mk, "MusicKeyword", 'Domain2')
+    engine.register_entity(mk, "MusicKeyword", domain='Domain2')
 
 music_intent = IntentBuilder("MusicIntent")\
     .require("MusicVerb")\
@@ -100,8 +100,8 @@ music_intent = IntentBuilder("MusicIntent")\
     .optionally("Artist")\
     .build()
 
-engine.register_intent_parser(weather_intent, 'Domain1')
-engine.register_intent_parser(music_intent, 'Domain2')
+engine.register_intent_parser(weather_intent, domain='Domain1')
+engine.register_intent_parser(music_intent, domain='Domain2')
 
 
 if __name__ == "__main__":
