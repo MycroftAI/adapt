@@ -1,6 +1,7 @@
 import re
 import heapq
 import pyee
+from six import next as six_next
 from adapt.entity_tagger import EntityTagger
 from adapt.parser import Parser
 from adapt.tools.text.tokenizer import EnglishTokenizer
@@ -113,7 +114,7 @@ class DomainIntentDeterminationEngine(object):
     def register_domain(self, domain):
         self.domains[domain] = IntentDeterminationEngine()
 
-    def register_entity(self, entity_value, entity_type, domain, alias_of=None):
+    def register_entity(self, entity_value, entity_type, alias_of=None, domain=None):
         """
         Register an entity to be tagged in potential parse results
 
@@ -123,13 +124,15 @@ class DomainIntentDeterminationEngine(object):
 
         :return: None
         """
-        if not domain:
-            self.domains[domain] = None
+        if domain is None:
+            domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
         self.domains[domain].register_entity(entity_value=entity_value,
                                              entity_type=entity_type,
                                              alias_of=alias_of)
 
-    def register_regex_entity(self, regex_str, domain):
+    def register_regex_entity(self, regex_str, domain=0):
         """
         A regular expression making use of python named group expressions.
 
@@ -139,8 +142,8 @@ class DomainIntentDeterminationEngine(object):
 
         :return: None
         """
-        if not domain:
-            self.domains[domain] = None
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
         self.domains[domain].register_regex_entity(regex_str=regex_str)
 
     def determine_intent(self, utterance, num_results=1):
@@ -161,8 +164,8 @@ class DomainIntentDeterminationEngine(object):
                 intents.append(intent)
         yield heapq.nlargest(len(intents), intents, key=lambda domain: domain['confidence'])
 
-    def register_intent_parser(self, intent_parser, domain):
-        if not domain:
-            self.domains[domain] = None
+    def register_intent_parser(self, intent_parser, domain=0):
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
         self.domains[domain].register_intent_parser(
             intent_parser=intent_parser)
