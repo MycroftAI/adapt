@@ -114,7 +114,7 @@ class DomainIntentDeterminationEngine(object):
     def register_domain(self, domain):
         self.domains[domain] = IntentDeterminationEngine()
 
-    def register_entity(self, entity_value, entity_type, alias_of=None, domain=None):
+    def register_entity(self, entity_value, entity_type, alias_of=None, domain=0):
         """
         Register an entity to be tagged in potential parse results
 
@@ -124,8 +124,6 @@ class DomainIntentDeterminationEngine(object):
 
         :return: None
         """
-        if domain is None:
-            domain = 0
         if domain not in self.domains:
             self.register_domain(domain=domain)
         self.domains[domain].register_entity(entity_value=entity_value,
