@@ -159,8 +159,8 @@ class DomainIntentDeterminationEngine(object):
             gen = self.domains[domain].determine_intent(
                 utterance=utterance, num_results=num_results)
             for intent in gen:
-                intents.append(intent)
-        yield heapq.nlargest(len(intents), intents, key=lambda domain: domain['confidence'])
+                heapq.heappush(intents, intent)
+        yield heapq.nlargest(len(num_results), intents, key=lambda domain: domain['confidence'])
 
     def register_intent_parser(self, intent_parser, domain=0):
         if domain not in self.domains:
