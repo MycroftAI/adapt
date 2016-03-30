@@ -104,7 +104,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         if hasattr(intent_parser, 'validate') and callable(intent_parser.validate):
             self.intent_parsers.append(intent_parser)
-        else:tokenizer=None, trie=None, 
+        else:
             raise ValueError("%s is not an intent parser" % str(intent_parser))
 
 
