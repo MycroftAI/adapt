@@ -2,6 +2,7 @@ import re
 import heapq
 import pyee
 from six import next as six_next
+from six.moves import range
 from adapt.entity_tagger import EntityTagger
 from adapt.parser import Parser
 from adapt.tools.text.tokenizer import EnglishTokenizer
@@ -103,24 +104,100 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         if hasattr(intent_parser, 'validate') and callable(intent_parser.validate):
             self.intent_parsers.append(intent_parser)
-        else:
+        else:tokenizer=None, trie=None, 
             raise ValueError("%s is not an intent parser" % str(intent_parser))
 
 
 class DomainIntentDeterminationEngine(object):
-    def __init__(self, tokenizer=None, trie=None):
-        self.domains = {}
+    """
+    DomainIntentDeterminationEngine.
 
-    def register_domain(self, domain):
-        self.domains[domain] = IntentDeterminationEngine()
+    The DomainIntentDeterminationEngine is a greedy and naive implementation of intent
+    determination. Given an utterance, it uses the Adapt parsing tools to come up with a
+    sorted collection of tagged parses. A valid parse result contains no overlapping
+    tagged entities in a single domain, and it's confidence is the sum of the tagged
+    entity confidences, which are weighted based on the percentage of the utterance
+    (per character) that the entity match represents.
+
+    This system makes heavy use of generators to enable greedy algorithms to short circuit
+    large portions of computation.
+    """
+
+    def __init__(self, tokenizer=None, trie=None, domain=0):
+        """
+        Initialize DomainIntentDeterminationEngine.
+
+        :param tokenizer: The tokenizer you wish to use.
+
+        :param trie: the Trie() you wish to use.
+
+        :param domain: a string representing the domain you wish to add
+        """
+        self.domains = {}
+        if tokenizer is not None or trie is not None:
+            self.register_domain(tokenizer=tokenizer, trie=trie, domain=domain)
+
+    @property
+    def intent_parsers(self, domain=0):
+        """
+        A property to link into IntentEngine's intent_parsers.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains intent_parsers from its IntentEngine
+        """
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].intent_parsers
+
+    @property
+    def _regex_strings(self, domain=0):
+        """
+        A property to link into IntentEngine's _regex_strings.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains _regex_strings from its IntentEngine
+        """
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain]._regex_strings
+
+    @property
+    def regular_expressions_entities(self, domain=0):
+        """
+        A property to link into IntentEngine's regular_expressions_entities.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains regular_expression_entities from its IntentEngine
+        """
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].regular_expressions_entities
+
+    def register_domain(self, tokenizer=None, trie=None, domain=0):
+        """
+        Register a domain with the intent engine.
+
+        :param tokenizer: The tokenizer you wish to use.
+
+        :param trie: the Trie() you wish to use.
+
+        :param domain: a string representing the domain you wish to add
+        """
+        self.domains[domain] = IntentDeterminationEngine(tokenizer=tokenizer, trie=trie)
 
     def register_entity(self, entity_value, entity_type, alias_of=None, domain=0):
         """
-        Register an entity to be tagged in potential parse results
+        Register an entity to be tagged in potential parse results.
 
-        :param entity_value: the value/proper name of an entity instance (Ex: "The Big Bang Theory")
+        :param entity_value: the value/proper name of an entity instance
+                             (Ex: "The Big Bang Theory")
 
         :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
+
+        :param domain: a string representing the domain you wish to add the entity to
 
         :return: None
         """
@@ -137,6 +214,8 @@ class DomainIntentDeterminationEngine(object):
         Example: (?P<Artist>.*)
 
         :param regex_str: a string representing a regular expression as defined above
+
+        :param domain: a string representing the domain you wish to add the entity to
 
         :return: None
         """
@@ -159,10 +238,22 @@ class DomainIntentDeterminationEngine(object):
             gen = self.domains[domain].determine_intent(
                 utterance=utterance, num_results=num_results)
             for intent in gen:
-                heapq.heappush(intents, intent)
-        yield heapq.nlargest(len(num_results), intents, key=lambda domain: domain['confidence'])
+                intents.append(intent)
+
+        heapq.nlargest(
+            num_results, intents, key=lambda domain: domain['confidence'])
+        for intent in intents:
+            yield intent
 
     def register_intent_parser(self, intent_parser, domain=0):
+        """
+        Register a intent parser with a domain.
+
+        :param intent_parser: The intent parser you wish to register.
+
+        :param domain: a string representing the domain you wish register the intent
+                       parser to.
+        """
         if domain not in self.domains:
             self.register_domain(domain=domain)
         self.domains[domain].register_intent_parser(
