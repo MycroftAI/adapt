@@ -2,7 +2,6 @@ import re
 import heapq
 import pyee
 from six import next as six_next
-from six.moves import range
 from adapt.entity_tagger import EntityTagger
 from adapt.parser import Parser
 from adapt.tools.text.tokenizer import EnglishTokenizer
@@ -176,7 +175,7 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(domain=domain)
         return self.domains[domain].regular_expressions_entities
 
-    def register_domain(self, tokenizer=None, trie=None, domain=0):
+    def register_domain(self, domain=0, tokenizer=None, trie=None):
         """
         Register a domain with the intent engine.
 
@@ -186,7 +185,8 @@ class DomainIntentDeterminationEngine(object):
 
         :param domain: a string representing the domain you wish to add
         """
-        self.domains[domain] = IntentDeterminationEngine(tokenizer=tokenizer, trie=trie)
+        self.domains[domain] = IntentDeterminationEngine(
+            tokenizer=tokenizer, trie=trie)
 
     def register_entity(self, entity_value, entity_type, alias_of=None, domain=0):
         """
@@ -235,8 +235,8 @@ class DomainIntentDeterminationEngine(object):
         """
         intents = []
         for domain in self.domains:
-            gen = self.domains[domain].determine_intent(
-                utterance=utterance, num_results=num_results)
+            gen = self.domains[domain].determine_intent(utterance=utterance,
+                                                        num_results=1)
             for intent in gen:
                 intents.append(intent)
 

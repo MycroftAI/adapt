@@ -77,17 +77,16 @@ class DomainIntentDeterminationEngineTests(unittest.TestCase):
         self.engine.register_entity("tree", "Entity1", domain='Domain1')
 
         # Creating second intent domain
-        parser2 = IntentBuilder("Parser2").require("Entity2").build()
+        parser2 = IntentBuilder("Parser1").require("Entity2").build()
         self.engine.register_intent_parser(parser2, domain="Domain2")
         self.engine.register_entity("house", "Entity2", domain="Domain2")
 
         utterance = "Entity1 Entity2 go to the tree house"
         intents = self.engine.determine_intent(utterance, 2)
+
         intent = next(intents)
         assert intent
-
-        # confidence for Parser2 > Parser1
-        self.assertEqual(intent['intent_type'], 'Parser2')
+        self.assertEqual(intent['intent_type'], 'Parser1')
 
         intent = next(intents)
         assert intent
