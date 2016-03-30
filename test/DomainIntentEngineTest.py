@@ -1,11 +1,116 @@
 import unittest
 from adapt.engine import DomainIntentDeterminationEngine
 from adapt.intent import IntentBuilder
+from adapt.entity_tagger import EntityTagger
+from adapt.tools.text.tokenizer import EnglishTokenizer
+from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
 
 
-class DomainIntentDeterminationEngineTests(unittest.TestCase):
+class TokenizerTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
+    def test_tokenizer_property(self):
+        """Test the tokenizer property is working."""
+        self.assertIsInstance(self.engine.tokenizer, EnglishTokenizer)
+
+    def test_get_tokenizer(self):
+        """Test the tokenizer property is working."""
+        self.engine.register_domain('Domain1')
+        self.assertIsInstance(self.engine.get_tokenizer('Domain1'), EnglishTokenizer)
+
+
+class TrieTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
+    def test_trie_property(self):
+        """Test the trie property is working."""
+        self.assertIsInstance(self.engine.trie, Trie)
+
+    def test_get_trie(self):
+        """Test the trie property is working."""
+        self.engine.register_domain('Domain1')
+        self.assertIsInstance(self.engine.get_trie('Domain1'), Trie)
+
+
+class TaggerTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
+    def test_get_tagger(self):
+        """Test the tagger property is working."""
+        self.engine.register_domain('Domain1')
+        self.assertIsInstance(self.engine.get_tagger('Domain1'), EntityTagger)
+
+    def test_tagger_property(self):
+        """Test the tagger property is working."""
+        self.assertIsInstance(self.engine.tagger, EntityTagger)
+
+
+class IntentParsersTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
+    def test_intent_parsers_property(self):
+        """Test the intent_parsers property is working."""
+        self.assertEqual(self.engine.intent_parsers, [])
+
+    def test_get_intent_parsers(self):
+        """Test the intent_parsers property is working."""
+        self.engine.register_domain('Domain1')
+        self.assertEqual(self.engine.get_intent_parsers(), [])
+
+
+class RegexStringsTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
+    def test__regex_strings_property(self):
+        """Test the _regex_strings property is working."""
+        self.assertEqual(self.engine._regex_strings, set())
+
+    def test_get_regex_strings(self):
+        """Test the _regex_strings property is working."""
+        self.engine.register_domain('Domain1')
+        self.assertEqual(self.engine.get__regex_strings('Domain1'), set())
+
+
+class RegularExpressionsEntitiesTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
+    def test_regular_expressions_entities_property(self):
+        """Test the regular_expressions_entities property is working."""
+        self.assertEqual(self.engine.regular_expressions_entities, [])
+
+    def test_get_regular_expressions_entities(self):
+        """Test the regular_expressions_entities property is working."""
+        self.engine.register_domain('Domain1')
+        self.assertEqual(self.engine.get_regular_expressions_entities('Domain1'), [])
+
+
+class RegisterIntentParserTests(unittest.TestCase):
     """All tests related to the DomainIntentDeterminationEngine."""
 
     def setUp(self):
@@ -31,6 +136,14 @@ class DomainIntentDeterminationEngineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.engine.register_intent_parser("NOTAPARSER")
 
+
+class RegisterRegexEntityTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
+
     def test_register_regex_entity(self):
         """Test to make sure a regex entity can be registered."""
         self.engine.register_regex_entity(".*")
@@ -41,6 +154,14 @@ class DomainIntentDeterminationEngineTests(unittest.TestCase):
         """Test to make sure that regex entity is empty by default."""
         self.assertEqual(len(self.engine._regex_strings), 0)
         self.assertEqual(len(self.engine.regular_expressions_entities), 0)
+
+
+class SelectBestIntentTests(unittest.TestCase):
+    """All tests related to the DomainIntentDeterminationEngine."""
+
+    def setUp(self):
+        """Setting up testing env."""
+        self.engine = DomainIntentDeterminationEngine()
 
     def test_select_best_intent(self):
         """

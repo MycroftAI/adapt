@@ -137,39 +137,162 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(tokenizer=tokenizer, trie=trie, domain=domain)
 
     @property
-    def intent_parsers(self, domain=0):
+    def tokenizer(self):
         """
-        A property to link into IntentEngine's intent_parsers.
+        A property to link into IntentEngine's tokenizer.
+
+        warning:: this is only for backwards compatiblility and should not be used if you
+        intend on using domains.
+
+        :return: the domains tokenizer from its IntentEngine
+        """
+        domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].tokenizer
+
+    def get_tokenizer(self, domain=0):
+        """
+        Get a tokenizer from a domain.
 
         :param domain: a string representing the domain you wish to access
 
+        :return: the domains tokenizer from IntentEngine
+        """
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].tokenizer
+
+    @property
+    def trie(self):
+        """
+        A property to link into IntentEngine's trie.
+
+        warning:: this is only for backwards compatiblility and should not be used if you
+        intend on using domains.
+
+        :return: the domains trie from its IntentEngine
+        """
+        domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].trie
+
+    def get_trie(self, domain=0):
+        """
+        Get a trie from a domain.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains trie from IntentEngine
+        """
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].trie
+
+    @property
+    def tagger(self):
+        """
+        A property to link into IntentEngine's intent_parsers.
+
+        warning:: this is only for backwards compatiblility and should not be used if you
+        intend on using domains.
+
         :return: the domains intent_parsers from its IntentEngine
+        """
+        domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].tagger
+
+    def get_tagger(self, domain=0):
+        """
+        Get a tagger from a domain.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains tagger from IntentEngine
+        """
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].tagger
+
+    @property
+    def intent_parsers(self):
+        """
+        A property to link into IntentEngine's intent_parsers.
+
+        warning:: this is only for backwards compatiblility and should not be used if you
+        intend on using domains.
+
+        :return: the domains intent_parsers from its IntentEngine
+        """
+        domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].intent_parsers
+
+    def get_intent_parsers(self, domain=0):
+        """
+        Get a intent_parsers from a domain.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains intent_parsers from IntentEngine
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
         return self.domains[domain].intent_parsers
 
     @property
-    def _regex_strings(self, domain=0):
+    def _regex_strings(self):
         """
         A property to link into IntentEngine's _regex_strings.
 
-        :param domain: a string representing the domain you wish to access
+        warning:: this is only for backwards compatiblility and should not be used if you
+        intend on using domains.
 
         :return: the domains _regex_strings from its IntentEngine
+        """
+        domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain]._regex_strings
+
+    def get__regex_strings(self, domain=0):
+        """
+        Get a _regex_strings from a domain.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains _regex_strings from IntentEngine
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
         return self.domains[domain]._regex_strings
 
     @property
-    def regular_expressions_entities(self, domain=0):
+    def regular_expressions_entities(self):
         """
         A property to link into IntentEngine's regular_expressions_entities.
 
-        :param domain: a string representing the domain you wish to access
+        warning:: this is only for backwards compatiblility and should not be used if you
+        intend on using domains.
 
         :return: the domains regular_expression_entities from its IntentEngine
+        """
+        domain = 0
+        if domain not in self.domains:
+            self.register_domain(domain=domain)
+        return self.domains[domain].regular_expressions_entities
+
+    def get_regular_expressions_entities(self, domain=0):
+        """
+        Get a regular_expressions_entities from a domain.
+
+        :param domain: a string representing the domain you wish to access
+
+        :return: the domains regular_expressions_entities from IntentEngine
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
@@ -193,7 +316,7 @@ class DomainIntentDeterminationEngine(object):
         Register an entity to be tagged in potential parse results.
 
         :param entity_value: the value/proper name of an entity instance
-                             (Ex: "The Big Bang Theory")
+        (Ex: "The Big Bang Theory")
 
         :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
 
@@ -252,7 +375,7 @@ class DomainIntentDeterminationEngine(object):
         :param intent_parser: The intent parser you wish to register.
 
         :param domain: a string representing the domain you wish register the intent
-                       parser to.
+        parser to.
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
