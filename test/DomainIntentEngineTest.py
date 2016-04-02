@@ -19,11 +19,6 @@ class TokenizerTests(unittest.TestCase):
         """Test the tokenizer property is working."""
         self.assertIsInstance(self.engine.tokenizer, EnglishTokenizer)
 
-    def test_get_tokenizer(self):
-        """Test the tokenizer property is working."""
-        self.engine.register_domain('Domain1')
-        self.assertIsInstance(self.engine.get_tokenizer('Domain1'), EnglishTokenizer)
-
 
 class TrieTests(unittest.TestCase):
     """All tests related to the DomainIntentDeterminationEngine."""
@@ -36,11 +31,6 @@ class TrieTests(unittest.TestCase):
         """Test the trie property is working."""
         self.assertIsInstance(self.engine.trie, Trie)
 
-    def test_get_trie(self):
-        """Test the trie property is working."""
-        self.engine.register_domain('Domain1')
-        self.assertIsInstance(self.engine.get_trie('Domain1'), Trie)
-
 
 class TaggerTests(unittest.TestCase):
     """All tests related to the DomainIntentDeterminationEngine."""
@@ -48,11 +38,6 @@ class TaggerTests(unittest.TestCase):
     def setUp(self):
         """Setting up testing env."""
         self.engine = DomainIntentDeterminationEngine()
-
-    def test_get_tagger(self):
-        """Test the tagger property is working."""
-        self.engine.register_domain('Domain1')
-        self.assertIsInstance(self.engine.get_tagger('Domain1'), EntityTagger)
 
     def test_tagger_property(self):
         """Test the tagger property is working."""
@@ -70,11 +55,6 @@ class IntentParsersTests(unittest.TestCase):
         """Test the intent_parsers property is working."""
         self.assertEqual(self.engine.intent_parsers, [])
 
-    def test_get_intent_parsers(self):
-        """Test the intent_parsers property is working."""
-        self.engine.register_domain('Domain1')
-        self.assertEqual(self.engine.get_intent_parsers(), [])
-
 
 class RegexStringsTests(unittest.TestCase):
     """All tests related to the DomainIntentDeterminationEngine."""
@@ -87,11 +67,6 @@ class RegexStringsTests(unittest.TestCase):
         """Test the _regex_strings property is working."""
         self.assertEqual(self.engine._regex_strings, set())
 
-    def test_get_regex_strings(self):
-        """Test the _regex_strings property is working."""
-        self.engine.register_domain('Domain1')
-        self.assertEqual(self.engine.get__regex_strings('Domain1'), set())
-
 
 class RegularExpressionsEntitiesTests(unittest.TestCase):
     """All tests related to the DomainIntentDeterminationEngine."""
@@ -103,11 +78,6 @@ class RegularExpressionsEntitiesTests(unittest.TestCase):
     def test_regular_expressions_entities_property(self):
         """Test the regular_expressions_entities property is working."""
         self.assertEqual(self.engine.regular_expressions_entities, [])
-
-    def test_get_regular_expressions_entities(self):
-        """Test the regular_expressions_entities property is working."""
-        self.engine.register_domain('Domain1')
-        self.assertEqual(self.engine.get_regular_expressions_entities('Domain1'), [])
 
 
 class RegisterIntentParserTests(unittest.TestCase):
