@@ -122,7 +122,7 @@ class DomainIntentDeterminationEngine(object):
     large portions of computation.
     """
 
-    def __init__(self, tokenizer=None, trie=None, domain=0):
+    def __init__(self):
         """
         Initialize DomainIntentDeterminationEngine.
 
@@ -133,8 +133,6 @@ class DomainIntentDeterminationEngine(object):
         :param domain: a string representing the domain you wish to add
         """
         self.domains = {}
-        if tokenizer is not None or trie is not None:
-            self.register_domain(tokenizer=tokenizer, trie=trie, domain=domain)
 
     @property
     def tokenizer(self):
@@ -147,18 +145,6 @@ class DomainIntentDeterminationEngine(object):
         :return: the domains tokenizer from its IntentEngine
         """
         domain = 0
-        if domain not in self.domains:
-            self.register_domain(domain=domain)
-        return self.domains[domain].tokenizer
-
-    def get_tokenizer(self, domain=0):
-        """
-        Get a tokenizer from a domain.
-
-        :param domain: a string representing the domain you wish to access
-
-        :return: the domains tokenizer from IntentEngine
-        """
         if domain not in self.domains:
             self.register_domain(domain=domain)
         return self.domains[domain].tokenizer
@@ -178,18 +164,6 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(domain=domain)
         return self.domains[domain].trie
 
-    def get_trie(self, domain=0):
-        """
-        Get a trie from a domain.
-
-        :param domain: a string representing the domain you wish to access
-
-        :return: the domains trie from IntentEngine
-        """
-        if domain not in self.domains:
-            self.register_domain(domain=domain)
-        return self.domains[domain].trie
-
     @property
     def tagger(self):
         """
@@ -201,18 +175,6 @@ class DomainIntentDeterminationEngine(object):
         :return: the domains intent_parsers from its IntentEngine
         """
         domain = 0
-        if domain not in self.domains:
-            self.register_domain(domain=domain)
-        return self.domains[domain].tagger
-
-    def get_tagger(self, domain=0):
-        """
-        Get a tagger from a domain.
-
-        :param domain: a string representing the domain you wish to access
-
-        :return: the domains tagger from IntentEngine
-        """
         if domain not in self.domains:
             self.register_domain(domain=domain)
         return self.domains[domain].tagger
@@ -232,18 +194,6 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(domain=domain)
         return self.domains[domain].intent_parsers
 
-    def get_intent_parsers(self, domain=0):
-        """
-        Get a intent_parsers from a domain.
-
-        :param domain: a string representing the domain you wish to access
-
-        :return: the domains intent_parsers from IntentEngine
-        """
-        if domain not in self.domains:
-            self.register_domain(domain=domain)
-        return self.domains[domain].intent_parsers
-
     @property
     def _regex_strings(self):
         """
@@ -259,18 +209,6 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(domain=domain)
         return self.domains[domain]._regex_strings
 
-    def get__regex_strings(self, domain=0):
-        """
-        Get a _regex_strings from a domain.
-
-        :param domain: a string representing the domain you wish to access
-
-        :return: the domains _regex_strings from IntentEngine
-        """
-        if domain not in self.domains:
-            self.register_domain(domain=domain)
-        return self.domains[domain]._regex_strings
-
     @property
     def regular_expressions_entities(self):
         """
@@ -282,18 +220,6 @@ class DomainIntentDeterminationEngine(object):
         :return: the domains regular_expression_entities from its IntentEngine
         """
         domain = 0
-        if domain not in self.domains:
-            self.register_domain(domain=domain)
-        return self.domains[domain].regular_expressions_entities
-
-    def get_regular_expressions_entities(self, domain=0):
-        """
-        Get a regular_expressions_entities from a domain.
-
-        :param domain: a string representing the domain you wish to access
-
-        :return: the domains regular_expressions_entities from IntentEngine
-        """
         if domain not in self.domains:
             self.register_domain(domain=domain)
         return self.domains[domain].regular_expressions_entities
