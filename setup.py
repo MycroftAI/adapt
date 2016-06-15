@@ -1,6 +1,10 @@
-__author__ = 'seanfitz'
-
 from setuptools import setup
+from adapt.util.setup_base import (
+    find_all_packages,
+    required,
+    get_version
+)
+__author__ = 'seanfitz'
 
 setup(
     name = "adapt-parser",
@@ -11,9 +15,7 @@ setup(
     license = ("LGPL-3"),
     keywords = "natural language processing",
     url = "https://github.com/MycroftAI/adapt",
-    packages = ["adapt", "adapt.tools", "adapt.tools.text"],
-
-    install_requires = [
-        "requirements.txt"
-    ]
+    #packages = ["adapt", "adapt.tools", "adapt.tools.text"],
+    packages=find_all_packages("adapt"),
+    install_requires=required('requirements.txt')
 )
