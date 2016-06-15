@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name = "adapt-parser",
-    version = "0.2.2",
+    version = "0.2.4",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
     description = ("A text-to-intent parsing framework."),
@@ -14,7 +14,7 @@ setup(
     packages = ["adapt", "adapt.tools", "adapt.tools.text"],
 
     install_requires = [
-        "pyee==0.1.0",
+        "pyee==1.0.1",
         "six==1.10.0"
     ]
 )
