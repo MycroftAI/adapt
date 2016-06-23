@@ -90,6 +90,7 @@ class Intent(object):
             else:
                 for key in best_resolution:
                     result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
+                    intent_confidence += 1.0
 
         for optional_type, attribute_name in self.optional:
             optional_tag, canonical_form = find_first_tag(local_tags, optional_type)

@@ -53,6 +53,20 @@ class IntentTest(unittest.TestCase):
             assert result_intent.get('PlayVerb') == 'play'
             assert result_intent.get('Radio Station') == "barenaked ladies"
 
+    def test_at_least_on_no_required(self):
+        intent = IntentBuilder("play intent") \
+            .one_of("Television Show", "Radio Station") \
+            .build()
+        for result in self.parser.parse("play the big bang theory"):
+            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            assert result_intent.get('confidence') > 0.0
+            assert result_intent.get('Television Show') == "the big bang theory"
+
+        for result in self.parser.parse("play the barenaked ladies"):
+            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            assert result_intent.get('confidence') > 0.0
+            assert result_intent.get('Radio Station') == "barenaked ladies"
+
     def test_basic_intent_with_alternate_names(self):
         intent = IntentBuilder("play television intent")\
             .require("PlayVerb", "Play Verb")\
