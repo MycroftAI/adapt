@@ -20,6 +20,8 @@ class IntentTest(unittest.TestCase):
         self.trie.insert("the big bang theory", ("the big bang theory", "Television Show"))
         self.trie.insert("the big", ("the big", "Not a Thing"))
         self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
+        self.trie.insert("show", ("show", "Command"))
+        self.trie.insert("what", ("what", "Question"))
         self.parser = Parser(self.tokenizer, self.tagger)
 
     def tearDown(self):
@@ -66,6 +68,16 @@ class IntentTest(unittest.TestCase):
             result_intent = intent.validate(result.get('tags'), result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Radio Station') == "barenaked ladies"
+
+    def test_at_least_one_alone(self):
+        intent = IntentBuilder("OptionsForLunch") \
+            .one_of("Question", "Command") \
+            .build()
+
+        for result in self.parser.parse("show"):
+            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            assert result_intent.get('confidence') > 0.0
+            assert result_intent.get('Command') == "show"
 
     def test_basic_intent_with_alternate_names(self):
         intent = IntentBuilder("play television intent")\

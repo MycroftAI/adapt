@@ -44,7 +44,7 @@ def resolve_one_of(tags, at_least_one):
         resolution = {}
         pr = possible_resolution[:]
         for entity_type in pr:
-            last_end_index = 0
+            last_end_index = -1
             if entity_type in resolution:
                 last_end_index = resolution.get[entity_type][-1].get('end_token')
             tag, value = find_first_tag(tags, entity_type, after_index=last_end_index)
