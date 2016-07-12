@@ -9,6 +9,9 @@ class TrieNode(object):
         self.is_terminal = is_terminal
         self.children = {}
         self.key = None
+        # since weight is an attribute on the node (and not on the payload), all
+        # payloads at this node have the weight of the last insert.
+        self.weight = 1.0
 
     def lookup(self, iterable, index=0, gather=False, edit_distance=0, max_edit_distance=0, match_threshold=0.0, matched_length=0):
         """
@@ -22,14 +25,14 @@ class TrieNode(object):
         """
         if self.is_terminal:
             if index == len(iterable) or \
-                    (gather and index < len(iterable) and iterable[index] == ' '): #only gather on word break)
+                    (gather and index < len(iterable) and iterable[index] == ' '):  # only gather on word break)
                 confidence = float(len(self.key) - edit_distance) / float(max(len(self.key), index))
                 if confidence > match_threshold:
                     yield {
                         'key': self.key,
                         'match': iterable[:index],
                         'data': self.data,
-                        'confidence': confidence
+                        'confidence': confidence * self.weight
                     }
 
         if index < len(iterable) and iterable[index] in self.children:
@@ -60,10 +63,11 @@ class TrieNode(object):
                                 edit_distance=edit_distance + 1, max_edit_distance=max_edit_distance, matched_length=matched_length):
                         yield result
 
-    def insert(self, iterable, index=0, data=None, value=None):
+    def insert(self, iterable, index=0, data=None, weight=1.0):
         if index == len(iterable):
             self.is_terminal = True
             self.key = iterable
+            self.weight = weight
             if data:
                 self.data.add(data)
         else:
@@ -121,8 +125,8 @@ class Trie(object):
                                        match_threshold=self.match_threshold):
             yield result
 
-    def insert(self, iterable, data=None):
-        self.root.insert(iterable, index=0, data=data)
+    def insert(self, iterable, data=None, weight=1.0):
+        self.root.insert(iterable, index=0, data=data, weight=1.0)
 
     def remove(self, iterable, data=None):
         return self.root.remove(iterable, data=data)

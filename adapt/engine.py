@@ -21,7 +21,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of
     computation.
     """
-    def __init__(self, tokenizer=None, trie=None):
+    def __init__(self, tokenizer=None, trie=None, context_manager=None):
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
         self.trie = trie or Trie()
@@ -29,17 +29,21 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         self._regex_strings = set()
         self.tagger = EntityTagger(self.trie, self.tokenizer, self.regular_expressions_entities)
         self.intent_parsers = []
+        self.context_manager = context_manager
 
-    def __best_intent(self, parse_result):
+    def __best_intent(self, parse_result, context=[]):
         best_intent = None
+        best_tags = None
+        context_as_entities = [{'entities': [c]} for c in context]
         for intent in self.intent_parsers:
-            i = intent.validate(parse_result.get('tags'), parse_result.get('confidence'))
+            i, tags = intent.validate_with_tags(parse_result.get('tags') + context_as_entities, parse_result.get('confidence'))
             if not best_intent or (i and i.get('confidence') > best_intent.get('confidence')):
                 best_intent = i
+                best_tags = tags
 
-        return best_intent
+        return best_intent, best_tags
 
-    def determine_intent(self, utterance, num_results=1):
+    def determine_intent(self, utterance, num_results=1, include_tags=False):
         """
         Given an utterance, provide a valid intent.
 
@@ -47,17 +51,23 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         :param num_results: a maximum number of results to be returned.
 
-        :return: A generator the yields dictionaries.
+        :return: A generator that yields dictionaries.
         """
         parser = Parser(self.tokenizer, self.tagger)
         parser.on('tagged_entities',
                   (lambda result:
                    self.emit("tagged_entities", result)))
 
-        for result in parser.parse(utterance, N=num_results):
+        context = []
+        if self.context_manager:
+            context = self.context_manager.get_context()
+
+        for result in parser.parse(utterance, N=num_results, context=context):
             self.emit("parse_result", result)
-            best_intent = self.__best_intent(result)
+            best_intent, tags = self.__best_intent(result, context)
             if best_intent and best_intent.get('confidence', 0.0) > 0:
+                if include_tags:
+                    best_intent['__tags__'] = tags
                 yield best_intent
 
     def register_entity(self, entity_value, entity_type, alias_of=None):
@@ -71,7 +81,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         :return: None
         """
         if alias_of:
-            self.trie.insert(entity_value, data=(alias_of, entity_type))
+            self.trie.insert(entity_value.lower(), data=(alias_of, entity_type))
         else:
             self.trie.insert(entity_value.lower(), data=(entity_value, entity_type))
             self.trie.insert(entity_type.lower(), data=(entity_type, 'Concept'))

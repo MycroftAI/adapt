@@ -1,7 +1,7 @@
 import pyee
 import time
 from adapt.expander import BronKerboschExpander
-
+from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
 
@@ -15,9 +15,30 @@ class Parser(pyee.EventEmitter):
         self._tokenizer = tokenizer
         self._tagger = tagger
 
-    def parse(self, utterance, relevance_store=None, N=1):
+    def parse(self, utterance, context=None, N=1):
+        """
+
+        :param utterance:
+        :param context: a list of entities
+        :param N:
+        :return:
+        """
         start = time.time()
-        tagged = self._tagger.tag(utterance.lower())
+        context_trie = None
+        if context and isinstance(context, list):
+            # sort by confidence in ascending order, so
+            # highest confidence for an entity is last.
+            # see comment on TrieNode ctor
+            context.sort(key=lambda x: x.get('confidence'))
+
+            context_trie = Trie()
+            for entity in context:
+                entity_value, entity_type = entity.get('data')[0]
+                context_trie.insert(entity_value.lower(),
+                                    data=(entity_value, entity_type),
+                                    weight=entity.get('confidence'))
+
+        tagged = self._tagger.tag(utterance.lower(), context_trie=context_trie)
         self.emit("tagged_entities",
                   {
                       'utterance': utterance,
