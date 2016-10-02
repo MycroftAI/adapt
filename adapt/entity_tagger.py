@@ -9,7 +9,6 @@ class EntityTagger(object):
     Known Entity Tagger
     Given an index of known entities, can efficiently search for those entities within a provided utterance.
     """
-
     def __init__(self, trie, tokenizer, regex_entities=[], max_tokens=20):
         self.trie = trie
         self.tokenizer = tokenizer
