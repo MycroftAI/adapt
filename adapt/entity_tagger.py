@@ -9,6 +9,7 @@ class EntityTagger(object):
     Known Entity Tagger
     Given an index of known entities, can efficiently search for those entities within a provided utterance.
     """
+
     def __init__(self, trie, tokenizer, regex_entities=[], max_tokens=20):
         self.trie = trie
         self.tokenizer = tokenizer
@@ -29,7 +30,7 @@ class EntityTagger(object):
 
     def _sort_and_merge_tags(self, tags):
         decorated = [(tag['start_token'], tag['end_token'], tag) for tag in tags]
-        decorated.sort()
+        decorated.sort(key=lambda x: (x[0], x[1]))
         return [tag for start_token, end_token, tag in decorated]
 
     def tag(self, utterance):
