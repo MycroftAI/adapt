@@ -29,7 +29,7 @@ class EntityTagger(object):
 
     def _sort_and_merge_tags(self, tags):
         decorated = [(tag['start_token'], tag['end_token'], tag) for tag in tags]
-        decorated.sort()
+        decorated.sort(key=lambda x: (x[0], x[1]))
         return [tag for start_token, end_token, tag in decorated]
 
     def tag(self, utterance):
