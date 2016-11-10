@@ -57,7 +57,7 @@ class ContextManagerIntegrationTest(unittest.TestCase):
         self.engine.register_entity("foo", "Foo")
         self.engine.register_entity("fop", "Foo")
 
-        intent = next(self.engine.determine_intent("", include_tags=True))
+        intent = next(self.engine.determine_intent("foo", include_tags=True))
         assert intent
         assert intent['intent_type'] == "DummyIntent"
         assert not (intent.get("Foo") and intent.get("Foo2"))

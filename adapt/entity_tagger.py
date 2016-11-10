@@ -84,7 +84,8 @@ class EntityTagger(object):
                     'key': new_entity.get('key'),
                     'start_token': i,
                     'entities': [new_entity],
-                    'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1
+                    'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1,
+                    'from_context': False
                 })
 
             if context_trie:
@@ -96,7 +97,8 @@ class EntityTagger(object):
                         'key': new_entity.get('key'),
                         'start_token': i,
                         'entities': [new_entity],
-                        'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1
+                        'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1,
+                        'from_context': True
                     })
 
         additional_sort = additional_sort or len(entities) > 0

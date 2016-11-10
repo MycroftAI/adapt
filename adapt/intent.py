@@ -108,7 +108,7 @@ class Intent(object):
             if not optional_tag or attribute_name in result:
                 continue
             result[attribute_name] = canonical_form
-            if best_resolution in local_tags:
+            if optional_tag in local_tags:
                 local_tags.remove(optional_tag)
             used_tags.append(optional_tag)
             intent_confidence += 1.0

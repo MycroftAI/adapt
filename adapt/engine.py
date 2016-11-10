@@ -43,6 +43,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         return best_intent, best_tags
 
+    def __get_unused_context(self, parse_result, context):
+        tags_keys = set([t['key'] for t in parse_result['tags'] if t['from_context']])
+        result_context = [c for c in context if c['key'] not in tags_keys]
+        return result_context
+
     def determine_intent(self, utterance, num_results=1, include_tags=False):
         """
         Given an utterance, provide a valid intent.
@@ -64,7 +69,9 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         for result in parser.parse(utterance, N=num_results, context=context):
             self.emit("parse_result", result)
-            best_intent, tags = self.__best_intent(result, context)
+            # create a context without entities used in result
+            remaining_context = self.__get_unused_context(result, context)
+            best_intent, tags = self.__best_intent(result, remaining_context)
             if best_intent and best_intent.get('confidence', 0.0) > 0:
                 if include_tags:
                     best_intent['__tags__'] = tags
