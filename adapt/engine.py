@@ -21,7 +21,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of
     computation.
     """
-    def __init__(self, tokenizer=None, trie=None, context_manager=None):
+    def __init__(self, tokenizer=None, trie=None):
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
         self.trie = trie or Trie()
@@ -29,7 +29,6 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         self._regex_strings = set()
         self.tagger = EntityTagger(self.trie, self.tokenizer, self.regular_expressions_entities)
         self.intent_parsers = []
-        self.context_manager = context_manager
 
     def __best_intent(self, parse_result, context=[]):
         best_intent = None
@@ -48,11 +47,16 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         result_context = [c for c in context if c['key'] not in tags_keys]
         return result_context
 
-    def determine_intent(self, utterance, num_results=1, include_tags=False):
+    def determine_intent(self, utterance, num_results=1, include_tags=False, context_manager=None):
         """
         Given an utterance, provide a valid intent.
 
         :param utterance: an ascii or unicode string representing natural language speech
+
+        :param include_tags: includes the parsed tags (including position and confidence)
+            as part of result
+
+        :param context_manager: a context manager to provide context to the utterance
 
         :param num_results: a maximum number of results to be returned.
 
@@ -64,8 +68,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                    self.emit("tagged_entities", result)))
 
         context = []
-        if self.context_manager:
-            context = self.context_manager.get_context()
+        if context_manager:
+            context = context_manager.get_context()
 
         for result in parser.parse(utterance, N=num_results, context=context):
             self.emit("parse_result", result)

@@ -10,7 +10,7 @@ import unittest
 class ContextManagerIntegrationTest(unittest.TestCase):
     def setUp(self):
         self.context_manager = ContextManager()
-        self.engine = IntentDeterminationEngine(context_manager=self.context_manager)
+        self.engine = IntentDeterminationEngine()
 
     def testBasicContextualFollowup(self):
         intent1 = IntentBuilder("TimeQueryIntent")\
@@ -32,7 +32,7 @@ class ContextManagerIntegrationTest(unittest.TestCase):
         self.engine.register_entity("weather", "WeatherKeyword")
 
         utterance1 = "what time is it in seattle"
-        intent = next(self.engine.determine_intent(utterance1, include_tags=True))
+        intent = next(self.engine.determine_intent(utterance1, include_tags=True, context_manager=self.context_manager))
         assert intent
         assert intent['intent_type'] == 'TimeQueryIntent'
         assert '__tags__' in intent
@@ -41,7 +41,7 @@ class ContextManagerIntegrationTest(unittest.TestCase):
             self.context_manager.inject_context(context_entity)
 
         utterance2 = "what's the weather like?"
-        intent = next(self.engine.determine_intent(utterance2))
+        intent = next(self.engine.determine_intent(utterance2, context_manager=self.context_manager))
         assert intent
         assert intent['intent_type'] == 'WeatherQueryIntent'
 
@@ -57,7 +57,7 @@ class ContextManagerIntegrationTest(unittest.TestCase):
         self.engine.register_entity("foo", "Foo")
         self.engine.register_entity("fop", "Foo")
 
-        intent = next(self.engine.determine_intent("foo", include_tags=True))
+        intent = next(self.engine.determine_intent("foo", include_tags=True, context_manager=self.context_manager))
         assert intent
         assert intent['intent_type'] == "DummyIntent"
         assert not (intent.get("Foo") and intent.get("Foo2"))
