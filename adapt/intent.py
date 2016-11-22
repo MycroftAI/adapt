@@ -15,10 +15,10 @@ def find_first_tag(tags, entity_type, after_index=-1):
     for tag in tags:
         for entity in tag.get('entities'):
             for v, t in entity.get('data'):
-                if t.lower() == entity_type.lower() and tag.get('start_token') > after_index:
-                    return tag, v
+                if t.lower() == entity_type.lower() and tag.get('start_token', 0) > after_index:
+                    return tag, v, entity.get('confidence')
 
-    return None, None
+    return None, None, None
 
 
 def find_next_tag(tags, end_index=0):
@@ -47,7 +47,7 @@ def resolve_one_of(tags, at_least_one):
             last_end_index = -1
             if entity_type in resolution:
                 last_end_index = resolution.get[entity_type][-1].get('end_token')
-            tag, value = find_first_tag(tags, entity_type, after_index=last_end_index)
+            tag, value, c = find_first_tag(tags, entity_type, after_index=last_end_index)
             if not tag:
                 break
             else:
@@ -68,46 +68,59 @@ class Intent(object):
         self.optional = optional
 
     def validate(self, tags, confidence):
+        intent, tags = self.validate_with_tags(tags, confidence)
+        return intent
+
+    def validate_with_tags(self, tags, confidence):
         result = {'intent_type': self.name}
         intent_confidence = 0.0
         local_tags = tags[:]
+        used_tags = []
+
         for require_type, attribute_name in self.requires:
-            required_tag, canonical_form = find_first_tag(local_tags, require_type)
+            required_tag, canonical_form, confidence = find_first_tag(local_tags, require_type)
             if not required_tag:
                 result['confidence'] = 0.0
-                return result
+                return result, []
 
             result[attribute_name] = canonical_form
-            local_tags.remove(required_tag)
+            if required_tag in local_tags:
+                local_tags.remove(required_tag)
+            used_tags.append(required_tag)
             # TODO: use confidence based on edit distance and context
-            intent_confidence += 1.0
+            intent_confidence += confidence
 
         if len(self.at_least_one) > 0:
             best_resolution = resolve_one_of(tags, self.at_least_one)
             if not best_resolution:
                 result['confidence'] = 0.0
-                return result
+                return result, []
             else:
                 for key in best_resolution:
                     result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
                     intent_confidence += 1.0
+                used_tags.append(best_resolution)
+                if best_resolution in local_tags:
+                    local_tags.remove(best_resolution)
 
         for optional_type, attribute_name in self.optional:
-            optional_tag, canonical_form = find_first_tag(local_tags, optional_type)
+            optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
             if not optional_tag or attribute_name in result:
                 continue
             result[attribute_name] = canonical_form
-            local_tags.remove(optional_tag)
+            if optional_tag in local_tags:
+                local_tags.remove(optional_tag)
+            used_tags.append(optional_tag)
             intent_confidence += 1.0
 
         total_confidence = intent_confidence / len(tags) * confidence
 
-        target_client, canonical_form = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
+        target_client, canonical_form, confidence = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
 
-        return result
+        return result, used_tags
 
 
 class IntentBuilder(object):

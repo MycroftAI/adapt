@@ -139,7 +139,8 @@ class BronKerboschExpander(object):
                     'confidence': entities.get(entity_name)[1] * old_tag.get('confidence', 1.0),
                     'end_token': old_tag.get('end_token'),
                     'match': old_tag.get('entities')[0].get('match'),
-                    'key': old_tag.get('entities')[0].get('key')
+                    'key': old_tag.get('entities')[0].get('key'),
+                    'from_context': old_tag.get('from_context', False)
                 }
                 result.append(tag)
             result = sorted(result, key=lambda e: e.get('start_token'))

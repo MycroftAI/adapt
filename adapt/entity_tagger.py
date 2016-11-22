@@ -32,11 +32,14 @@ class EntityTagger(object):
         decorated.sort(key=lambda x: (x[0], x[1]))
         return [tag for start_token, end_token, tag in decorated]
 
-    def tag(self, utterance):
+    def tag(self, utterance, context_trie=None):
         """
         Tag known entities within the utterance.
 
         :param utterance: a string of natural language text
+
+        :param context_trie: optional, a trie containing only entities from context
+            for this request
 
         :return: dictionary, with the following keys
 
@@ -70,6 +73,7 @@ class EntityTagger(object):
                     entities.append(sub_entity)
         additional_sort = len(entities) > 0
 
+        context_entities = []
         for i in xrange(len(tokens)):
             part = ' '.join(tokens[i:])
 
@@ -80,10 +84,26 @@ class EntityTagger(object):
                     'key': new_entity.get('key'),
                     'start_token': i,
                     'entities': [new_entity],
-                    'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1
+                    'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1,
+                    'from_context': False
                 })
 
+            if context_trie:
+                for new_entity in context_trie.gather(part):
+                    new_entity['data'] = list(new_entity['data'])
+                    new_entity['confidence'] *= 2.0  # context entities get double the weight!
+                    context_entities.append({
+                        'match': new_entity.get('match'),
+                        'key': new_entity.get('key'),
+                        'start_token': i,
+                        'entities': [new_entity],
+                        'end_token': i + len(self.tokenizer.tokenize(new_entity.get('match'))) - 1,
+                        'from_context': True
+                    })
+
+        additional_sort = additional_sort or len(entities) > 0
+
         if additional_sort:
-            entities = self._sort_and_merge_tags(entities)
+            entities = self._sort_and_merge_tags(entities + context_entities)
 
         return entities
