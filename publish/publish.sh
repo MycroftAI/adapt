@@ -75,11 +75,12 @@ replace ${PYPIRC_FILE} %%TESTPYPI_PASSWORD%% ${TESTPYPI_PASSWORD}
 # make .pyric private
 chmod -v 600 ${PYPIRC_FILE}
 
-#echo "Registering at pypitest.python.org"
-#python setup.py register -r pypitest
-#echo "Uploading to pypitest.python.org"
-#python setup.py sdist upload -r pypitest
+echo "Registering at pypitest.python.org"
+python setup.py register -r pypitest
+echo "Uploading to pypitest.python.org"
+python setup.py sdist upload -r pypitest
 
+echo "testing installation from testpypi.python.org"
 PYPI_TEST_VIRTUALENV='/tmp/.virtualenv'
 rm -Rvf ${PYPI_TEST_VIRTUALENV}
 virtualenv ${PYPI_TEST_VIRTUALENV}
