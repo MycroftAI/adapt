@@ -22,6 +22,14 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     computation.
     """
     def __init__(self, tokenizer=None, trie=None):
+        """
+        Initialize the IntentDeterminationEngine
+
+        Parameters
+        ----------
+        tokenizer :  EnglishTokenizer()
+        trie : Trie()
+        """
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
         self.trie = trie or Trie()
@@ -31,6 +39,20 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         self.intent_parsers = []
 
     def __best_intent(self, parse_result, context=[]):
+        """
+        Decide the best intent
+
+        Parameters
+        ----------
+        parse_result :
+        context : []
+
+        Returns
+        -------
+        (best_intent, best_tags)
+            best_intent : 
+            best_tags : 
+        """
         best_intent = None
         best_tags = None
         context_as_entities = [{'entities': [c]} for c in context]
@@ -43,6 +65,9 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         return best_intent, best_tags
 
     def __get_unused_context(self, parse_result, context):
+        """
+        
+        """
         tags_keys = set([t['key'] for t in parse_result['tags'] if t['from_context']])
         result_context = [c for c in context if c['key'] not in tags_keys]
         return result_context
