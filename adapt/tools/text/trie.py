@@ -19,7 +19,79 @@ class TrieNode(object):
         # payloads at this node have the weight of the last insert.
         self.weight = 1.0
 
-    def lookup(self, iterable, index=0, gather=False, edit_distance=0, max_edit_distance=0, match_threshold=0.0, matched_length=0):
+    def __str__(self):
+        """Used to show the content of the Node object as a string
+
+        Notes
+        -----
+        This will look to child nodes and include them as well.
+
+        Returns
+        -------
+        string - this returns a string representation of a Node Object.
+        """
+        return str(self.json())
+        print self.json()
+        children = ""
+        for child in self.children:
+            data = self.children[child]
+            data_str = str(data)
+            # print "data1 terminal",data.is_terminal
+            if True:
+                # print "data1 terminal",data.is_terminal
+                children = children + data_str
+                # children[data.key] = str(data)
+                # print "child %s dddd" % data
+        return "Trie Node data: %s terminal: %s key: %s children %s" % (
+            self.data, self.is_terminal, self.key, children)
+
+    def json(self):
+        """Used to show the tree from this node
+
+        Returns
+        -------
+        {} - a json object of this node and all child nodes.
+        """
+        results = {
+            'key': self.key,
+            'data': self.data,
+            'is_terminal': self.is_terminal,
+            'xchildren': []
+        }
+        for child in self.children:
+            results["xchildren"].append(self.children[child].json())
+        return results
+
+    def entities(self):
+        """ Used to list the entities included in Trie
+
+        Returns
+        -------
+        [] - List of entity strings included in the tree.
+            set could be empty
+        """
+        result = list(self.data)
+        for item in result:
+            if isinstance(item, list) or isinstance(item, tuple):
+                """Split items up in the list"""
+                result.remove(item)
+                result.extend(item)
+        for child in self.children:
+            """Add children entities to entities"""
+            for entity in self.children[child].entities():
+                if entity not in result:
+                    result.append(entity)
+        return result
+
+    def lookup(
+            self,
+            iterable,
+            index=0,
+            gather=False,
+            edit_distance=0,
+            max_edit_distance=0,
+            match_threshold=0.0,
+            matched_length=0):
         """Used for looking up values within this tree
         TODO: Implement trie lookup with edit distance
 
@@ -36,9 +108,11 @@ class TrieNode(object):
         yields the results of the search
         """
         if self.is_terminal:
-            if index == len(iterable) or \
-                    (gather and index < len(iterable) and iterable[index] == ' '):  # only gather on word break)
-                confidence = float(len(self.key) - edit_distance) / float(max(len(self.key), index))
+            if index == len(iterable) or (gather and index < len(
+                    iterable) and iterable[index] == ' '):
+                        # only gather on word break)
+                confidence = float(len(self.key) - edit_distance) / \
+                    float(max(len(self.key), index))
                 if confidence > match_threshold:
                     yield {
                         'key': self.key,
@@ -48,31 +122,47 @@ class TrieNode(object):
                     }
 
         if index < len(iterable) and iterable[index] in self.children:
-            for result in self.children[iterable[index]]\
-                    .lookup(iterable, index + 1, gather=gather,
-                            edit_distance=edit_distance, max_edit_distance=max_edit_distance, matched_length=matched_length + 1):
+            for result in self.children[iterable[index]].lookup(iterable,
+                                                                index + 1,
+                                                                gather=gather,
+                                                                edit_distance=edit_distance,
+                                                                max_edit_distance=max_edit_distance,
+                                                                matched_length=matched_length + 1):
                 yield result
 
-        # if there's edit distance remaining and it's possible to match a word above the confidence threshold
-        potential_confidence = float(index - edit_distance + (max_edit_distance - edit_distance)) / \
-                               (float(index) + (max_edit_distance - edit_distance)) if index + max_edit_distance - edit_distance > 0 else 0.0
+        # if there's edit distance remaining and it's possible to match a word
+        # above the confidence threshold
+        potential_confidence = float(index - edit_distance + (max_edit_distance - edit_distance)) / (float(
+            index) + (max_edit_distance - edit_distance)) if index + max_edit_distance - edit_distance > 0 else 0.0
         if edit_distance < max_edit_distance and potential_confidence > match_threshold:
             for child in list(self.children):
                 if index >= len(iterable) or child != iterable[index]:
                     # substitution
-                    for result in self.children[child]\
-                        .lookup(iterable, index + 1, gather=gather,
-                                edit_distance=edit_distance + 1, max_edit_distance=max_edit_distance, matched_length=matched_length):
+                    for result in self.children[child] .lookup(
+                            iterable,
+                            index + 1,
+                            gather=gather,
+                            edit_distance=edit_distance + 1,
+                            max_edit_distance=max_edit_distance,
+                            matched_length=matched_length):
                         yield result
                     # delete
-                    for result in self.children[child]\
-                        .lookup(iterable, index + 2, gather=gather,
-                                edit_distance=edit_distance + 1, max_edit_distance=max_edit_distance, matched_length=matched_length):
+                    for result in self.children[child] .lookup(
+                            iterable,
+                            index + 2,
+                            gather=gather,
+                            edit_distance=edit_distance + 1,
+                            max_edit_distance=max_edit_distance,
+                            matched_length=matched_length):
                         yield result
                     # insert
-                    for result in self.children[child]\
-                        .lookup(iterable, index, gather=gather,
-                                edit_distance=edit_distance + 1, max_edit_distance=max_edit_distance, matched_length=matched_length):
+                    for result in self.children[child] .lookup(
+                            iterable,
+                            index,
+                            gather=gather,
+                            edit_distance=edit_distance + 1,
+                            max_edit_distance=max_edit_distance,
+                            matched_length=matched_length):
                         yield result
 
     def insert(self, iterable, index=0, data=None, weight=1.0):
@@ -99,7 +189,8 @@ class TrieNode(object):
     def is_prefix(self, iterable, index=0):
         """This doesn't seem to get used and I don't see where it is set"""
         if iterable[index] in self.children:
-            return self.children[iterable[index]].is_prefix(iterable, index + 1)
+            return self.children[iterable[index]
+                                 ].is_prefix(iterable, index + 1)
         else:
             return False
 
@@ -113,7 +204,7 @@ class TrieNode(object):
         index: index of what is to me removed
 
         Returns:
-        bool: 
+        bool:
             True: if it was removed
             False: if it was not removed
         """
@@ -130,17 +221,19 @@ class TrieNode(object):
             else:
                 return False
         elif iterable[index] in self.children:
-            return self.children[iterable[index]].remove(iterable, index=index+1, data=data)
+            return self.children[iterable[index]].remove(
+                iterable, index=index + 1, data=data)
         else:
             return False
 
 
 class Trie(object):
     """Interface for the tree"""
+
     def __init__(self, max_edit_distance=0, match_threshold=0.0):
         """Init the Trie object and create root node.
 
-        Creates an Trie object with a root node with the passed in 
+        Creates an Trie object with a root node with the passed in
         max_edit_distance and match_threshold.
 
         Parameters
@@ -156,12 +249,47 @@ class Trie(object):
         self.max_edit_distance = max_edit_distance
         self.match_threshold = match_threshold
 
+    def __str__(self):
+        """Use to get a string represntation of the Trie from Root Node
+
+        Returns
+        -------
+        string - A String representation of the entire Trie
+        """
+        return str("Trie Object{%s}" % str(self.root))
+
+    def json(self):
+        """Created to show the tree"""
+        return self.root.json()
+
     def gather(self, iterable):
         """Calls the lookup with gather True Passing iterable and yields
         the result.
         """
         for result in self.lookup(iterable, gather=True):
             yield result
+
+    def checkForMissingEntites(self, entities):
+        """Used for checking a given list for missing Entities
+
+        Parameters
+        ----------
+        entities - []/string - representing entities to search for
+
+        Returns
+        -------
+        [] - a list of the missing entities
+        Will be None if all the entites are found
+        """
+        Trie_entites = self.root.entities()
+        Missing_entities = None
+        if isinstance(entities, list) or isinstance(entities, tuple):
+            for entity in entities:
+                if entity not in Trie_entites:
+                    if Missing_entities is None:
+                        Missing_entities = []
+                    Missing_entities.append(entity)
+        return Missing_entities
 
     def lookup(self, iterable, gather=False):
         """Call the lookup on the root node with the given parameters.
@@ -172,20 +300,21 @@ class Trie(object):
             Used to retrive nodes from tree
         gather: bool
             this is passed down to the root node lookup
-        
+
         Notes
         -----
         max_edit_distance and match_threshold come from the init
         """
-        for result in self.root.lookup(iterable,
-                                       gather=gather,
-                                       edit_distance=0,
-                                       max_edit_distance=self.max_edit_distance,
-                                       match_threshold=self.match_threshold):
+        for result in self.root.lookup(
+                iterable,
+                gather=gather,
+                edit_distance=0,
+                max_edit_distance=self.max_edit_distance,
+                match_threshold=self.match_threshold):
             yield result
 
     def insert(self, iterable, data=None, weight=1.0):
-        """Used to insert into he root node 
+        """Used to insert into he root node
 
         Parameters
         ----------
