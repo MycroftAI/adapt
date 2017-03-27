@@ -22,14 +22,14 @@ class ContextManagerIntegrationTest(unittest.TestCase):
             .require("Location")\
             .build()
 
-        self.engine.register_intent_parser(intent1)
-        self.engine.register_intent_parser(intent2)
-
         self.engine.register_entity("what time is it", "TimeQuery")
         self.engine.register_entity("seattle", "Location")
         self.engine.register_entity("miami", "Location")
 
         self.engine.register_entity("weather", "WeatherKeyword")
+
+        self.engine.register_intent_parser(intent1)
+        self.engine.register_intent_parser(intent2)
 
         utterance1 = "what time is it in seattle"
         intent = next(self.engine.determine_intent(utterance1, include_tags=True, context_manager=self.context_manager))
@@ -53,9 +53,9 @@ class ContextManagerIntegrationTest(unittest.TestCase):
 
         context_entity = {'confidence': 1.0, 'data': [('foo', 'Foo')], 'match': 'foo', 'key': 'foo'}
         self.context_manager.inject_context(context_entity)
-        self.engine.register_intent_parser(intent_parser)
         self.engine.register_entity("foo", "Foo")
         self.engine.register_entity("fop", "Foo")
+        self.engine.register_intent_parser(intent_parser)
 
         intent = next(self.engine.determine_intent("foo", include_tags=True, context_manager=self.context_manager))
         assert intent
