@@ -71,6 +71,24 @@ class Intent(object):
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
 
+    def entities(self):
+        """Used to get the Entities the intent is looking for.
+        
+        Returns
+        -------
+        [] - A list of Entities the intent is looking for.  This should
+        never be empty but still could be.
+        """
+        entities = []
+        thelist = self.requires + self.at_least_one + self.optional
+        for entity in thelist:
+            if type(entity) is tuple:
+                entityx, name = entity
+                entities.append(entityx)
+            else:
+                entities.append(entity)
+        return entities
+
     def validate_with_tags(self, tags, confidence):
         result = {'intent_type': self.name}
         intent_confidence = 0.0
