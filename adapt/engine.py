@@ -22,32 +22,68 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     computation.
     """
     def __init__(self, tokenizer=None, trie=None):
+        """
+        Initialize the IntentDeterminationEngine
+
+        Parameters
+        ----------
+        tokenizer :  EnglishTokenizer()
+        trie : Trie()
+        """
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
         self.trie = trie or Trie()
         self.regular_expressions_entities = []
         self._regex_strings = set()
-        self.tagger = EntityTagger(self.trie, self.tokenizer, self.regular_expressions_entities)
+        self.tagger = EntityTagger(
+            self.trie,
+            self.tokenizer,
+            self.regular_expressions_entities)
         self.intent_parsers = []
 
     def __best_intent(self, parse_result, context=[]):
+        """
+        Decide the best intent
+
+        Parameters
+        ----------
+        parse_result :
+        context : []
+
+        Returns
+        -------
+        (best_intent, best_tags)
+            best_intent :
+            best_tags :
+        """
         best_intent = None
         best_tags = None
         context_as_entities = [{'entities': [c]} for c in context]
         for intent in self.intent_parsers:
-            i, tags = intent.validate_with_tags(parse_result.get('tags') + context_as_entities, parse_result.get('confidence'))
-            if not best_intent or (i and i.get('confidence') > best_intent.get('confidence')):
+            i, tags = intent.validate_with_tags(parse_result.get(
+                'tags') + context_as_entities, parse_result.get('confidence'))
+            if not best_intent or (
+                    i and i.get('confidence') > best_intent.get('confidence')):
                 best_intent = i
                 best_tags = tags
 
         return best_intent, best_tags
 
     def __get_unused_context(self, parse_result, context):
-        tags_keys = set([t['key'] for t in parse_result['tags'] if t['from_context']])
+        """
+
+        """
+        tags_keys = set([t['key']
+                         for t in parse_result['tags'] if t['from_context']])
         result_context = [c for c in context if c['key'] not in tags_keys]
         return result_context
 
-    def determine_intent(self, utterance, num_results=1, include_tags=False, context_manager=None):
+    def determine_intent(
+            self,
+            utterance,
+            num_results=1,
+            include_tags=False,
+            context_manager=None):
         """
         Given an utterance, provide a valid intent.
 
@@ -92,10 +128,16 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         :return: None
         """
         if alias_of:
-            self.trie.insert(entity_value.lower(), data=(alias_of, entity_type))
+            self.trie.insert(
+                entity_value.lower(), data=(
+                    alias_of, entity_type))
         else:
-            self.trie.insert(entity_value.lower(), data=(entity_value, entity_type))
-            self.trie.insert(entity_type.lower(), data=(entity_type, 'Concept'))
+            self.trie.insert(
+                entity_value.lower(), data=(
+                    entity_value, entity_type))
+            self.trie.insert(
+                entity_type.lower(), data=(
+                    entity_type, 'Concept'))
 
     def register_regex_entity(self, regex_str):
         """
@@ -109,7 +151,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         if regex_str and regex_str not in self._regex_strings:
             self._regex_strings.add(regex_str)
-            self.regular_expressions_entities.append(re.compile(regex_str, re.IGNORECASE))
+            self.regular_expressions_entities.append(
+                re.compile(regex_str, re.IGNORECASE))
 
     def register_intent_parser(self, intent_parser):
         """
@@ -121,8 +164,18 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         :raises ValueError on invalid intent
         """
-        if hasattr(intent_parser, 'validate') and callable(intent_parser.validate):
-            self.intent_parsers.append(intent_parser)
+        if hasattr(
+                intent_parser,
+                'validate') and callable(
+                intent_parser.validate):
+            missing_entities = self.trie.checkForMissingEntites(
+                intent_parser.entities())
+            if missing_entities is None:
+                self.intent_parsers.append(intent_parser)
+            else:
+                raise ValueError(
+                    "%s is using an Entity(s)(%s) that does not exisit" %
+                    (intent_parser.name, str(missing_entities)))
         else:
             raise ValueError("%s is not an intent parser" % str(intent_parser))
 
@@ -257,7 +310,12 @@ class DomainIntentDeterminationEngine(object):
         self.domains[domain] = IntentDeterminationEngine(
             tokenizer=tokenizer, trie=trie)
 
-    def register_entity(self, entity_value, entity_type, alias_of=None, domain=0):
+    def register_entity(
+            self,
+            entity_value,
+            entity_type,
+            alias_of=None,
+            domain=0):
         """
         Register an entity to be tagged in potential parse results.
 

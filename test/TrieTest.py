@@ -11,9 +11,18 @@ class TrieTest(unittest.TestCase):
 
     def test_basic_retrieval(self):
         trie = Trie()
-        trie.insert("restaurant")
-        results = list(trie.lookup("restaurant"))
+        trie.insert("restaurant", "Concept")
+        trie.insert("rest", "Concept")
+        trie.insert("restaurant2", "Fast")
+        results = list(trie.gather("restaurant"))
         assert len(results) == 1
+        assert trie.root.entities() == ['root', 'Concept', 'Fast']
+        assert trie.checkForMissingEntites("Concept") == None
+        assert trie.checkForMissingEntites("root") == None
+        assert trie.checkForMissingEntites("Fast") == None
+        assert trie.checkForMissingEntites(['root', 'Concept', 'Fast']) == None
+        assert trie.checkForMissingEntites(['root2', 'Concept', 'Fast']) == ["root2"]
+        assert trie.checkForMissingEntites(('root2', 'Concept', 'Fast')) == ["root2"]
 
     def test_data_is_correct_on_insert(self):
         trie = Trie()
