@@ -31,17 +31,12 @@ class TrieNode(object):
         string - this returns a string representation of a Node Object.
         """
         return str(self.json())
-        print self.json()
         children = ""
         for child in self.children:
             data = self.children[child]
             data_str = str(data)
-            # print "data1 terminal",data.is_terminal
             if True:
-                # print "data1 terminal",data.is_terminal
                 children = children + data_str
-                # children[data.key] = str(data)
-                # print "child %s dddd" % data
         return "Trie Node data: %s terminal: %s key: %s children %s" % (
             self.data, self.is_terminal, self.key, children)
 

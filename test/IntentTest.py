@@ -22,7 +22,6 @@ class IntentTest(unittest.TestCase):
         self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
         self.trie.insert("show", ("show", "Command"))
         self.trie.insert("what", ("what", "Question"))
-        #print "Entities ", self.trie.root.entities()
         self.parser = Parser(self.tokenizer, self.tagger)
 
     def tearDown(self):
@@ -33,7 +32,6 @@ class IntentTest(unittest.TestCase):
             .require("PlayVerb")\
             .require("Television Show")\
             .build()
-        #print "intent basic", intent.entities()
         for result in self.parser.parse("play the big bang theory"):
             result_intent = intent.validate(result.get('tags'), result.get('confidence'))
             assert result_intent.get('confidence') > 0.0

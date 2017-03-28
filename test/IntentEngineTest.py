@@ -52,16 +52,12 @@ class IntentEngineTests(unittest.TestCase):
         self.engine.register_entity("Two","Two")
         self.engine.register_intent_parser(parser3)
         intent2 = self.engine.determine_intent(utterance2)
-        #print "intent2", intent2
         try:
             intent2 = next(intent2)
-            #print intent2['intent_type']
         except:
             pass
         intent1 = self.engine.determine_intent(utterance1)
-        #print intent1
         try:
             intent1 = next(intent1)
-            #print intent1['intent_type']
         except:
             pass
