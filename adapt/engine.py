@@ -154,6 +154,24 @@ class IntentDeterminationEngine(pyee.EventEmitter):
             self.regular_expressions_entities.append(
                 re.compile(regex_str, re.IGNORECASE))
 
+    def check_intent_entities(self, intent_parser):
+        """Used to check intents for entities that are not registered yet
+        
+        Parameters
+        ----------
+        intent_parser: class intent - This is the intent to check the 
+        Entities for.
+        
+        Returns
+        -------
+        [] - Returns a list of entities missing from intent_parser.
+        
+        Note
+        ----
+        It's up to the caller to deside how to handle missing entities.
+        """
+        return self.trie.checkForMissingEntites(intent_parser.entities())
+
     def register_intent_parser(self, intent_parser):
         """
         "Enforce" the intent parser interface at registration time.
@@ -168,14 +186,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                 intent_parser,
                 'validate') and callable(
                 intent_parser.validate):
-            missing_entities = self.trie.checkForMissingEntites(
-                intent_parser.entities())
-            if missing_entities is None:
-                self.intent_parsers.append(intent_parser)
-            else:
-                raise ValueError(
-                    "%s is using an Entity(s)(%s) that does not exisit" %
-                    (intent_parser.name, str(missing_entities)))
+            self.intent_parsers.append(intent_parser)
         else:
             raise ValueError("%s is not an intent parser" % str(intent_parser))
 
