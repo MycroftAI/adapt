@@ -9,7 +9,7 @@ class TrieTest(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_basic_retrieval(self):
+    def test_missing_entities(self):
         trie = Trie()
         trie.insert("restaurant", "Concept")
         trie.insert("rest", "Concept")
