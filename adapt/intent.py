@@ -29,20 +29,20 @@ def find_next_tag(tags, end_index=0):
 
 
 def choose_1_from_each(lists):
-	"""Takes a list of lists and returns a list of lists with one item
-	from each list.  This new list should be the length of each list multiplied
-	by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght
-	of each sub list should be same as the length of lists passed in.
-	
-	Properties
-	----------
-	lists: [[]] - A list of lists 
-	
-	Returns
-	-------
-	[[]] - returns a list of lists constructions of one item from each 
-	list in lists.  
-	"""
+    """Takes a list of lists and returns a list of lists with one item
+    from each list.  This new list should be the length of each list multiplied
+    by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght
+    of each sub list should be same as the length of lists passed in.
+
+    Properties
+    ----------
+    lists: [[]] - A list of lists
+
+    Returns
+    -------
+    [[]] - returns a list of lists constructions of one item from each
+    list in lists.
+    """
     if len(lists) == 0:
         yield []
     else:
@@ -77,7 +77,7 @@ def resolve_one_of(tags, at_least_one):
 class Intent(object):
     def __init__(self, name, requires, at_least_one, optional):
         """Create Intent object
-        
+
         Parameters
         ----------
         name - str - Name for Intent
@@ -92,7 +92,7 @@ class Intent(object):
 
     def validate(self, tags, confidence):
         """Using this method removes tags from the result of validate_with_tags
-        
+
         Returns
         -------
         intent - class intent - Resuts from validate_with_tags
@@ -102,7 +102,7 @@ class Intent(object):
 
     def entities(self):
         """Used to get the Entities the intent is looking for.
-        
+
         Returns
         -------
         [] - A list of Entities the intent is looking for.  This should
@@ -120,12 +120,12 @@ class Intent(object):
 
     def validate_with_tags(self, tags, confidence):
         """Validate weather tags has required entites for this intent to fire
-        
+
         Parameters
         ----------
         tags - Tags and Entities used for validation
         confidence - ?
-        
+
         Returns
         -------
         (intent, tags) - Returns intent and tags used by the intent on
