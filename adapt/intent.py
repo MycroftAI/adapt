@@ -29,6 +29,20 @@ def find_next_tag(tags, end_index=0):
 
 
 def choose_1_from_each(lists):
+	"""Takes a list of lists and returns a list of lists with one item
+	from each list.  This new list should be the length of each list multiplied
+	by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght
+	of each sub list should be same as the length of lists passed in.
+	
+	Properties
+	----------
+	lists: [[]] - A list of lists 
+	
+	Returns
+	-------
+	[[]] - returns a list of lists constructions of one item from each 
+	list in lists.  
+	"""
     if len(lists) == 0:
         yield []
     else:
@@ -62,12 +76,27 @@ def resolve_one_of(tags, at_least_one):
 
 class Intent(object):
     def __init__(self, name, requires, at_least_one, optional):
+        """Create Intent object
+        
+        Parameters
+        ----------
+        name - str - Name for Intent
+        requires - Entities that are required
+        at_least_one - One of these Entities are required
+        optional - Optional Entities used by the intent
+        """
         self.name = name
         self.requires = requires
         self.at_least_one = at_least_one
         self.optional = optional
 
     def validate(self, tags, confidence):
+        """Using this method removes tags from the result of validate_with_tags
+        
+        Returns
+        -------
+        intent - class intent - Resuts from validate_with_tags
+        """
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
 
@@ -90,6 +119,19 @@ class Intent(object):
         return entities
 
     def validate_with_tags(self, tags, confidence):
+        """Validate weather tags has required entites for this intent to fire
+        
+        Parameters
+        ----------
+        tags - Tags and Entities used for validation
+        confidence - ?
+        
+        Returns
+        -------
+        (intent, tags) - Returns intent and tags used by the intent on
+        falure to meat required entities then returns intent with confidence
+        of 0.0 and an empty list for tags.
+        """
         result = {'intent_type': self.name}
         intent_confidence = 0.0
         local_tags = tags[:]
