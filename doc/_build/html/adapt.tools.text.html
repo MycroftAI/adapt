@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>adapt.tools.text package &#8212; adapt  documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="adapt.tools package" href="adapt.tools.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="adapt-tools-text-package">
+<h1>adapt.tools.text package<a class="headerlink" href="#adapt-tools-text-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-adapt.tools.text.tokenizer">
+<span id="adapt-tools-text-tokenizer-module"></span><h2>adapt.tools.text.tokenizer module<a class="headerlink" href="#module-adapt.tools.text.tokenizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="adapt.tools.text.tokenizer.EnglishTokenizer">
+<em class="property">class </em><code class="descclassname">adapt.tools.text.tokenizer.</code><code class="descname">EnglishTokenizer</code><a class="reference internal" href="_modules/adapt/tools/text/tokenizer.html#EnglishTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.tokenizer.EnglishTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="adapt.tools.text.tokenizer.EnglishTokenizer.tokenize">
+<code class="descname">tokenize</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/tokenizer.html#EnglishTokenizer.tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.tokenizer.EnglishTokenizer.tokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to parce a string into tokens</p>
+<p>This function is to take in a string and return a list of tokens</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> (<em>str</em>) &#8211; This is a string of words or a sentance to be parsed into tokens</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[] - a list of tokens from the string passed in.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Doesn&#8217;t seem to parse contractions correctly for example don&#8217;t
+would parse as two tokens &#8216;do&#8217; and &#8220;n&#8217;t&#8221; and this seems to be not
+what we would want.  Maybe should be &#8220;don&#8217;t&#8221; or maybe contractions
+should be expanded into &#8220;do not&#8221; or &#8220;do&#8221;,&#8221;not&#8221;.  This could be
+done with a contraction dictionary and some preprocessing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="adapt.tools.text.tokenizer.tokenize_string">
+<code class="descclassname">adapt.tools.text.tokenizer.</code><code class="descname">tokenize_string</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/tokenizer.html#tokenize_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.tokenizer.tokenize_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>To assist with testing strings returns the token list from text</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-adapt.tools.text.trie">
+<span id="adapt-tools-text-trie-module"></span><h2>adapt.tools.text.trie module<a class="headerlink" href="#module-adapt.tools.text.trie" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="adapt.tools.text.trie.Trie">
+<em class="property">class </em><code class="descclassname">adapt.tools.text.trie.</code><code class="descname">Trie</code><span class="sig-paren">(</span><em>max_edit_distance=0</em>, <em>match_threshold=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Interface for the tree</p>
+<dl class="method">
+<dt id="adapt.tools.text.trie.Trie.checkForMissingEntites">
+<code class="descname">checkForMissingEntites</code><span class="sig-paren">(</span><em>entities</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie.checkForMissingEntites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie.checkForMissingEntites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for checking a given list for missing Entities</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>-</strong><strong> [</strong><strong></strong><strong>]</strong><strong>/string - representing entities to search for</strong> (<a class="reference internal" href="#adapt.tools.text.trie.TrieNode.entities" title="adapt.tools.text.trie.TrieNode.entities"><em>entities</em></a>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>[] - a list of the missing entities</em></li>
+<li><em>Will be None if all the entites are found</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.Trie.gather">
+<code class="descname">gather</code><span class="sig-paren">(</span><em>iterable</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie.gather"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie.gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the lookup with gather True Passing iterable and yields
+the result.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.Trie.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>iterable</em>, <em>data=None</em>, <em>weight=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to insert into he root node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iterable</strong> (<em>index</em><em> or </em><em>key used to identify</em>) &#8211; </li>
+<li><strong>data</strong> (<em>data to be paired with the key</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.Trie.json">
+<code class="descname">json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie.json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Created to show the tree</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.Trie.lookup">
+<code class="descname">lookup</code><span class="sig-paren">(</span><em>iterable</em>, <em>gather=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the lookup on the root node with the given parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iterable</strong> (<em>index</em><em> or </em><em>key</em>) &#8211; Used to retrive nodes from tree</li>
+<li><strong>gather</strong> (<em>bool</em>) &#8211; this is passed down to the root node lookup</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>max_edit_distance and match_threshold come from the init</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.Trie.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>iterable</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#Trie.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.Trie.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to remove from the root node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iterable</strong> (<em>index</em><em> or </em><em>key used to identify</em>) &#8211; </li>
+<li><strong>data</strong> (<em>data to be paired with the key</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="adapt.tools.text.trie.TrieNode">
+<em class="property">class </em><code class="descclassname">adapt.tools.text.trie.</code><code class="descname">TrieNode</code><span class="sig-paren">(</span><em>data=None</em>, <em>is_terminal=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="adapt.tools.text.trie.TrieNode.entities">
+<code class="descname">entities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode.entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode.entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to list the entities included in Trie</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">set could be empty</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[] - List of entity strings included in the tree.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.TrieNode.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>iterable</em>, <em>index=0</em>, <em>data=None</em>, <em>weight=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert new node into tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iterable</strong> (<em>key used to find what is to be removed</em>) &#8211; </li>
+<li><strong>data</strong> (<em>data associated with the key</em>) &#8211; </li>
+<li><strong>index</strong> (<em>int</em>) &#8211; </li>
+<li><strong>weight</strong> (<em>float</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.TrieNode.is_prefix">
+<code class="descname">is_prefix</code><span class="sig-paren">(</span><em>iterable</em>, <em>index=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode.is_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode.is_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This doesn&#8217;t seem to get used and I don&#8217;t see where it is set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.TrieNode.json">
+<code class="descname">json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode.json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to show the tree from this node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">{} - a json object of this node and all child nodes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.TrieNode.lookup">
+<code class="descname">lookup</code><span class="sig-paren">(</span><em>iterable</em>, <em>index=0</em>, <em>gather=False</em>, <em>edit_distance=0</em>, <em>max_edit_distance=0</em>, <em>match_threshold=0.0</em>, <em>matched_length=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for looking up values within this tree
+TODO: Implement trie lookup with edit distance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iterable</strong> (<em>key used to find what is requested</em>) &#8211; </li>
+<li><strong>index</strong> (<em>index of what is requested</em>) &#8211; </li>
+<li><strong>gather</strong> (<em>bool of weather to gather</em><em> or </em><em>not</em>) &#8211; </li>
+<li><strong>edit_distance</strong> (<em>int of the distance -- currently not used</em>) &#8211; </li>
+<li><strong>max_edit_distance</strong> (<em>int of the max distance -- not currently used</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">yields the results of the search</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapt.tools.text.trie.TrieNode.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>iterable</em>, <em>data=None</em>, <em>index=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adapt/tools/text/trie.html#TrieNode.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#adapt.tools.text.trie.TrieNode.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an element from the trie</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iterable</strong> (<em>key used to find what is to be removed</em>) &#8211; </li>
+<li><strong>data</strong> (<em>data associated with the key</em>) &#8211; </li>
+<li><strong>index</strong> (<em>index of what is to me removed</em>) &#8211; </li>
+<li><strong>Returns</strong> &#8211; </li>
+<li><strong>bool</strong> &#8211; True: if it was removed
+False: if it was not removed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-adapt.tools.text">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-adapt.tools.text" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">adapt.tools.text package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-adapt.tools.text.tokenizer">adapt.tools.text.tokenizer module</a></li>
+<li><a class="reference internal" href="#module-adapt.tools.text.trie">adapt.tools.text.trie module</a></li>
+<li><a class="reference internal" href="#module-adapt.tools.text">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="adapt.html">adapt package</a><ul>
+  <li><a href="adapt.tools.html">adapt.tools package</a><ul>
+      <li>Previous: <a href="adapt.tools.html" title="previous chapter">adapt.tools package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/adapt.tools.text.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/adapt.tools.text.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
