@@ -71,10 +71,10 @@ class SimpleGraph(object):
 
 if __name__ == "__main__":
     """ Testing SimpleGraph """
-    print "Testing SimpleGraph"
+    print("Testing SimpleGraph")
     graph = SimpleGraph()
-    print "graph",graph
-    print "vertex_set",graph.vertex_set()
+    print("graph",graph)
+    print("vertex_set",graph.vertex_set())
     graph.add_edge(1,2)
     graph.add_edge(1,3)
     graph.add_edge(3,4)
@@ -83,12 +83,12 @@ if __name__ == "__main__":
     graph.add_edge(2,4)
     graph.add_edge(1,4)
     graph.add_edge("A","B")
-    print "graph",graph
+    print("graph",graph)
     virts = graph.vertex_set()
-    print "vertex_set",virts
+    print("vertex_set",virts)
     for virt in virts:
-        print "neighbors of ", virt,graph.get_neighbors_of(virt)
-    print "neighbors of E ", graph.get_neighbors_of("E")
+        print("neighbors of ", virt,graph.get_neighbors_of(virt))
+    print("neighbors of E ", graph.get_neighbors_of("E"))
 
 
 def bronk(r, p, x, graph):
@@ -109,9 +109,9 @@ def bronk(r, p, x, graph):
 
 if __name__ == "__main__":
     """testing bronk"""
-    print "testing bronk"
+    print("testing bronk")
     results = list(bronk([], graph.vertex_set(), [], graph))
-    print "results",results
+    print("results",results)
 
 def get_cliques(vertices, graph):
     """get cliques"""
@@ -120,9 +120,9 @@ def get_cliques(vertices, graph):
 
 if __name__ == "__main__":
     """testing cliques"""
-    print "testing cliques"
+    print("testing cliques")
     cliques = list(get_cliques(graph.vertex_set(),graph))
-    print "cliques",cliques
+    print("cliques",cliques)
 
 def graph_key_from_tag(tag, entity_index):
     """Returns a key from a tag entity
@@ -194,14 +194,14 @@ class Lattice(object):
 
 if __name__ == "__main__":
     """testing lattice"""
-    print "testing lattice"
+    print("testing lattice")
     lattice = Lattice()
     lattice.append([1,2,3])
     lattice.append([1,2,3])
     lattice.append([1,2,3])
     lattice.append([1,2,3])
-    print "Lattice is ",lattice
-    print "Traverse",list(lattice.traverse())
+    print("Lattice is ",lattice)
+    print("Traverse",list(lattice.traverse()))
 
 
 class BronKerboschExpander(object):
@@ -322,7 +322,7 @@ class BronKerboschExpander(object):
 
 if __name__ == "__main__":
     """testing BronKerboschExpander"""
-    print "testing BronKerboschExpander"
+    print("testing BronKerboschExpander")
     from adapt.tools.text.tokenizer import EnglishTokenizer
     from adapt.entity_tagger import EntityTagger
     from adapt.tools.text.trie import Trie
@@ -344,10 +344,10 @@ if __name__ == "__main__":
     Bke= BronKerboschExpander(tokenizer)
     graphA = Bke._build_graph(tags)
     for v in graphA.vertex_set():
-        print "vertex",v,list(graphA.get_neighbors_of(v))
+        print("vertex",v,list(graphA.get_neighbors_of(v)))
     parse_results = list(Bke.expand(tags))
     for r in parse_results:
-        print "Bke ----- "
+        print("Bke ----- ")
         for x in r:
             pprint.pprint(x)
     #print "Results X ",parse_results

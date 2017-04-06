@@ -314,6 +314,6 @@ if __name__ == "__main__":
     test = IntentTest()
     #print "Result %s " % test.teststring("show the big bang theory")
     #print "Result %s " % test.teststring("play barenaked ladies")
-    print "Result %s " % test.teststring("play all that")
+    print("Result %s " % test.teststring("play all that"))
     #print "Result %s " % test.teststring("play pair")
 
