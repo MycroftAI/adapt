@@ -277,14 +277,14 @@ class Trie(object):
         Will be None if all the entites are found
         """
         Trie_entites = self.root.entities()
-        Missing_entities = None
+        missing_entities = None
         if isinstance(entities, list) or isinstance(entities, tuple):
             for entity in entities:
                 if entity not in Trie_entites:
-                    if Missing_entities is None:
-                        Missing_entities = []
-                    Missing_entities.append(entity)
-        return Missing_entities
+                    if missing_entities is None:
+                        missing_entities = []
+                    missing_entities.append(entity)
+        return missing_entities
 
     def lookup(self, iterable, gather=False):
         """Call the lookup on the root node with the given parameters.
