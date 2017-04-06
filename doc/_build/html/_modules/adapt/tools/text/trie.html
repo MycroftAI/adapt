@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>adapt.tools.text.trie &#8212; adapt  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for adapt.tools.text.trie</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
+
+
+<div class="viewcode-block" id="TrieNode"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode">[docs]</a><span class="k">class</span> <span class="nc">TrieNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_terminal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init the TrieNode with data and is_terminal settings</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: data index by the node</span>
+<span class="sd">        is_terminal: bool that is used to set is_terminal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="n">is_terminal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># since weight is an attribute on the node (and not on the payload), all</span>
+        <span class="c1"># payloads at this node have the weight of the last insert.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to show the content of the Node object as a string</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This will look to child nodes and include them as well.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        string - this returns a string representation of a Node Object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">child</span><span class="p">]</span>
+            <span class="n">data_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">children</span> <span class="o">=</span> <span class="n">children</span> <span class="o">+</span> <span class="n">data_str</span>
+        <span class="k">return</span> <span class="s2">&quot;Trie Node data: </span><span class="si">%s</span><span class="s2"> terminal: </span><span class="si">%s</span><span class="s2"> key: </span><span class="si">%s</span><span class="s2"> children </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrieNode.json"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to show the tree from this node</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        {} - a json object of this node and all child nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="s1">&#39;is_terminal&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">,</span>
+            <span class="s1">&#39;xchildren&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;xchildren&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">child</span><span class="p">]</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="TrieNode.entities"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.entities">[docs]</a>    <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Used to list the entities included in Trie</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        [] - List of entity strings included in the tree.</span>
+<span class="sd">            set could be empty</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;Split items up in the list&quot;&quot;&quot;</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Add children entities to entities&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">child</span><span class="p">]</span><span class="o">.</span><span class="n">entities</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">entity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="TrieNode.lookup"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.lookup">[docs]</a>    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">iterable</span><span class="p">,</span>
+            <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">gather</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">edit_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">max_edit_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">match_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">matched_length</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used for looking up values within this tree</span>
+<span class="sd">        TODO: Implement trie lookup with edit distance</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable: key used to find what is requested</span>
+<span class="sd">        index: index of what is requested</span>
+<span class="sd">        gather: bool of weather to gather or not</span>
+<span class="sd">        edit_distance: int of the distance -- currently not used</span>
+<span class="sd">        max_edit_distance: int of the max distance -- not currently used</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        yields the results of the search</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">gather</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span>
+                    <span class="n">iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span><span class="p">):</span>
+                        <span class="c1"># only gather on word break)</span>
+                <span class="n">confidence</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="o">-</span> <span class="n">edit_distance</span><span class="p">)</span> <span class="o">/</span> \
+                    <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="n">index</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">confidence</span> <span class="o">&gt;</span> <span class="n">match_threshold</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">{</span>
+                        <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                        <span class="s1">&#39;match&#39;</span><span class="p">:</span> <span class="n">iterable</span><span class="p">[:</span><span class="n">index</span><span class="p">],</span>
+                        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                        <span class="s1">&#39;confidence&#39;</span><span class="p">:</span> <span class="n">confidence</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
+                    <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span>
+                                                                <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                                                <span class="n">gather</span><span class="o">=</span><span class="n">gather</span><span class="p">,</span>
+                                                                <span class="n">edit_distance</span><span class="o">=</span><span class="n">edit_distance</span><span class="p">,</span>
+                                                                <span class="n">max_edit_distance</span><span class="o">=</span><span class="n">max_edit_distance</span><span class="p">,</span>
+                                                                <span class="n">matched_length</span><span class="o">=</span><span class="n">matched_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">result</span>
+
+        <span class="c1"># if there&#39;s edit distance remaining and it&#39;s possible to match a word</span>
+        <span class="c1"># above the confidence threshold</span>
+        <span class="n">potential_confidence</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="n">edit_distance</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_edit_distance</span> <span class="o">-</span> <span class="n">edit_distance</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span>
+            <span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_edit_distance</span> <span class="o">-</span> <span class="n">edit_distance</span><span class="p">))</span> <span class="k">if</span> <span class="n">index</span> <span class="o">+</span> <span class="n">max_edit_distance</span> <span class="o">-</span> <span class="n">edit_distance</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">edit_distance</span> <span class="o">&lt;</span> <span class="n">max_edit_distance</span> <span class="ow">and</span> <span class="n">potential_confidence</span> <span class="o">&gt;</span> <span class="n">match_threshold</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="n">child</span> <span class="o">!=</span> <span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]:</span>
+                    <span class="c1"># substitution</span>
+                    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">.</span><span class="n">lookup</span><span class="p">(</span>
+                            <span class="n">iterable</span><span class="p">,</span>
+                            <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">gather</span><span class="o">=</span><span class="n">gather</span><span class="p">,</span>
+                            <span class="n">edit_distance</span><span class="o">=</span><span class="n">edit_distance</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">max_edit_distance</span><span class="o">=</span><span class="n">max_edit_distance</span><span class="p">,</span>
+                            <span class="n">matched_length</span><span class="o">=</span><span class="n">matched_length</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">result</span>
+                    <span class="c1"># delete</span>
+                    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">.</span><span class="n">lookup</span><span class="p">(</span>
+                            <span class="n">iterable</span><span class="p">,</span>
+                            <span class="n">index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">gather</span><span class="o">=</span><span class="n">gather</span><span class="p">,</span>
+                            <span class="n">edit_distance</span><span class="o">=</span><span class="n">edit_distance</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">max_edit_distance</span><span class="o">=</span><span class="n">max_edit_distance</span><span class="p">,</span>
+                            <span class="n">matched_length</span><span class="o">=</span><span class="n">matched_length</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">result</span>
+                    <span class="c1"># insert</span>
+                    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">.</span><span class="n">lookup</span><span class="p">(</span>
+                            <span class="n">iterable</span><span class="p">,</span>
+                            <span class="n">index</span><span class="p">,</span>
+                            <span class="n">gather</span><span class="o">=</span><span class="n">gather</span><span class="p">,</span>
+                            <span class="n">edit_distance</span><span class="o">=</span><span class="n">edit_distance</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">max_edit_distance</span><span class="o">=</span><span class="n">max_edit_distance</span><span class="p">,</span>
+                            <span class="n">matched_length</span><span class="o">=</span><span class="n">matched_length</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="TrieNode.insert"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert new node into tree</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable: key used to find what is to be removed</span>
+<span class="sd">        data: data associated with the key</span>
+<span class="sd">        index: int</span>
+<span class="sd">        weight: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">iterable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span> <span class="o">=</span> <span class="n">TrieNode</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TrieNode.is_prefix"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.is_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">is_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This doesn&#39;t seem to get used and I don&#39;t see where it is set&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                                 <span class="p">]</span><span class="o">.</span><span class="n">is_prefix</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="TrieNode.remove"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove an element from the trie</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable: key used to find what is to be removed</span>
+<span class="sd">        data: data associated with the key</span>
+<span class="sd">        index: index of what is to me removed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        bool:</span>
+<span class="sd">            True: if it was removed</span>
+<span class="sd">            False: if it was not removed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">iterable</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span>
+                <span class="n">iterable</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="Trie"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie">[docs]</a><span class="k">class</span> <span class="nc">Trie</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface for the tree&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_edit_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">match_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init the Trie object and create root node.</span>
+
+<span class="sd">        Creates an Trie object with a root node with the passed in</span>
+<span class="sd">        max_edit_distance and match_threshold.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_edit_distance: int</span>
+<span class="sd">        match_threshold: int</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This never seems to get called with max_edit_distance or match_threshold</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">TrieNode</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_edit_distance</span> <span class="o">=</span> <span class="n">max_edit_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">match_threshold</span> <span class="o">=</span> <span class="n">match_threshold</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use to get a string represntation of the Trie from Root Node</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        string - A String representation of the entire Trie</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;Trie Object{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Trie.json"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Created to show the tree&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Trie.gather"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.gather">[docs]</a>    <span class="k">def</span> <span class="nf">gather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calls the lookup with gather True Passing iterable and yields</span>
+<span class="sd">        the result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">gather</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Trie.checkForMissingEntites"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.checkForMissingEntites">[docs]</a>    <span class="k">def</span> <span class="nf">checkForMissingEntites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used for checking a given list for missing Entities</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entities - []/string - representing entities to search for</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        [] - a list of the missing entities</span>
+<span class="sd">        Will be None if all the entites are found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Trie_entites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">entities</span><span class="p">()</span>
+        <span class="n">Missing_entities</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Trie_entites</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">Missing_entities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">Missing_entities</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">Missing_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Missing_entities</span></div>
+
+<div class="viewcode-block" id="Trie.lookup"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.lookup">[docs]</a>    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">gather</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call the lookup on the root node with the given parameters.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable: index or key</span>
+<span class="sd">            Used to retrive nodes from tree</span>
+<span class="sd">        gather: bool</span>
+<span class="sd">            this is passed down to the root node lookup</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        max_edit_distance and match_threshold come from the init</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span>
+                <span class="n">iterable</span><span class="p">,</span>
+                <span class="n">gather</span><span class="o">=</span><span class="n">gather</span><span class="p">,</span>
+                <span class="n">edit_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">max_edit_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_edit_distance</span><span class="p">,</span>
+                <span class="n">match_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">match_threshold</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Trie.insert"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to insert into he root node</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable: index or key used to identify</span>
+<span class="sd">        data: data to be paired with the key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Trie.remove"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to remove from the root node</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable: index or key used to identify</span>
+<span class="sd">        data: data to be paired with the key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

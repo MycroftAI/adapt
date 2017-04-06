@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>adapt.context &#8212; adapt  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for adapt.context</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is to Manage Context of a Conversation</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">    Comments are subject to evaluation and may not reflect intent.</span>
+<span class="sd">    Comments should be updated as code is clearly understood.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">xrange</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;seanfitz, Art McGee&quot;</span>
+
+
+<div class="viewcode-block" id="ContextManagerFrame"><a class="viewcode-back" href="../../adapt.html#adapt.context.ContextManagerFrame">[docs]</a><span class="k">class</span> <span class="nc">ContextManagerFrame</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages entities and context for a single frame of conversation.</span>
+<span class="sd">    Provides simple equality querying.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    entities : []</span>
+<span class="sd">        Entities that belong to ContextManagerFrame</span>
+<span class="sd">    metadata : {}</span>
+<span class="sd">        metadata to describe context belonging to ContextManagerFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="o">=</span><span class="p">[],</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize ContextManagerFrame</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entities : []</span>
+<span class="sd">            List of Entities...</span>
+<span class="sd">        metadata : {}</span>
+<span class="sd">            metadata to describe context?</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="n">entities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+
+<div class="viewcode-block" id="ContextManagerFrame.metadata_matches"><a class="viewcode-back" href="../../adapt.html#adapt.context.ContextManagerFrame.metadata_matches">[docs]</a>    <span class="k">def</span> <span class="nf">metadata_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns key matches to metadata</span>
+
+<span class="sd">        This will check every key in query for a matching key in metadata</span>
+<span class="sd">        returning true if every key is in metadata.  query without keys</span>
+<span class="sd">        return false.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        query : {}</span>
+<span class="sd">            metadata for matching</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True: when key count in query is &gt; 0 and all keys in query in</span>
+<span class="sd">                self.metadata</span>
+<span class="sd">            False: if key count in query is &lt;= 0 or any key in query not</span>
+<span class="sd">                found in self.metadata</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">and</span> <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="ContextManagerFrame.merge_context"><a class="viewcode-back" href="../../adapt.html#adapt.context.ContextManagerFrame.merge_context">[docs]</a>    <span class="k">def</span> <span class="nf">merge_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        merge into contextManagerFrame new entity and metadata.</span>
+
+<span class="sd">        Appends tag as new entity and adds keys in metadata to keys in</span>
+<span class="sd">        self.metadata.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tag : string</span>
+<span class="sd">            entity to be added to self.entities</span>
+<span class="sd">        metadata : {}</span>
+<span class="sd">            metadata containes keys to be added to self.metadata</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="sd">&quot;&quot;&quot;TODO: Should this be using the key as the value for key?&quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="ContextManager"><a class="viewcode-back" href="../../adapt.html#adapt.context.ContextManager">[docs]</a><span class="k">class</span> <span class="nc">ContextManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ContextManager</span>
+<span class="sd">    Use to track context throughout the course of a conversational session.</span>
+<span class="sd">    How to manage a session&#39;s lifecycle is not captured here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="ContextManager.inject_context"><a class="viewcode-back" href="../../adapt.html#adapt.context.ContextManager.inject_context">[docs]</a>    <span class="k">def</span> <span class="nf">inject_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entity: {}</span>
+<span class="sd">            format {&#39;data&#39;: &#39;Entity tag as &lt;str&gt;&#39;,</span>
+<span class="sd">            &#39;key&#39;: &#39;entity proper name as &lt;str&gt;&#39;,</span>
+<span class="sd">             &#39;confidence&#39;: &lt;float&gt;&#39;</span>
+<span class="sd">             }</span>
+
+<span class="sd">        metadata: {}</span>
+<span class="sd">            dict, arbitrary metadata about the entity being added</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">top_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">top_frame</span> <span class="ow">and</span> <span class="n">top_frame</span><span class="o">.</span><span class="n">metadata_matches</span><span class="p">(</span><span class="n">metadata</span><span class="p">):</span>
+            <span class="n">top_frame</span><span class="o">.</span><span class="n">merge_context</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">ContextManagerFrame</span><span class="p">(</span>
+                <span class="n">entities</span><span class="o">=</span><span class="p">[</span><span class="n">entity</span><span class="p">],</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_stack</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContextManager.get_context"><a class="viewcode-back" href="../../adapt.html#adapt.context.ContextManager.get_context">[docs]</a>    <span class="k">def</span> <span class="nf">get_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_frames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_entities</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs a list of entities from the context.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_frames: integer</span>
+<span class="sd">            maximum number of frames to look back</span>
+
+<span class="sd">        missing_entities: [] of strings</span>
+<span class="sd">            a list or set of tag names, as strings</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        [] - a list of entities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">max_frames</span><span class="p">:</span>
+            <span class="n">max_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_stack</span><span class="p">)</span>
+
+        <span class="n">missing_entities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">missing_entities</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">max_frames</span><span class="p">):</span>
+            <span class="n">frame_entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">entity</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                              <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_stack</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">entities</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">frame_entities</span><span class="p">:</span>
+                <span class="n">entity</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;confidence&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">context</span> <span class="o">+=</span> <span class="n">frame_entities</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_entities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">missing_entities</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+                    <span class="c1"># NOTE: this implies that we will only ever get one</span>
+                    <span class="c1"># of an entity kind from context, unless specified</span>
+                    <span class="c1"># multiple times in missing_entities. Cannot get</span>
+                    <span class="c1"># an arbitrary number of an entity kind.</span>
+                    <span class="n">missing_entities</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">context</span>
+
+        <span class="k">return</span> <span class="n">result</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
