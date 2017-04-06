@@ -57,7 +57,6 @@ class ParserTest(unittest.TestCase):
                      'time': 0.0001361370086669922,
                      'utterance': 'show play the big bang theory'}
         for result in self.parser.parse(s):
-            pprint.pprint(result)
             assert ( result['tags'] == verify['tags'] )
 
 if __name__ == '__main__':

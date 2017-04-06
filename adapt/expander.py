@@ -3,11 +3,28 @@ from six.moves import xrange
 __author__ = 'seanfitz'
 
 
+
 class SimpleGraph(object):
+    """This class is to graph connected nodes
+    Note:
+        hash is a type that is hashable so independant values and tuples
+        but not objects, classes or lists.
+    """
     def __init__(self):
+        """init an empty set"""
         self.adjacency_lists = {}
 
     def add_edge(self, a, b):
+        """Used to add edges to the graph. 'a' and 'b' are vertexes and
+        if 'a' or 'b' doesn't exisit then the vertex is created
+
+        Args:
+            a (hash): is one vertex of the edge
+            b (hash): is another vertext of the edge
+
+
+        """
+        #print "SimpleGraph.add_edge",type(a), a, type(b),b
         neighbors_of_a = self.adjacency_lists.get(a)
         if not neighbors_of_a:
             neighbors_of_a = set()
@@ -23,13 +40,60 @@ class SimpleGraph(object):
         neighbors_of_b.add(a)
 
     def get_neighbors_of(self, a):
+        """This will return the neighbors of the vertex
+
+        Args:
+            a (hash): is the vertex to get the neighbors for
+
+        Returns:
+            [] : a list of neighbors_of 'a'
+                Will return an empty set if 'a' doesn't exist or has no
+                neightbors.
+
+        """
         return self.adjacency_lists.get(a, set())
 
     def vertex_set(self):
+        """This returns a list of vertexes included in graph
+
+        Returns:
+            [] : a list of vertexes include in graph
+        """
         return list(self.adjacency_lists)
+
+    def __str__(self):
+        """Used to return a str representing object
+
+        Returns:
+            str : a string representation of graph.
+        """
+        return "SimpleGraph adjacency_list:%s" % self.adjacency_lists
+
+if __name__ == "__main__":
+    """ Testing SimpleGraph """
+    print "Testing SimpleGraph"
+    graph = SimpleGraph()
+    print "graph",graph
+    print "vertex_set",graph.vertex_set()
+    graph.add_edge(1,2)
+    graph.add_edge(1,3)
+    graph.add_edge(3,4)
+    graph.add_edge(3,4)
+    graph.add_edge(2,3)
+    graph.add_edge(2,4)
+    graph.add_edge(1,4)
+    graph.add_edge("A","B")
+    print "graph",graph
+    virts = graph.vertex_set()
+    print "vertex_set",virts
+    for virt in virts:
+        print "neighbors of ", virt,graph.get_neighbors_of(virt)
+    print "neighbors of E ", graph.get_neighbors_of("E")
 
 
 def bronk(r, p, x, graph):
+    """This is used to fine cliques and remove them from graph
+    """
     if len(p) == 0 and len(x) == 0:
         yield r
         return
@@ -43,29 +107,81 @@ def bronk(r, p, x, graph):
         p.remove(vertex)
         x.append(vertex)
 
+if __name__ == "__main__":
+    """testing bronk"""
+    print "testing bronk"
+    results = list(bronk([], graph.vertex_set(), [], graph))
+    print "results",results
 
 def get_cliques(vertices, graph):
+    """get cliques"""
     for clique in bronk([], vertices, [], graph):
         yield clique
 
+if __name__ == "__main__":
+    """testing cliques"""
+    print "testing cliques"
+    cliques = list(get_cliques(graph.vertex_set(),graph))
+    print "cliques",cliques
 
 def graph_key_from_tag(tag, entity_index):
+    """Returns a key from a tag entity
+
+    Args:
+        tag (tag) : this is the tag selected to get the key from
+        entity_index (int) : this is the index of the tagged entity
+
+    Returns:
+        str : String representing the key for the given tagged entity.
+    """
     start_token = tag.get('start_token')
     entity = tag.get('entities', [])[entity_index]
     return str(start_token) + '-' + entity.get('key') + '-' + str(entity.get('confidence'))
 
 
 class Lattice(object):
+    """This manages a list of items or lists
+
+    Attributes:
+        nodes (list) : is a list of items or lists.
+            This is used to track items and lists that are a part of the
+            Lattice
+    """
     def __init__(self):
+        """Creates the Lattice with an empty list"""
         self.nodes = []
 
+    def __str__(self):
+        """ This Returns a string that represents the contances.
+        Returns:
+            str : that represents the contance of the Lattice
+        """
+        string = "Lattice nodes:%s " % self.nodes
+        return string
+
     def append(self, data):
+        """Appends items or lists to the Lattice
+
+        Args:
+            data (item,list) : The Item or List to be added to the Lattice
+        """
         if isinstance(data, list) and len(data) > 0:
             self.nodes.append(data)
         else:
             self.nodes.append([data])
 
     def traverse(self, index=0):
+        """ This is used to produce a list of lists where each each item
+        in that list is a diffrent combination of items from the lists
+        within with every combination of such values.
+
+        Args:
+            index (int) : the index at witch to start the list.
+                Note this is used only in the function as a processing
+
+        Returns:
+            list : is every combination.
+        """
         if index < len(self.nodes):
             for entity in self.nodes[index]:
                 for next_result in self.traverse(index=index+1):
@@ -75,6 +191,17 @@ class Lattice(object):
                         yield [entity] + next_result
         else:
             yield []
+
+if __name__ == "__main__":
+    """testing lattice"""
+    print "testing lattice"
+    lattice = Lattice()
+    lattice.append([1,2,3])
+    lattice.append([1,2,3])
+    lattice.append([1,2,3])
+    lattice.append([1,2,3])
+    print "Lattice is ",lattice
+    print "Traverse",list(lattice.traverse())
 
 
 class BronKerboschExpander(object):
@@ -98,6 +225,16 @@ class BronKerboschExpander(object):
         self.tokenizer = tokenizer
 
     def _build_graph(self, tags):
+        """Builds a graph from the entities included in the tags.
+        Note this is used internally.
+
+        Args:
+            tags (list): A list of the tags to include in graph
+
+        Returns:
+            graph : this is the resulting graph of the tagged entities.
+
+        """
         graph = SimpleGraph()
         for tag_index in xrange(len(tags)):
             for entity_index in xrange(len(tags[tag_index].get('entities'))):
@@ -113,6 +250,8 @@ class BronKerboschExpander(object):
         return graph
 
     def _sub_expand(self, tags):
+        """This called by expand to find clique
+        """
         entities = {}
         graph = self._build_graph(tags)
 
@@ -147,6 +286,8 @@ class BronKerboschExpander(object):
             yield result
 
     def expand(self, tags, clique_scoring_func=None):
+        """
+        """
         lattice = Lattice()
         overlapping_spans = []
 
@@ -160,6 +301,7 @@ class BronKerboschExpander(object):
                 overlapping_spans.append(tag)
             elif len(overlapping_spans) > 1:
                 cliques = list(self._sub_expand(overlapping_spans))
+                #print "y overlapping_spans",overlapping_spans,"cliques",cliques
                 if clique_scoring_func:
                     cliques = sorted(cliques, key=lambda e: -1 * clique_scoring_func(e))
                 lattice.append(cliques)
@@ -169,6 +311,7 @@ class BronKerboschExpander(object):
                 overlapping_spans = [tag]
         if len(overlapping_spans) > 1:
             cliques = list(self._sub_expand(overlapping_spans))
+            #print "x overlapping_spans",overlapping_spans,"cliques",cliques
             if clique_scoring_func:
                     cliques = sorted(cliques, key=lambda e: -1 * clique_scoring_func(e))
             lattice.append(cliques)
@@ -176,4 +319,38 @@ class BronKerboschExpander(object):
             lattice.append(overlapping_spans)
 
         return lattice.traverse()
+
+if __name__ == "__main__":
+    """testing BronKerboschExpander"""
+    print "testing BronKerboschExpander"
+    from adapt.tools.text.tokenizer import EnglishTokenizer
+    from adapt.entity_tagger import EntityTagger
+    from adapt.tools.text.trie import Trie
+    import pprint
+    tokenizer = EnglishTokenizer()
+    trie = Trie()
+    trie.insert("x-play", "Television Show")
+    trie.insert("play", "Play Verb")
+    trie.insert("play season", "Time Period")
+    trie.insert("play", "Player Control")
+    trie.insert("season", "Season Prefix")
+    trie.insert("1", "Number")
+    trie.insert("the big bang theory", "Television Show")
+    trie.insert("the big", "Television Show")
+    trie.insert("big bang", "event")
+    trie.insert("bang theory", "Scientific Theory")
+    tagger = EntityTagger(trie, tokenizer)
+    tags = tagger.tag("play season 2 the big 1 of the big bang theory")
+    Bke= BronKerboschExpander(tokenizer)
+    graphA = Bke._build_graph(tags)
+    for v in graphA.vertex_set():
+        print "vertex",v,list(graphA.get_neighbors_of(v))
+    parse_results = list(Bke.expand(tags))
+    for r in parse_results:
+        print "Bke ----- "
+        for x in r:
+            pprint.pprint(x)
+    #print "Results X ",parse_results
+    #print "GraphA",graphA
+    #print "vertexes",graphA.vertex_set()
 

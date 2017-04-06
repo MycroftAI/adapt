@@ -4,6 +4,8 @@ CLIENT_ENTITY_NAME = 'Client'
 
 
 def is_entity(tag, entity_name):
+    """This doesn't look like it is used any where?
+    """
     for entity in tag.get('entities'):
         for v, t in entity.get('data'):
             if t.lower() == entity_name.lower():
@@ -12,16 +14,31 @@ def is_entity(tag, entity_name):
 
 
 def find_first_tag(tags, entity_type, after_index=-1):
+    """Searches tags for entity type after given index
+
+    Parameters
+    ----------
+    tags: [] - a list of tags with entity types to be compaired too entity_type
+    entity_type: str - This is he entity type to be looking for in tags
+    after_index: int - the start token must be greaterthan this.
+
+    Returns
+    -------
+    ( tag, v, confidence )
+    tag: str - is the tag that matched
+    v: str - ? the word that matched?
+    confidence: double - is a mesure of accuacy.  1 is full confidence and 0 is none.
+    """
     for tag in tags:
         for entity in tag.get('entities'):
             for v, t in entity.get('data'):
                 if t.lower() == entity_type.lower() and tag.get('start_token', 0) > after_index:
                     return tag, v, entity.get('confidence')
-
     return None, None, None
 
 
 def find_next_tag(tags, end_index=0):
+    """This doesn't look like it's used anywhere?"""
     for tag in tags:
         if tag.get('start_token') > end_index:
             return tag
@@ -52,6 +69,17 @@ def choose_1_from_each(lists):
 
 
 def resolve_one_of(tags, at_least_one):
+    """This searches tags for Entites in at_least_one and returns any match
+
+    Parameters
+    ----------
+    tags: [] - List of tags with Entities to search for Entities
+    at_least_one: [] - List of Entities to find in tags
+
+    Returns
+    -------
+    {} - returns None if no match is found but returns any match as an object
+    """
     if len(tags) < len(at_least_one):
         return None
     for possible_resolution in choose_1_from_each(at_least_one):
@@ -70,7 +98,6 @@ def resolve_one_of(tags, at_least_one):
                 resolution[entity_type].append(tag)
         if len(resolution) == len(possible_resolution):
             return resolution
-
     return None
 
 
@@ -248,3 +275,45 @@ class IntentBuilder(object):
         :return: an Intent instance.
         """
         return Intent(self.name, self.requires, self.at_least_one, self.optional)
+
+
+""" For testing locally """
+if __name__ == "__main__":
+    import pprint
+    from adapt.parser import Parser
+    from adapt.entity_tagger import EntityTagger
+    from adapt.tools.text.tokenizer import EnglishTokenizer
+    from adapt.tools.text.trie import Trie
+
+    class IntentTest:
+
+        def __init__(self):
+            self.trie = Trie()
+            self.tokenizer = EnglishTokenizer()
+            self.regex_entities = []
+            self.tagger = EntityTagger(self.trie, self.tokenizer, regex_entities=self.regex_entities)
+            self.trie.insert("play", ("play", "PlayVerb"))
+            self.trie.insert("play", ("play", "Command"))
+            self.trie.insert("the big bang theory", ("the big bang theory", "Television Show"))
+            self.trie.insert("all that", ("all that", "Television Show"))
+            self.trie.insert("all that", ("all that", "Radio Station"))
+            self.trie.insert("the big", ("the big", "Not a Thing"))
+            self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
+            self.trie.insert("show", ("show", "Command"))
+            self.trie.insert("what", ("what", "Question"))
+            self.parser = Parser(self.tokenizer, self.tagger)
+            self.intent = IntentBuilder("Test Intent").require("PlayVerb").one_of("Television Show","Radio Station").build()
+
+        def teststring(self,stringA):
+            results = []
+            for result in self.parser.parse(stringA):
+                result_intent = self.intent.validate(result.get('tags'), result.get('confidence'))
+                results.append(result_intent)
+            return results
+
+    test = IntentTest()
+    #print "Result %s " % test.teststring("show the big bang theory")
+    #print "Result %s " % test.teststring("play barenaked ladies")
+    print "Result %s " % test.teststring("play all that")
+    #print "Result %s " % test.teststring("play pair")
+

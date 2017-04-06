@@ -27,7 +27,7 @@ class Parser(pyee.EventEmitter):
         time : duration since call of function
         confidence : float indicating how confident of a match to the
         utterance. This might be used to determan the most likely intent.
-        
+
         """
         start = time.time()
         context_trie = None
