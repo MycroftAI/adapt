@@ -24,9 +24,9 @@ class ContextManagerFrame(object):
         """
         Initialize ContextManagerFrame
 
-        Parameters:
-        entities(list): List of Entities...
-        metadata(object): metadata to describe context?
+        Args:
+            entities(list): List of Entities...
+            metadata(object): metadata to describe context?
         """
         self.entities = entities
         self.metadata = metadata
@@ -39,7 +39,7 @@ class ContextManagerFrame(object):
         returning true if every key is in metadata.  query without keys
         return false.
 
-        Parameters:
+        Args:
             query(object): metadata for matching
 
         Returns:
@@ -63,7 +63,7 @@ class ContextManagerFrame(object):
         Appends tag as new entity and adds keys in metadata to keys in
         self.metadata.
 
-        Parameters:
+        Args:
             tag(str): entity to be added to self.entities
             metadata(object): metadata containes keys to be added to self.metadata
         """
@@ -86,7 +86,7 @@ class ContextManager(object):
 
     def inject_context(self, entity, metadata={}):
         """
-        Parameters:
+        Args:
             entity(object):
                 format {'data': 'Entity tag as <str>',
                         'key': 'entity proper name as <str>',
@@ -106,7 +106,7 @@ class ContextManager(object):
         """
         Constructs a list of entities from the context.
 
-        Parameters:
+        Args:
             max_frames(int): maximum number of frames to look back
             missing_entities(list of str): a list or set of tag names, as strings
 

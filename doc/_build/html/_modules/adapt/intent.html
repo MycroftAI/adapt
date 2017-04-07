@@ -42,12 +42,14 @@
           <div class="body" role="main">
             
   <h1>Source code for adapt.intent</h1><div class="highlight"><pre>
-<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
 
 <span class="n">CLIENT_ENTITY_NAME</span> <span class="o">=</span> <span class="s1">&#39;Client&#39;</span>
 
 
 <div class="viewcode-block" id="is_entity"><a class="viewcode-back" href="../../adapt.html#adapt.intent.is_entity">[docs]</a><span class="k">def</span> <span class="nf">is_entity</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">entity_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This doesn&#39;t look like it is used any where?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;entities&#39;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">entity_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
@@ -56,16 +58,29 @@
 
 
 <div class="viewcode-block" id="find_first_tag"><a class="viewcode-back" href="../../adapt.html#adapt.intent.find_first_tag">[docs]</a><span class="k">def</span> <span class="nf">find_first_tag</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">after_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Searches tags for entity type after given index</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tags(list): a list of tags with entity types to be compaired too entity_type</span>
+<span class="sd">        entity_type(str): This is he entity type to be looking for in tags</span>
+<span class="sd">        after_index(int): the start token must be greaterthan this.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ( tag, v, confidence ):</span>
+<span class="sd">            tag(str): is the tag that matched</span>
+<span class="sd">            v(str): ? the word that matched?</span>
+<span class="sd">            confidence(float): is a mesure of accuacy.  1 is full confidence and 0 is none.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;entities&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">entity_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_token&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">after_index</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">)</span>
-
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="find_next_tag"><a class="viewcode-back" href="../../adapt.html#adapt.intent.find_next_tag">[docs]</a><span class="k">def</span> <span class="nf">find_next_tag</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">end_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This doesn&#39;t look like it&#39;s used anywhere?&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_token&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">end_index</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tag</span>
@@ -78,14 +93,12 @@
 <span class="sd">    by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght</span>
 <span class="sd">    of each sub list should be same as the length of lists passed in.</span>
 
-<span class="sd">    Properties</span>
-<span class="sd">    ----------</span>
-<span class="sd">    lists: [[]] - A list of lists</span>
+<span class="sd">    Args:</span>
+<span class="sd">        lists(list of Lists):  A list of lists</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    [[]] - returns a list of lists constructions of one item from each</span>
-<span class="sd">    list in lists.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list of lists: returns a list of lists constructions of one item from each</span>
+<span class="sd">            list in lists.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lists</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">[]</span>
@@ -96,6 +109,15 @@
 
 
 <div class="viewcode-block" id="resolve_one_of"><a class="viewcode-back" href="../../adapt.html#adapt.intent.resolve_one_of">[docs]</a><span class="k">def</span> <span class="nf">resolve_one_of</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">at_least_one</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This searches tags for Entites in at_least_one and returns any match</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tags(list): List of tags with Entities to search for Entities</span>
+<span class="sd">        at_least_one(list): List of Entities to find in tags</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        object: returns None if no match is found but returns any match as an object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">at_least_one</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">possible_resolution</span> <span class="ow">in</span> <span class="n">choose_1_from_each</span><span class="p">(</span><span class="n">at_least_one</span><span class="p">):</span>
@@ -104,8 +126,10 @@
         <span class="k">for</span> <span class="n">entity_type</span> <span class="ow">in</span> <span class="n">pr</span><span class="p">:</span>
             <span class="n">last_end_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="k">if</span> <span class="n">entity_type</span> <span class="ow">in</span> <span class="n">resolution</span><span class="p">:</span>
-                <span class="n">last_end_index</span> <span class="o">=</span> <span class="n">resolution</span><span class="o">.</span><span class="n">get</span><span class="p">[</span><span class="n">entity_type</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;end_token&#39;</span><span class="p">)</span>
-            <span class="n">tag</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">after_index</span><span class="o">=</span><span class="n">last_end_index</span><span class="p">)</span>
+                <span class="n">last_end_index</span> <span class="o">=</span> <span class="n">resolution</span><span class="o">.</span><span class="n">get</span><span class="p">[</span><span class="n">entity_type</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;end_token&#39;</span><span class="p">)</span>
+            <span class="n">tag</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span>
+                <span class="n">tags</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">after_index</span><span class="o">=</span><span class="n">last_end_index</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">tag</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
@@ -114,7 +138,6 @@
                 <span class="n">resolution</span><span class="p">[</span><span class="n">entity_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_resolution</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">resolution</span>
-
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -122,12 +145,11 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">requires</span><span class="p">,</span> <span class="n">at_least_one</span><span class="p">,</span> <span class="n">optional</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create Intent object</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        name - str - Name for Intent</span>
-<span class="sd">        requires - Entities that are required</span>
-<span class="sd">        at_least_one - One of these Entities are required</span>
-<span class="sd">        optional - Optional Entities used by the intent</span>
+<span class="sd">        Args:</span>
+<span class="sd">            name(str): Name for Intent</span>
+<span class="sd">            requires(list): Entities that are required</span>
+<span class="sd">            at_least_one(list): One of these Entities are required</span>
+<span class="sd">            optional(list): Optional Entities used by the intent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">requires</span> <span class="o">=</span> <span class="n">requires</span>
@@ -137,9 +159,8 @@
 <div class="viewcode-block" id="Intent.validate"><a class="viewcode-back" href="../../adapt.html#adapt.intent.Intent.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">confidence</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Using this method removes tags from the result of validate_with_tags</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        intent - class intent - Resuts from validate_with_tags</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            intent(intent): Resuts from validate_with_tags</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">intent</span><span class="p">,</span> <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_with_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">confidence</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">intent</span></div>
@@ -147,15 +168,14 @@
 <div class="viewcode-block" id="Intent.entities"><a class="viewcode-back" href="../../adapt.html#adapt.intent.Intent.entities">[docs]</a>    <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to get the Entities the intent is looking for.</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        [] - A list of Entities the intent is looking for.  This should</span>
-<span class="sd">        never be empty but still could be.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of Entities the intent is looking for.  This should</span>
+<span class="sd">                never be empty but still could be.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">thelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_least_one</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional</span>
         <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">thelist</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                 <span class="n">entityx</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">entity</span>
                 <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entityx</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -165,16 +185,14 @@
 <div class="viewcode-block" id="Intent.validate_with_tags"><a class="viewcode-back" href="../../adapt.html#adapt.intent.Intent.validate_with_tags">[docs]</a>    <span class="k">def</span> <span class="nf">validate_with_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">confidence</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate weather tags has required entites for this intent to fire</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        tags - Tags and Entities used for validation</span>
-<span class="sd">        confidence - ?</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tags(list): Tags and Entities used for validation</span>
+<span class="sd">            confidence(float): ?</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        (intent, tags) - Returns intent and tags used by the intent on</span>
-<span class="sd">        falure to meat required entities then returns intent with confidence</span>
-<span class="sd">        of 0.0 and an empty list for tags.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            intent, tags: Returns intent and tags used by the intent on</span>
+<span class="sd">                falure to meat required entities then returns intent with confidence</span>
+<span class="sd">                of 0.0 and an empty list for tags.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;intent_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="n">intent_confidence</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -182,7 +200,8 @@
         <span class="n">used_tags</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">require_type</span><span class="p">,</span> <span class="n">attribute_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires</span><span class="p">:</span>
-            <span class="n">required_tag</span><span class="p">,</span> <span class="n">canonical_form</span><span class="p">,</span> <span class="n">confidence</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span><span class="n">local_tags</span><span class="p">,</span> <span class="n">require_type</span><span class="p">)</span>
+            <span class="n">required_tag</span><span class="p">,</span> <span class="n">canonical_form</span><span class="p">,</span> <span class="n">confidence</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span>
+                <span class="n">local_tags</span><span class="p">,</span> <span class="n">require_type</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">required_tag</span><span class="p">:</span>
                 <span class="n">result</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
                 <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="p">[]</span>
@@ -201,14 +220,16 @@
                 <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="p">[]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">best_resolution</span><span class="p">:</span>
-                    <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_resolution</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="c1"># TODO: at least one must support aliases</span>
+                    <span class="c1"># TODO: at least one must support aliases</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_resolution</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
                     <span class="n">intent_confidence</span> <span class="o">+=</span> <span class="mf">1.0</span>
                 <span class="n">used_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_resolution</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">best_resolution</span> <span class="ow">in</span> <span class="n">local_tags</span><span class="p">:</span>
                     <span class="n">local_tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">best_resolution</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">optional_type</span><span class="p">,</span> <span class="n">attribute_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="p">:</span>
-            <span class="n">optional_tag</span><span class="p">,</span> <span class="n">canonical_form</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span><span class="n">local_tags</span><span class="p">,</span> <span class="n">optional_type</span><span class="p">)</span>
+            <span class="n">optional_tag</span><span class="p">,</span> <span class="n">canonical_form</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span>
+                <span class="n">local_tags</span><span class="p">,</span> <span class="n">optional_type</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">optional_tag</span> <span class="ow">or</span> <span class="n">attribute_name</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">result</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">canonical_form</span>
@@ -219,7 +240,8 @@
 
         <span class="n">total_confidence</span> <span class="o">=</span> <span class="n">intent_confidence</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">*</span> <span class="n">confidence</span>
 
-        <span class="n">target_client</span><span class="p">,</span> <span class="n">canonical_form</span><span class="p">,</span> <span class="n">confidence</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span><span class="n">local_tags</span><span class="p">,</span> <span class="n">CLIENT_ENTITY_NAME</span><span class="p">)</span>
+        <span class="n">target_client</span><span class="p">,</span> <span class="n">canonical_form</span><span class="p">,</span> <span class="n">confidence</span> <span class="o">=</span> <span class="n">find_first_tag</span><span class="p">(</span>
+            <span class="n">local_tags</span><span class="p">,</span> <span class="n">CLIENT_ENTITY_NAME</span><span class="p">)</span>
 
         <span class="n">result</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">target_client</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">result</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_confidence</span>
@@ -230,14 +252,28 @@
 <div class="viewcode-block" id="IntentBuilder"><a class="viewcode-back" href="../../adapt.html#adapt.intent.IntentBuilder">[docs]</a><span class="k">class</span> <span class="nc">IntentBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    IntentBuilder, used to construct intent parsers.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        at_least_one(list): A list of Entities where one is required.</span>
+<span class="sd">            These are seperated into lists so you can have one of (A or B) and</span>
+<span class="sd">            then require one of (D or F).</span>
+<span class="sd">        requires(list): A list of Required Entities</span>
+<span class="sd">        optional(list): A list of optional Entities</span>
+<span class="sd">        name(str): Name of intent</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This is designed to allow construction of intents in one line.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        IntentBuilder(&quot;Intent&quot;).requires(&quot;A&quot;).one_of(&quot;C&quot;,&quot;D&quot;).optional(&quot;G&quot;).build()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor</span>
 
-<span class="sd">        :param intent_name: the name of the intents that this parser parses/validates</span>
-
-<span class="sd">        :return: an instance of IntentBuilder</span>
+<span class="sd">        Args:</span>
+<span class="sd">            intent_name(str): the name of the intents that this parser parses/validates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_least_one</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">requires</span> <span class="o">=</span> <span class="p">[]</span>
@@ -248,9 +284,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The intent parser should require one of the provided entity types to validate this clause.</span>
 
-<span class="sd">        :param args: *args notation list of entity names</span>
+<span class="sd">        Args:</span>
+<span class="sd">            args(args): *args notation list of entity names</span>
 
-<span class="sd">        :return: self</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            self: to continue modifications.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_least_one</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -259,11 +297,12 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The intent parser should require an entity of the provided type.</span>
 
-<span class="sd">        :param entity_type: string, an entity type</span>
+<span class="sd">        Args:</span>
+<span class="sd">            entity_type(str): an entity type</span>
+<span class="sd">            attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.</span>
 
-<span class="sd">        :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.</span>
-
-<span class="sd">        :return: self</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            self: to continue modifications.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">attribute_name</span><span class="p">:</span>
             <span class="n">attribute_name</span> <span class="o">=</span> <span class="n">entity_type</span>
@@ -274,11 +313,12 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parsed intents from this parser can optionally include an entity of the provided type.</span>
 
-<span class="sd">        :param entity_type: string, an entity type</span>
+<span class="sd">        Args:</span>
+<span class="sd">            entity_type(str): an entity type</span>
+<span class="sd">            attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.</span>
 
-<span class="sd">        :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.</span>
-
-<span class="sd">        :return: self</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            self: to continue modifications.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">attribute_name</span><span class="p">:</span>
             <span class="n">attribute_name</span> <span class="o">=</span> <span class="n">entity_type</span>
@@ -289,9 +329,65 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs an intent from the builder&#39;s specifications.</span>
 
-<span class="sd">        :return: an Intent instance.</span>
+<span class="sd">        Returns: an Intent instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Intent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_least_one</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">Intent</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">requires</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">at_least_one</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="p">)</span></div></div>
+
+
+<span class="sd">&quot;&quot;&quot; For testing locally &quot;&quot;&quot;</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pprint</span>
+    <span class="kn">from</span> <span class="nn">adapt.parser</span> <span class="k">import</span> <span class="n">Parser</span>
+    <span class="kn">from</span> <span class="nn">adapt.entity_tagger</span> <span class="k">import</span> <span class="n">EntityTagger</span>
+    <span class="kn">from</span> <span class="nn">adapt.tools.text.tokenizer</span> <span class="k">import</span> <span class="n">EnglishTokenizer</span>
+    <span class="kn">from</span> <span class="nn">adapt.tools.text.trie</span> <span class="k">import</span> <span class="n">Trie</span>
+
+    <span class="k">class</span> <span class="nc">IntentTest</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">EnglishTokenizer</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regex_entities</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tagger</span> <span class="o">=</span> <span class="n">EntityTagger</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+                <span class="n">regex_entities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_entities</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;play&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;play&quot;</span><span class="p">,</span> <span class="s2">&quot;PlayVerb&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;play&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;play&quot;</span><span class="p">,</span> <span class="s2">&quot;Command&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="s2">&quot;the big bang theory&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="s2">&quot;the big bang theory&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;Television Show&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;all that&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;all that&quot;</span><span class="p">,</span> <span class="s2">&quot;Television Show&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;all that&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;all that&quot;</span><span class="p">,</span> <span class="s2">&quot;Radio Station&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;the big&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;the big&quot;</span><span class="p">,</span> <span class="s2">&quot;Not a Thing&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="s2">&quot;barenaked ladies&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="s2">&quot;barenaked ladies&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;Radio Station&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="s2">&quot;Command&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;what&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;what&quot;</span><span class="p">,</span> <span class="s2">&quot;Question&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tagger</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intent</span> <span class="o">=</span> <span class="n">IntentBuilder</span><span class="p">(</span><span class="s2">&quot;Test Intent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">require</span><span class="p">(</span>
+                <span class="s2">&quot;PlayVerb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">one_of</span><span class="p">(</span><span class="s2">&quot;Television Show&quot;</span><span class="p">,</span> <span class="s2">&quot;Radio Station&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">teststring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stringA</span><span class="p">):</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">stringA</span><span class="p">):</span>
+                <span class="n">result_intent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intent</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">))</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_intent</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">results</span>
+
+    <span class="n">test</span> <span class="o">=</span> <span class="n">IntentTest</span><span class="p">()</span>
+    <span class="c1"># print &quot;Result %s &quot; % test.teststring(&quot;show the big bang theory&quot;)</span>
+    <span class="c1"># print &quot;Result %s &quot; % test.teststring(&quot;play barenaked ladies&quot;)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">test</span><span class="o">.</span><span class="n">teststring</span><span class="p">(</span><span class="s2">&quot;play all that&quot;</span><span class="p">))</span>
+    <span class="c1"># print &quot;Result %s &quot; % test.teststring(&quot;play pair&quot;)</span>
 </pre></div>
 
           </div>
@@ -325,8 +421,8 @@
       &copy;2017, Author.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 

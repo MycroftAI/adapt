@@ -49,6 +49,7 @@
  <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
@@ -56,7 +57,9 @@
  | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -70,11 +73,15 @@
 </li>
       <li><a href="adapt.html#module-adapt.context">adapt.context (module)</a>
 </li>
+      <li><a href="adapt.html#module-adapt.engine">adapt.engine (module)</a>
+</li>
       <li><a href="adapt.html#module-adapt.entity_tagger">adapt.entity_tagger (module)</a>
 </li>
       <li><a href="adapt.html#module-adapt.expander">adapt.expander (module)</a>
 </li>
       <li><a href="adapt.html#module-adapt.intent">adapt.intent (module)</a>
+</li>
+      <li><a href="adapt.html#module-adapt.parser">adapt.parser (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -89,6 +96,8 @@
       <li><a href="adapt.html#adapt.expander.SimpleGraph.add_edge">add_edge() (adapt.expander.SimpleGraph method)</a>
 </li>
       <li><a href="adapt.html#adapt.expander.Lattice.append">append() (adapt.expander.Lattice method)</a>
+</li>
+      <li><a href="adapt.html#adapt.intent.IntentBuilder.at_least_one">at_least_one (adapt.intent.IntentBuilder attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -110,15 +119,33 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie.checkForMissingEntites">checkForMissingEntites() (adapt.tools.text.trie.Trie method)</a>
+      <li><a href="adapt.html#adapt.engine.IntentDeterminationEngine.check_intent_entities">check_intent_entities() (adapt.engine.IntentDeterminationEngine method)</a>
 </li>
-      <li><a href="adapt.html#adapt.intent.choose_1_from_each">choose_1_from_each() (in module adapt.intent)</a>
+      <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie.checkForMissingEntites">checkForMissingEntites() (adapt.tools.text.trie.Trie method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.intent.choose_1_from_each">choose_1_from_each() (in module adapt.intent)</a>
+</li>
       <li><a href="adapt.html#adapt.context.ContextManager">ContextManager (class in adapt.context)</a>
 </li>
       <li><a href="adapt.html#adapt.context.ContextManagerFrame">ContextManagerFrame (class in adapt.context)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.determine_intent">determine_intent() (adapt.engine.DomainIntentDeterminationEngine method)</a>
+
+      <ul>
+        <li><a href="adapt.html#adapt.engine.IntentDeterminationEngine.determine_intent">(adapt.engine.IntentDeterminationEngine method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine">DomainIntentDeterminationEngine (class in adapt.engine)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -186,11 +213,15 @@
         <li><a href="adapt.tools.text.html#adapt.tools.text.trie.TrieNode.insert">(adapt.tools.text.trie.TrieNode method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="adapt.html#adapt.intent.Intent">Intent (class in adapt.intent)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.intent_parsers">intent_parsers (adapt.engine.DomainIntentDeterminationEngine attribute)</a>
+</li>
       <li><a href="adapt.html#adapt.intent.IntentBuilder">IntentBuilder (class in adapt.intent)</a>
+</li>
+      <li><a href="adapt.html#adapt.engine.IntentDeterminationEngine">IntentDeterminationEngine (class in adapt.engine)</a>
 </li>
       <li><a href="adapt.html#adapt.intent.is_entity">is_entity() (in module adapt.intent)</a>
 </li>
@@ -230,13 +261,29 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="adapt.html#adapt.context.ContextManagerFrame.merge_context">merge_context() (adapt.context.ContextManagerFrame method)</a>
+      <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie.match_threshold">match_threshold (adapt.tools.text.trie.Trie attribute)</a>
+</li>
+      <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie.max_edit_distance">max_edit_distance (adapt.tools.text.trie.Trie attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.context.ContextManagerFrame.merge_context">merge_context() (adapt.context.ContextManagerFrame method)</a>
+</li>
       <li><a href="adapt.html#adapt.context.ContextManagerFrame.metadata">metadata (adapt.context.ContextManagerFrame attribute)</a>
 </li>
       <li><a href="adapt.html#adapt.context.ContextManagerFrame.metadata_matches">metadata_matches() (adapt.context.ContextManagerFrame method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.intent.IntentBuilder.name">name (adapt.intent.IntentBuilder attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.expander.Lattice.nodes">nodes (adapt.expander.Lattice attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -248,7 +295,21 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.intent.IntentBuilder.optional">optional (adapt.intent.IntentBuilder attribute)</a>
+</li>
       <li><a href="adapt.html#adapt.intent.IntentBuilder.optionally">optionally() (adapt.intent.IntentBuilder method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.parser.Parser.parse">parse() (adapt.parser.Parser method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.parser.Parser">Parser (class in adapt.parser)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -256,17 +317,43 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_domain">register_domain() (adapt.engine.DomainIntentDeterminationEngine method)</a>
+</li>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_entity">register_entity() (adapt.engine.DomainIntentDeterminationEngine method)</a>
+
+      <ul>
+        <li><a href="adapt.html#adapt.engine.IntentDeterminationEngine.register_entity">(adapt.engine.IntentDeterminationEngine method)</a>
+</li>
+      </ul></li>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_intent_parser">register_intent_parser() (adapt.engine.DomainIntentDeterminationEngine method)</a>
+
+      <ul>
+        <li><a href="adapt.html#adapt.engine.IntentDeterminationEngine.register_intent_parser">(adapt.engine.IntentDeterminationEngine method)</a>
+</li>
+      </ul></li>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_regex_entity">register_regex_entity() (adapt.engine.DomainIntentDeterminationEngine method)</a>
+
+      <ul>
+        <li><a href="adapt.html#adapt.engine.IntentDeterminationEngine.register_regex_entity">(adapt.engine.IntentDeterminationEngine method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.regular_expressions_entities">regular_expressions_entities (adapt.engine.DomainIntentDeterminationEngine attribute)</a>
+</li>
       <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie.remove">remove() (adapt.tools.text.trie.Trie method)</a>
 
       <ul>
         <li><a href="adapt.tools.text.html#adapt.tools.text.trie.TrieNode.remove">(adapt.tools.text.trie.TrieNode method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="adapt.html#adapt.intent.IntentBuilder.require">require() (adapt.intent.IntentBuilder method)</a>
 </li>
+      <li><a href="adapt.html#adapt.intent.IntentBuilder.requires">requires (adapt.intent.IntentBuilder attribute)</a>
+</li>
       <li><a href="adapt.html#adapt.intent.resolve_one_of">resolve_one_of() (in module adapt.intent)</a>
+</li>
+      <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie.root">root (adapt.tools.text.trie.Trie attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -284,13 +371,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="adapt.html#adapt.entity_tagger.EntityTagger.tag">tag() (adapt.entity_tagger.EntityTagger method)</a>
 </li>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.tagger">tagger (adapt.engine.DomainIntentDeterminationEngine attribute)</a>
+</li>
       <li><a href="adapt.tools.text.html#adapt.tools.text.tokenizer.EnglishTokenizer.tokenize">tokenize() (adapt.tools.text.tokenizer.EnglishTokenizer method)</a>
 </li>
       <li><a href="adapt.tools.text.html#adapt.tools.text.tokenizer.tokenize_string">tokenize_string() (in module adapt.tools.text.tokenizer)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.tokenizer">tokenizer (adapt.engine.DomainIntentDeterminationEngine attribute)</a>
+</li>
       <li><a href="adapt.html#adapt.expander.Lattice.traverse">traverse() (adapt.expander.Lattice method)</a>
+</li>
+      <li><a href="adapt.html#adapt.engine.DomainIntentDeterminationEngine.trie">trie (adapt.engine.DomainIntentDeterminationEngine attribute)</a>
 </li>
       <li><a href="adapt.tools.text.html#adapt.tools.text.trie.Trie">Trie (class in adapt.tools.text.trie)</a>
 </li>
@@ -347,8 +440,8 @@
       &copy;2017, Author.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 

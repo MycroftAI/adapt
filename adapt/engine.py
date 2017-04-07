@@ -26,7 +26,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         Initialize the IntentDeterminationEngine
 
-        Parameters:
+        Args:
             tokenizer(tokenizer) : tokenizer used to break up spoken text
                 example EnglishTokenizer()
             trie(Trie): tree of matches to Entites
@@ -46,7 +46,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         Decide the best intent
 
-        Parameters:
+        Args:
             parse_result(list): results used to match the best intent.
             context(list): ?
 
@@ -72,7 +72,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """ Used to get unused context from context.  Any keys not in
         parse_result
 
-        Parameters:
+        Args:
             parse_results(list): parsed results used to identify what keys
                 in the context are used.
             context(list): this is the context used to match with parsed results
@@ -159,7 +159,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     def check_intent_entities(self, intent_parser):
         """Used to check intents for entities that are not registered yet
 
-        Parameters:
+        Args:
             intent_parser(intent): This is the intent to check the
                 Entities for.
 
@@ -175,7 +175,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         "Enforce" the intent parser interface at registration time.
 
-        intent_parser(intent): Intent to be registered.
+        Args:
+            intent_parser(intent): Intent to be registered.
 
         Raises:
             ValueError: on invalid intent

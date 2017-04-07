@@ -1,0 +1,476 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>adapt.engine &#8212; adapt  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for adapt.engine</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">heapq</span>
+<span class="kn">import</span> <span class="nn">pyee</span>
+<span class="kn">from</span> <span class="nn">adapt.entity_tagger</span> <span class="k">import</span> <span class="n">EntityTagger</span>
+<span class="kn">from</span> <span class="nn">adapt.parser</span> <span class="k">import</span> <span class="n">Parser</span>
+<span class="kn">from</span> <span class="nn">adapt.tools.text.tokenizer</span> <span class="k">import</span> <span class="n">EnglishTokenizer</span>
+<span class="kn">from</span> <span class="nn">adapt.tools.text.trie</span> <span class="k">import</span> <span class="n">Trie</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
+
+
+<div class="viewcode-block" id="IntentDeterminationEngine"><a class="viewcode-back" href="../../adapt.html#adapt.engine.IntentDeterminationEngine">[docs]</a><span class="k">class</span> <span class="nc">IntentDeterminationEngine</span><span class="p">(</span><span class="n">pyee</span><span class="o">.</span><span class="n">EventEmitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    IntentDeterminationEngine</span>
+
+<span class="sd">    The IntentDeterminationEngine is a greedy and naive implementation of intent determination. Given an utterance,</span>
+<span class="sd">    it uses the Adapt parsing tools to come up with a sorted collection of tagged parses. A valid parse result contains</span>
+<span class="sd">    no overlapping tagged entities, and it&#39;s confidence is the sum of the tagged entity confidences, which are</span>
+<span class="sd">    weighted based on the percentage of the utterance (per character) that the entity match represents.</span>
+
+<span class="sd">    This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of</span>
+<span class="sd">    computation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trie</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the IntentDeterminationEngine</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tokenizer(tokenizer) : tokenizer used to break up spoken text</span>
+<span class="sd">                example EnglishTokenizer()</span>
+<span class="sd">            trie(Trie): tree of matches to Entites</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pyee</span><span class="o">.</span><span class="n">EventEmitter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span> <span class="ow">or</span> <span class="n">EnglishTokenizer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trie</span> <span class="o">=</span> <span class="n">trie</span> <span class="ow">or</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regular_expressions_entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_regex_strings</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tagger</span> <span class="o">=</span> <span class="n">EntityTagger</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regular_expressions_entities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intent_parsers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__best_intent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parse_result</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decide the best intent</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parse_result(list): results used to match the best intent.</span>
+<span class="sd">            context(list): ?</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            best_intent, best_tags:</span>
+<span class="sd">                best_intent : The best intent for given results</span>
+<span class="sd">                best_tags : The Tags for result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">best_intent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_tags</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">context_as_entities</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span><span class="p">]}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">context</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">intent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">intent_parsers</span><span class="p">:</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">tags</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">validate_with_tags</span><span class="p">(</span><span class="n">parse_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;tags&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">context_as_entities</span><span class="p">,</span> <span class="n">parse_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">best_intent</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">i</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">best_intent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">)):</span>
+                <span class="n">best_intent</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">best_tags</span> <span class="o">=</span> <span class="n">tags</span>
+
+        <span class="k">return</span> <span class="n">best_intent</span><span class="p">,</span> <span class="n">best_tags</span>
+
+    <span class="k">def</span> <span class="nf">__get_unused_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parse_result</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Used to get unused context from context.  Any keys not in</span>
+<span class="sd">        parse_result</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parse_results(list): parsed results used to identify what keys</span>
+<span class="sd">                in the context are used.</span>
+<span class="sd">            context(list): this is the context used to match with parsed results</span>
+<span class="sd">                keys missing in the parsed results are the unused context</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of the unused context results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tags_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+                         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">parse_result</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;from_context&#39;</span><span class="p">]])</span>
+        <span class="n">result_context</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">context</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tags_keys</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result_context</span>
+
+<div class="viewcode-block" id="IntentDeterminationEngine.determine_intent"><a class="viewcode-back" href="../../adapt.html#adapt.engine.IntentDeterminationEngine.determine_intent">[docs]</a>    <span class="k">def</span> <span class="nf">determine_intent</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">utterance</span><span class="p">,</span>
+            <span class="n">num_results</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">include_tags</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">context_manager</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an utterance, provide a valid intent.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            utterance(str): an ascii or unicode string representing natural language speech</span>
+<span class="sd">            include_tags(list): includes the parsed tags (including position and confidence)</span>
+<span class="sd">                as part of result</span>
+<span class="sd">            context_manager(list): a context manager to provide context to the utterance</span>
+<span class="sd">            num_results(int): a maximum number of results to be returned.</span>
+
+<span class="sd">        Returns: A generator that yields dictionaries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tagger</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;tagged_entities&#39;</span><span class="p">,</span>
+                  <span class="p">(</span><span class="k">lambda</span> <span class="n">result</span><span class="p">:</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;tagged_entities&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)))</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">context_manager</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">context_manager</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">utterance</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">num_results</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;parse_result&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="c1"># create a context without entities used in result</span>
+            <span class="n">remaining_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_unused_context</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+            <span class="n">best_intent</span><span class="p">,</span> <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__best_intent</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">remaining_context</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">best_intent</span> <span class="ow">and</span> <span class="n">best_intent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">include_tags</span><span class="p">:</span>
+                    <span class="n">best_intent</span><span class="p">[</span><span class="s1">&#39;__tags__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span>
+                <span class="k">yield</span> <span class="n">best_intent</span></div>
+
+<div class="viewcode-block" id="IntentDeterminationEngine.register_entity"><a class="viewcode-back" href="../../adapt.html#adapt.engine.IntentDeterminationEngine.register_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_value</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">alias_of</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an entity to be tagged in potential parse results</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            entity_value(str): the value/proper name of an entity instance (Ex: &quot;The Big Bang Theory&quot;)</span>
+<span class="sd">            entity_type(str): the type/tag of an entity instance (Ex: &quot;Television Show&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">alias_of</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="n">entity_value</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">alias_of</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="n">entity_value</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">entity_value</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="n">entity_type</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">entity_type</span><span class="p">,</span> <span class="s1">&#39;Concept&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="IntentDeterminationEngine.register_regex_entity"><a class="viewcode-back" href="../../adapt.html#adapt.engine.IntentDeterminationEngine.register_regex_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_regex_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A regular expression making use of python named group expressions.</span>
+
+<span class="sd">        Example: (?P&lt;Artist&gt;.*)</span>
+
+<span class="sd">        regex_str(str): a string representing a regular expression as defined above</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">regex_str</span> <span class="ow">and</span> <span class="n">regex_str</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regex_strings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_regex_strings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex_str</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regular_expressions_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_str</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="IntentDeterminationEngine.check_intent_entities"><a class="viewcode-back" href="../../adapt.html#adapt.engine.IntentDeterminationEngine.check_intent_entities">[docs]</a>    <span class="k">def</span> <span class="nf">check_intent_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent_parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to check intents for entities that are not registered yet</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            intent_parser(intent): This is the intent to check the</span>
+<span class="sd">                Entities for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Returns a list of entities missing from intent_parser.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            It&#39;s up to the caller to deside how to handle missing entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">(</span><span class="n">intent_parser</span><span class="o">.</span><span class="n">entities</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="IntentDeterminationEngine.register_intent_parser"><a class="viewcode-back" href="../../adapt.html#adapt.engine.IntentDeterminationEngine.register_intent_parser">[docs]</a>    <span class="k">def</span> <span class="nf">register_intent_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent_parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;Enforce&quot; the intent parser interface at registration time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            intent_parser(intent): Intent to be registered.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: on invalid intent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span>
+                <span class="n">intent_parser</span><span class="p">,</span>
+                <span class="s1">&#39;validate&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span>
+                <span class="n">intent_parser</span><span class="o">.</span><span class="n">validate</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intent_parsers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intent_parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not an intent parser&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">intent_parser</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="DomainIntentDeterminationEngine"><a class="viewcode-back" href="../../adapt.html#adapt.engine.DomainIntentDeterminationEngine">[docs]</a><span class="k">class</span> <span class="nc">DomainIntentDeterminationEngine</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DomainIntentDeterminationEngine.</span>
+
+<span class="sd">    The DomainIntentDeterminationEngine is a greedy and naive implementation of intent</span>
+<span class="sd">    determination. Given an utterance, it uses the Adapt parsing tools to come up with a</span>
+<span class="sd">    sorted collection of tagged parses. A valid parse result contains no overlapping</span>
+<span class="sd">    tagged entities in a single domain, and it&#39;s confidence is the sum of the tagged</span>
+<span class="sd">    entity confidences, which are weighted based on the percentage of the utterance</span>
+<span class="sd">    (per character) that the entity match represents.</span>
+
+<span class="sd">    This system makes heavy use of generators to enable greedy algorithms to short circuit</span>
+<span class="sd">    large portions of computation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize DomainIntentDeterminationEngine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tokenizer(tokenizer): The tokenizer you wish to use.</span>
+<span class="sd">            trie(Trie): the Trie() you wish to use.</span>
+<span class="sd">            domain(str): a string representing the domain you wish to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tokenizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A property to link into IntentEngine&#39;s tokenizer.</span>
+
+<span class="sd">        Warning: this is only for backwards compatiblility and should not be used if you</span>
+<span class="sd">            intend on using domains.</span>
+
+<span class="sd">        Return: the domains tokenizer from its IntentEngine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">tokenizer</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A property to link into IntentEngine&#39;s trie.</span>
+
+<span class="sd">        Warning: this is only for backwards compatiblility and should not be used if you</span>
+<span class="sd">            intend on using domains.</span>
+
+<span class="sd">        Return: the domains trie from its IntentEngine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">trie</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tagger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A property to link into IntentEngine&#39;s intent_parsers.</span>
+
+<span class="sd">        Warning: this is only for backwards compatiblility and should not be used if you</span>
+<span class="sd">        intend on using domains.</span>
+
+<span class="sd">        Return: the domains intent_parsers from its IntentEngine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">tagger</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">intent_parsers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A property to link into IntentEngine&#39;s intent_parsers.</span>
+
+<span class="sd">        Warning: this is only for backwards compatiblility and should not be used if you</span>
+<span class="sd">            intend on using domains.</span>
+
+<span class="sd">        Returns: the domains intent_parsers from its IntentEngine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">intent_parsers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_regex_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A property to link into IntentEngine&#39;s _regex_strings.</span>
+
+<span class="sd">        Warning: this is only for backwards compatiblility and should not be used if you</span>
+<span class="sd">            intend on using domains.</span>
+
+<span class="sd">        Returns: the domains _regex_strings from its IntentEngine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">_regex_strings</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">regular_expressions_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A property to link into IntentEngine&#39;s regular_expressions_entities.</span>
+
+<span class="sd">        Warning: this is only for backwards compatiblility and should not be used if you</span>
+<span class="sd">            intend on using domains.</span>
+
+<span class="sd">        Returns: the domains regular_expression_entities from its IntentEngine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">regular_expressions_entities</span>
+
+<div class="viewcode-block" id="DomainIntentDeterminationEngine.register_domain"><a class="viewcode-back" href="../../adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_domain">[docs]</a>    <span class="k">def</span> <span class="nf">register_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trie</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a domain with the intent engine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tokenizer(tokenizer): The tokenizer you wish to use.</span>
+<span class="sd">            trie(Trie): the Trie() you wish to use.</span>
+<span class="sd">            domain(str): a string representing the domain you wish to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">IntentDeterminationEngine</span><span class="p">(</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">trie</span><span class="o">=</span><span class="n">trie</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DomainIntentDeterminationEngine.register_entity"><a class="viewcode-back" href="../../adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_entity</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">entity_value</span><span class="p">,</span>
+            <span class="n">entity_type</span><span class="p">,</span>
+            <span class="n">alias_of</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">domain</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an entity to be tagged in potential parse results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            entity_value(str): the value/proper name of an entity instance</span>
+<span class="sd">                (Ex: &quot;The Big Bang Theory&quot;)</span>
+<span class="sd">            entity_type(str): the type/tag of an entity instance (Ex: &quot;Television Show&quot;)</span>
+<span class="sd">            domain(str): a string representing the domain you wish to add the entity to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">register_entity</span><span class="p">(</span><span class="n">entity_value</span><span class="o">=</span><span class="n">entity_value</span><span class="p">,</span>
+                                             <span class="n">entity_type</span><span class="o">=</span><span class="n">entity_type</span><span class="p">,</span>
+                                             <span class="n">alias_of</span><span class="o">=</span><span class="n">alias_of</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DomainIntentDeterminationEngine.register_regex_entity"><a class="viewcode-back" href="../../adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_regex_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_regex_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_str</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A regular expression making use of python named group expressions.</span>
+
+<span class="sd">        Example: (?P&lt;Artist&gt;.*)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            regex_str(str): a string representing a regular expression as defined above</span>
+<span class="sd">            domain(str): a string representing the domain you wish to add the entity to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">register_regex_entity</span><span class="p">(</span><span class="n">regex_str</span><span class="o">=</span><span class="n">regex_str</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DomainIntentDeterminationEngine.determine_intent"><a class="viewcode-back" href="../../adapt.html#adapt.engine.DomainIntentDeterminationEngine.determine_intent">[docs]</a>    <span class="k">def</span> <span class="nf">determine_intent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utterance</span><span class="p">,</span> <span class="n">num_results</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an utterance, provide a valid intent.</span>
+
+<span class="sd">        utterance(str): an ascii or unicode string representing natural language speech</span>
+<span class="sd">        num_results(int): a maximum number of results to be returned.</span>
+
+<span class="sd">        Returns: A generator the yields dictionaries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">intents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">domain</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="n">gen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">determine_intent</span><span class="p">(</span><span class="n">utterance</span><span class="o">=</span><span class="n">utterance</span><span class="p">,</span>
+                                                        <span class="n">num_results</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">intent</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+                <span class="n">intents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span>
+
+        <span class="n">heapq</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span>
+            <span class="n">num_results</span><span class="p">,</span> <span class="n">intents</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">domain</span><span class="p">:</span> <span class="n">domain</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">intent</span> <span class="ow">in</span> <span class="n">intents</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">intent</span></div>
+
+<div class="viewcode-block" id="DomainIntentDeterminationEngine.register_intent_parser"><a class="viewcode-back" href="../../adapt.html#adapt.engine.DomainIntentDeterminationEngine.register_intent_parser">[docs]</a>    <span class="k">def</span> <span class="nf">register_intent_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent_parser</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a intent parser with a domain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            intent_parser(intent): The intent parser you wish to register.</span>
+<span class="sd">            domain(str): a string representing the domain you wish register the intent</span>
+<span class="sd">                parser to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_domain</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">register_intent_parser</span><span class="p">(</span>
+            <span class="n">intent_parser</span><span class="o">=</span><span class="n">intent_parser</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

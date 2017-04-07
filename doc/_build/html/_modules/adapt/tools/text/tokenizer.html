@@ -42,7 +42,7 @@
           <div class="body" role="main">
             
   <h1>Source code for adapt.tools.text.tokenizer</h1><div class="highlight"><pre>
-<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="n">regex_letter_number</span> <span class="o">=</span> <span class="s2">r&quot;[a-zA-Z0-9]&quot;</span>
 <span class="n">regex_not_letter_number</span> <span class="o">=</span> <span class="s2">r&quot;[^a-zA-Z0-9]&quot;</span>
@@ -50,14 +50,61 @@
 
 <span class="n">regex_clitics</span> <span class="o">=</span> <span class="s2">r&quot;&#39;|:|-|&#39;S|&#39;D|&#39;M|&#39;LL|&#39;RE|&#39;VE|N&#39;T|&#39;s|&#39;d|&#39;m|&#39;ll|&#39;re|&#39;ve|n&#39;t&quot;</span>
 
-<span class="n">abbreviations_list</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;Co.&quot;</span><span class="p">,</span> <span class="s2">&quot;Corp.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;vs.&quot;</span><span class="p">,</span> <span class="s2">&quot;e.g.&quot;</span><span class="p">,</span> <span class="s2">&quot;etc.&quot;</span><span class="p">,</span> <span class="s2">&quot;ex.&quot;</span><span class="p">,</span> <span class="s2">&quot;cf.&quot;</span><span class="p">,</span> <span class="s2">&quot;eg.&quot;</span><span class="p">,</span> <span class="s2">&quot;Jan.&quot;</span><span class="p">,</span> <span class="s2">&quot;Feb.&quot;</span><span class="p">,</span> <span class="s2">&quot;Mar.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Apr.&quot;</span><span class="p">,</span> <span class="s2">&quot;Jun.&quot;</span><span class="p">,</span> <span class="s2">&quot;Jul.&quot;</span><span class="p">,</span> <span class="s2">&quot;Aug.&quot;</span><span class="p">,</span> <span class="s2">&quot;Sept.&quot;</span><span class="p">,</span> <span class="s2">&quot;Oct.&quot;</span><span class="p">,</span> <span class="s2">&quot;Nov.&quot;</span><span class="p">,</span> <span class="s2">&quot;Dec.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;jan.&quot;</span><span class="p">,</span> <span class="s2">&quot;feb.&quot;</span><span class="p">,</span> <span class="s2">&quot;mar.&quot;</span><span class="p">,</span> <span class="s2">&quot;apr.&quot;</span><span class="p">,</span> <span class="s2">&quot;jun.&quot;</span><span class="p">,</span> <span class="s2">&quot;jul.&quot;</span><span class="p">,</span> <span class="s2">&quot;aug.&quot;</span><span class="p">,</span> <span class="s2">&quot;sept.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;oct.&quot;</span><span class="p">,</span> <span class="s2">&quot;nov.&quot;</span><span class="p">,</span> <span class="s2">&quot;dec.&quot;</span><span class="p">,</span> <span class="s2">&quot;ed.&quot;</span><span class="p">,</span> <span class="s2">&quot;eds.&quot;</span><span class="p">,</span> <span class="s2">&quot;repr.&quot;</span><span class="p">,</span> <span class="s2">&quot;trans.&quot;</span><span class="p">,</span> <span class="s2">&quot;vol.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;vols.&quot;</span><span class="p">,</span> <span class="s2">&quot;rev.&quot;</span><span class="p">,</span> <span class="s2">&quot;est.&quot;</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">,</span> <span class="s2">&quot;m.&quot;</span><span class="p">,</span> <span class="s2">&quot;bur.&quot;</span><span class="p">,</span> <span class="s2">&quot;d.&quot;</span><span class="p">,</span> <span class="s2">&quot;r.&quot;</span><span class="p">,</span> <span class="s2">&quot;M.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Dept.&quot;</span><span class="p">,</span> <span class="s2">&quot;MM.&quot;</span><span class="p">,</span> <span class="s2">&quot;U.&quot;</span><span class="p">,</span> <span class="s2">&quot;Mr.&quot;</span><span class="p">,</span> <span class="s2">&quot;Jr.&quot;</span><span class="p">,</span> <span class="s2">&quot;Ms.&quot;</span><span class="p">,</span> <span class="s2">&quot;Mme.&quot;</span><span class="p">,</span> <span class="s2">&quot;Mrs.&quot;</span><span class="p">,</span> <span class="s2">&quot;Dr.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Ph.D.&quot;</span><span class="p">]</span>
+<span class="n">abbreviations_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Co.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Corp.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vs.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;e.g.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;etc.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ex.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cf.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eg.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Jan.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Feb.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Mar.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Apr.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Jun.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Jul.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Aug.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Sept.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Oct.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Nov.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dec.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jan.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;feb.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mar.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;apr.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jun.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jul.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;aug.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sept.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;oct.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nov.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dec.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ed.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eds.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;repr.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trans.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vol.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vols.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rev.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;est.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;b.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;m.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bur.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;d.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;r.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;M.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dept.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MM.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;U.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Mr.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Jr.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Ms.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Mme.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Mrs.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dr.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Ph.D.&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="EnglishTokenizer"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.tokenizer.EnglishTokenizer">[docs]</a><span class="k">class</span> <span class="nc">EnglishTokenizer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -66,25 +113,21 @@
 
 <div class="viewcode-block" id="EnglishTokenizer.tokenize"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.tokenizer.EnglishTokenizer.tokenize">[docs]</a>    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to parce a string into tokens</span>
-<span class="sd">        </span>
+
 <span class="sd">        This function is to take in a string and return a list of tokens</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        string: str</span>
-<span class="sd">           This is a string of words or a sentance to be parsed into tokens</span>
-<span class="sd">           </span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        [] - a list of tokens from the string passed in.</span>
-<span class="sd">        </span>
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        Doesn&#39;t seem to parse contractions correctly for example don&#39;t</span>
-<span class="sd">        would parse as two tokens &#39;do&#39; and &quot;n&#39;t&quot; and this seems to be not</span>
-<span class="sd">        what we would want.  Maybe should be &quot;don&#39;t&quot; or maybe contractions</span>
-<span class="sd">        should be expanded into &quot;do not&quot; or &quot;do&quot;,&quot;not&quot;.  This could be</span>
-<span class="sd">        done with a contraction dictionary and some preprocessing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string(str): This is a string of words or a sentance to be parsed into tokens</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: a list of tokens from the string passed in.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Doesn&#39;t seem to parse contractions correctly for example don&#39;t</span>
+<span class="sd">            would parse as two tokens &#39;do&#39; and &quot;n&#39;t&quot; and this seems to be not</span>
+<span class="sd">            what we would want.  Maybe should be &quot;don&#39;t&quot; or maybe contractions</span>
+<span class="sd">            should be expanded into &quot;do not&quot; or &quot;do&quot;,&quot;not&quot;.  This could be</span>
+<span class="sd">            done with a contraction dictionary and some preprocessing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">string</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
@@ -94,11 +137,19 @@
         <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^(&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;\g&lt;1&gt; &quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">regex_not_letter_number</span> <span class="o">+</span> <span class="s2">&quot;)&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;\g&lt;1&gt; &#39;&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">regex_clitics</span> <span class="o">+</span> <span class="s2">&quot;)$&quot;</span><span class="p">,</span> <span class="s2">&quot; \g&lt;1&gt;&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">regex_clitics</span> <span class="o">+</span> <span class="s2">&quot;)(&quot;</span> <span class="o">+</span> <span class="n">regex_not_letter_number</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot; \g&lt;1&gt; \g&lt;2&gt;&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+            <span class="s2">&quot;(&quot;</span> <span class="o">+</span>
+            <span class="n">regex_clitics</span> <span class="o">+</span>
+            <span class="s2">&quot;)(&quot;</span> <span class="o">+</span>
+            <span class="n">regex_not_letter_number</span> <span class="o">+</span>
+            <span class="s2">&quot;)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot; \g&lt;1&gt; \g&lt;2&gt;&quot;</span><span class="p">,</span>
+            <span class="n">s</span><span class="p">)</span>
 
         <span class="n">words</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.*&quot;</span> <span class="o">+</span> <span class="n">regex_letter_number</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">.&quot;</span><span class="p">)</span>
-        <span class="n">p2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;^([A-Za-z]</span><span class="se">\\</span><span class="s2">.([A-Za-z]</span><span class="se">\\</span><span class="s2">.)+|[A-Z][bcdfghj-nptvxz]+</span><span class="se">\\</span><span class="s2">.)$&quot;</span><span class="p">)</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="s2">&quot;^([A-Za-z]</span><span class="se">\\</span><span class="s2">.([A-Za-z]</span><span class="se">\\</span><span class="s2">.)+|[A-Z][bcdfghj-nptvxz]+</span><span class="se">\\</span><span class="s2">.)$&quot;</span><span class="p">)</span>
 
         <span class="n">token_list</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -117,9 +168,16 @@
 
 <div class="viewcode-block" id="tokenize_string"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.tokenizer.tokenize_string">[docs]</a><span class="k">def</span> <span class="nf">tokenize_string</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;To assist with testing strings returns the token list from text</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text(str): String to be parsed into tokens</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of tokens found in the text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tk</span> <span class="o">=</span> <span class="n">EnglishTokenizer</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">tk</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;When ran with python demonstrat function&quot;&quot;&quot;</span>
@@ -158,8 +216,8 @@
       &copy;2017, Author.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 

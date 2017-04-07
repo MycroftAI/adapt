@@ -42,16 +42,15 @@
           <div class="body" role="main">
             
   <h1>Source code for adapt.tools.text.trie</h1><div class="highlight"><pre>
-<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
 
 
 <div class="viewcode-block" id="TrieNode"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode">[docs]</a><span class="k">class</span> <span class="nc">TrieNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_terminal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Init the TrieNode with data and is_terminal settings</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        data: data index by the node</span>
-<span class="sd">        is_terminal: bool that is used to set is_terminal</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data(object): data index by the node</span>
+<span class="sd">            is_terminal(bool): that is used to set is_terminal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
@@ -66,13 +65,11 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to show the content of the Node object as a string</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This will look to child nodes and include them as well.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            This will look to child nodes and include them as well.</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        string - this returns a string representation of a Node Object.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: this returns a string representation of a Node Object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
         <span class="n">children</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -87,9 +84,8 @@
 <div class="viewcode-block" id="TrieNode.json"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to show the tree from this node</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        {} - a json object of this node and all child nodes.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            object: a json object of this node and all child nodes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
@@ -104,10 +100,9 @@
 <div class="viewcode-block" id="TrieNode.entities"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.entities">[docs]</a>    <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Used to list the entities included in Trie</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        [] - List of entity strings included in the tree.</span>
-<span class="sd">            set could be empty</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of entity strings included in the tree.</span>
+<span class="sd">                set could be empty</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
@@ -134,17 +129,16 @@
         <span class="sd">&quot;&quot;&quot;Used for looking up values within this tree</span>
 <span class="sd">        TODO: Implement trie lookup with edit distance</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iterable: key used to find what is requested</span>
-<span class="sd">        index: index of what is requested</span>
-<span class="sd">        gather: bool of weather to gather or not</span>
-<span class="sd">        edit_distance: int of the distance -- currently not used</span>
-<span class="sd">        max_edit_distance: int of the max distance -- not currently used</span>
+<span class="sd">        Args:</span>
+<span class="sd">            iterable(list?): key used to find what is requested this could</span>
+<span class="sd">                be a generator.</span>
+<span class="sd">            index(int): index of what is requested</span>
+<span class="sd">            gather(bool): of weather to gather or not</span>
+<span class="sd">            edit_distance(int): the distance -- currently not used</span>
+<span class="sd">            max_edit_distance(int): the max distance -- not currently used</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        yields the results of the search</span>
+<span class="sd">        yields:</span>
+<span class="sd">            object: yields the results of the search</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">gather</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span>
@@ -207,12 +201,11 @@
 <div class="viewcode-block" id="TrieNode.insert"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Insert new node into tree</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iterable: key used to find what is to be removed</span>
-<span class="sd">        data: data associated with the key</span>
-<span class="sd">        index: int</span>
-<span class="sd">        weight: float</span>
+<span class="sd">        Args:</span>
+<span class="sd">            iterable(hashable): key used to find in the future.</span>
+<span class="sd">            data(object): data associated with the key</span>
+<span class="sd">            index(int): an index used for insertion.</span>
+<span class="sd">            weight(float): the wait given for the item added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="kc">True</span>
@@ -236,11 +229,10 @@
 <div class="viewcode-block" id="TrieNode.remove"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.TrieNode.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove an element from the trie</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iterable: key used to find what is to be removed</span>
-<span class="sd">        data: data associated with the key</span>
-<span class="sd">        index: index of what is to me removed</span>
+<span class="sd">        Args</span>
+<span class="sd">            iterable(hashable): key used to find what is to be removed</span>
+<span class="sd">            data(object): data associated with the key</span>
+<span class="sd">            index(int): index of what is to me removed</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">        bool:</span>
@@ -267,7 +259,14 @@
 
 
 <div class="viewcode-block" id="Trie"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie">[docs]</a><span class="k">class</span> <span class="nc">Trie</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Interface for the tree&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Interface for the tree</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            root(TrieNode): parent node to start the tree</span>
+<span class="sd">            max_edit_distance(int): ?</span>
+<span class="sd">            match_threshold(int): ?</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_edit_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">match_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Init the Trie object and create root node.</span>
@@ -275,14 +274,12 @@
 <span class="sd">        Creates an Trie object with a root node with the passed in</span>
 <span class="sd">        max_edit_distance and match_threshold.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        max_edit_distance: int</span>
-<span class="sd">        match_threshold: int</span>
+<span class="sd">        Args:</span>
+<span class="sd">            max_edit_distance(int): ?</span>
+<span class="sd">            match_threshold(int): ?</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This never seems to get called with max_edit_distance or match_threshold</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            This never seems to get called with max_edit_distance or match_threshold</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">TrieNode</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_edit_distance</span> <span class="o">=</span> <span class="n">max_edit_distance</span>
@@ -291,14 +288,17 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use to get a string represntation of the Trie from Root Node</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        string - A String representation of the entire Trie</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: A String representation of the entire Trie</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;Trie Object{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Trie.json"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Created to show the tree&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Created to show the tree</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            json: a json represntation of the trie</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Trie.gather"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.gather">[docs]</a>    <span class="k">def</span> <span class="nf">gather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
@@ -311,38 +311,32 @@
 <div class="viewcode-block" id="Trie.checkForMissingEntites"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.checkForMissingEntites">[docs]</a>    <span class="k">def</span> <span class="nf">checkForMissingEntites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used for checking a given list for missing Entities</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        entities - []/string - representing entities to search for</span>
+<span class="sd">        Args</span>
+<span class="sd">            entities(list or str): representing entities to search for</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        [] - a list of the missing entities</span>
-<span class="sd">        Will be None if all the entites are found</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list - a list of the missing entities</span>
+<span class="sd">                Will be None if all the entites are found</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Trie_entites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">entities</span><span class="p">()</span>
-        <span class="n">Missing_entities</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">missing_entities</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">entity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Trie_entites</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">Missing_entities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">Missing_entities</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="n">Missing_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Missing_entities</span></div>
+                    <span class="k">if</span> <span class="n">missing_entities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">missing_entities</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">missing_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">missing_entities</span></div>
 
 <div class="viewcode-block" id="Trie.lookup"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.lookup">[docs]</a>    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">gather</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Call the lookup on the root node with the given parameters.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iterable: index or key</span>
-<span class="sd">            Used to retrive nodes from tree</span>
-<span class="sd">        gather: bool</span>
-<span class="sd">            this is passed down to the root node lookup</span>
+<span class="sd">        Args</span>
+<span class="sd">            iterable(index or key): Used to retrive nodes from tree</span>
+<span class="sd">            gather(bool): this is passed down to the root node lookup</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        max_edit_distance and match_threshold come from the init</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            max_edit_distance and match_threshold come from the init</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span>
                 <span class="n">iterable</span><span class="p">,</span>
@@ -355,20 +349,19 @@
 <div class="viewcode-block" id="Trie.insert"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to insert into he root node</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iterable: index or key used to identify</span>
-<span class="sd">        data: data to be paired with the key</span>
+<span class="sd">        Args</span>
+<span class="sd">            iterable(hashable): index or key used to identify</span>
+<span class="sd">            data(object): data to be paired with the key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Trie.remove"><a class="viewcode-back" href="../../../../adapt.tools.text.html#adapt.tools.text.trie.Trie.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to remove from the root node</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iterable: index or key used to identify</span>
-<span class="sd">        data: data to be paired with the key</span>
+<span class="sd">        Args:</span>
+<span class="sd">            iterable(hashable): index or key used to identify</span>
+<span class="sd">                item to remove</span>
+<span class="sd">            data: data to be paired with the key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div></div>
 </pre></div>
@@ -404,8 +397,8 @@
       &copy;2017, Author.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 

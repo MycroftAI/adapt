@@ -72,7 +72,7 @@ class EnglishTokenizer(object):
 
         This function is to take in a string and return a list of tokens
 
-        Parameters:
+        Args:
             string(str): This is a string of words or a sentance to be parsed into tokens
 
         Returns:
@@ -125,7 +125,7 @@ class EnglishTokenizer(object):
 def tokenize_string(text):
     """To assist with testing strings returns the token list from text
 
-    Parameters:
+    Args:
         text(str): String to be parsed into tokens
 
     Returns:

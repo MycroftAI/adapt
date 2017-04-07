@@ -42,7 +42,7 @@
           <div class="body" role="main">
             
   <h1>Source code for adapt.entity_tagger</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">adapt.tools.text.trie</span> <span class="k">import</span> <span class="n">Trie</span>
+<span class="kn">from</span> <span class="nn">adapt.tools.text.trie</span> <span class="k">import</span> <span class="n">Trie</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">xrange</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
@@ -53,6 +53,7 @@
 <span class="sd">    Known Entity Tagger</span>
 <span class="sd">    Given an index of known entities, can efficiently search for those entities within a provided utterance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trie</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">regex_entities</span><span class="o">=</span><span class="p">[],</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trie</span> <span class="o">=</span> <span class="n">trie</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
@@ -63,39 +64,36 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Using regex invokes this function, which significantly impacts performance of adapt. it is an N! operation.</span>
 
-<span class="sd">        :param tokens:</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tokens(list): list of tokens for Yield results.</span>
 
-<span class="sd">        :return:</span>
+<span class="sd">        Yields:</span>
+<span class="sd">            str: ?</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">end_idx</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">start_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]),</span> <span class="n">start_idx</span>
 
     <span class="k">def</span> <span class="nf">_sort_and_merge_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
-        <span class="n">decorated</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tag</span><span class="p">[</span><span class="s1">&#39;start_token&#39;</span><span class="p">],</span> <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;end_token&#39;</span><span class="p">],</span> <span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
+        <span class="n">decorated</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tag</span><span class="p">[</span><span class="s1">&#39;start_token&#39;</span><span class="p">],</span> <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;end_token&#39;</span><span class="p">],</span> <span class="n">tag</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
         <span class="n">decorated</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">tag</span> <span class="k">for</span> <span class="n">start_token</span><span class="p">,</span> <span class="n">end_token</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">decorated</span><span class="p">]</span>
 
 <div class="viewcode-block" id="EntityTagger.tag"><a class="viewcode-back" href="../../adapt.html#adapt.entity_tagger.EntityTagger.tag">[docs]</a>    <span class="k">def</span> <span class="nf">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utterance</span><span class="p">,</span> <span class="n">context_trie</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tag known entities within the utterance.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            utterance(str): a string of natural language text</span>
+<span class="sd">            context_trie(trie): optional, a trie containing only entities from context</span>
+<span class="sd">                for this request</span>
 
-<span class="sd">        :param utterance: a string of natural language text</span>
-
-<span class="sd">        :param context_trie: optional, a trie containing only entities from context</span>
-<span class="sd">            for this request</span>
-
-<span class="sd">        :return: dictionary, with the following keys</span>
-
-<span class="sd">        match: str - the proper entity matched</span>
-
-<span class="sd">        key: str - the string that was matched to the entity</span>
-
-<span class="sd">        start_token: int - 0-based index of the first token matched</span>
-
-<span class="sd">        end_token: int - 0-based index of the last token matched</span>
-
-<span class="sd">        entities: list - a list of entity kinds as strings (Ex: Artist, Location)</span>
+<span class="sd">        Returns: dictionary, with the following keys</span>
+<span class="sd">            match(str): the proper entity matched</span>
+<span class="sd">            key(str): the string that was matched to the entity</span>
+<span class="sd">            start_token(int): 0-based index of the first token matched</span>
+<span class="sd">            end_token(int): 0-based index of the last token matched</span>
+<span class="sd">            entities(list): a list of entity kinds as strings (Ex: Artist, Location)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">utterance</span><span class="p">)</span>
         <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
@@ -108,7 +106,8 @@
                     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">groups</span><span class="p">):</span>
                         <span class="n">match_str</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                         <span class="n">local_trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">match_str</span><span class="p">,</span> <span class="p">(</span><span class="n">match_str</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
-                <span class="n">sub_tagger</span> <span class="o">=</span> <span class="n">EntityTagger</span><span class="p">(</span><span class="n">local_trie</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_tokens</span><span class="p">)</span>
+                <span class="n">sub_tagger</span> <span class="o">=</span> <span class="n">EntityTagger</span><span class="p">(</span>
+                    <span class="n">local_trie</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_tokens</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">sub_entity</span> <span class="ow">in</span> <span class="n">sub_tagger</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
                     <span class="n">sub_entity</span><span class="p">[</span><span class="s1">&#39;start_token&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">idx</span>
                     <span class="n">sub_entity</span><span class="p">[</span><span class="s1">&#39;end_token&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">idx</span>
@@ -135,7 +134,8 @@
             <span class="k">if</span> <span class="n">context_trie</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">new_entity</span> <span class="ow">in</span> <span class="n">context_trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
                     <span class="n">new_entity</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_entity</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
-                    <span class="n">new_entity</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">2.0</span>  <span class="c1"># context entities get double the weight!</span>
+                    <span class="c1"># context entities get double the weight!</span>
+                    <span class="n">new_entity</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">2.0</span>
                     <span class="n">context_entities</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
                         <span class="s1">&#39;match&#39;</span><span class="p">:</span> <span class="n">new_entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;match&#39;</span><span class="p">),</span>
                         <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">new_entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">),</span>
@@ -184,8 +184,8 @@
       &copy;2017, Author.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 
