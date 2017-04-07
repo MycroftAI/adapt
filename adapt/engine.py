@@ -95,16 +95,14 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         Given an utterance, provide a valid intent.
 
-        :param utterance: an ascii or unicode string representing natural language speech
+        Args:
+            utterance(str): an ascii or unicode string representing natural language speech
+            include_tags(list): includes the parsed tags (including position and confidence)
+                as part of result
+            context_manager(list): a context manager to provide context to the utterance
+            num_results(int): a maximum number of results to be returned.
 
-        :param include_tags: includes the parsed tags (including position and confidence)
-            as part of result
-
-        :param context_manager: a context manager to provide context to the utterance
-
-        :param num_results: a maximum number of results to be returned.
-
-        :return: A generator that yields dictionaries.
+        Returns: A generator that yields dictionaries.
         """
         parser = Parser(self.tokenizer, self.tagger)
         parser.on('tagged_entities',
@@ -129,11 +127,9 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         Register an entity to be tagged in potential parse results
 
-        :param entity_value: the value/proper name of an entity instance (Ex: "The Big Bang Theory")
-
-        :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
-
-        :return: None
+        Args:
+            entity_value(str): the value/proper name of an entity instance (Ex: "The Big Bang Theory")
+            entity_type(str): the type/tag of an entity instance (Ex: "Television Show")
         """
         if alias_of:
             self.trie.insert(
@@ -153,9 +149,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         Example: (?P<Artist>.*)
 
-        :param regex_str: a string representing a regular expression as defined above
-
-        :return: None
+        regex_str(str): a string representing a regular expression as defined above
         """
         if regex_str and regex_str not in self._regex_strings:
             self._regex_strings.add(regex_str)
@@ -181,11 +175,10 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         "Enforce" the intent parser interface at registration time.
 
-        :param intent_parser:
+        intent_parser(intent): Intent to be registered.
 
-        :return: None
-
-        :raises ValueError on invalid intent
+        Raises:
+            ValueError: on invalid intent
         """
         if hasattr(
                 intent_parser,
@@ -215,11 +208,10 @@ class DomainIntentDeterminationEngine(object):
         """
         Initialize DomainIntentDeterminationEngine.
 
-        :param tokenizer: The tokenizer you wish to use.
-
-        :param trie: the Trie() you wish to use.
-
-        :param domain: a string representing the domain you wish to add
+        Args:
+            tokenizer(tokenizer): The tokenizer you wish to use.
+            trie(Trie): the Trie() you wish to use.
+            domain(str): a string representing the domain you wish to add
         """
         self.domains = {}
 
@@ -228,10 +220,10 @@ class DomainIntentDeterminationEngine(object):
         """
         A property to link into IntentEngine's tokenizer.
 
-        warning:: this is only for backwards compatiblility and should not be used if you
-        intend on using domains.
+        Warning: this is only for backwards compatiblility and should not be used if you
+            intend on using domains.
 
-        :return: the domains tokenizer from its IntentEngine
+        Return: the domains tokenizer from its IntentEngine
         """
         domain = 0
         if domain not in self.domains:
@@ -243,10 +235,10 @@ class DomainIntentDeterminationEngine(object):
         """
         A property to link into IntentEngine's trie.
 
-        warning:: this is only for backwards compatiblility and should not be used if you
-        intend on using domains.
+        Warning: this is only for backwards compatiblility and should not be used if you
+            intend on using domains.
 
-        :return: the domains trie from its IntentEngine
+        Return: the domains trie from its IntentEngine
         """
         domain = 0
         if domain not in self.domains:
@@ -258,10 +250,10 @@ class DomainIntentDeterminationEngine(object):
         """
         A property to link into IntentEngine's intent_parsers.
 
-        warning:: this is only for backwards compatiblility and should not be used if you
+        Warning: this is only for backwards compatiblility and should not be used if you
         intend on using domains.
 
-        :return: the domains intent_parsers from its IntentEngine
+        Return: the domains intent_parsers from its IntentEngine
         """
         domain = 0
         if domain not in self.domains:
@@ -273,10 +265,10 @@ class DomainIntentDeterminationEngine(object):
         """
         A property to link into IntentEngine's intent_parsers.
 
-        warning:: this is only for backwards compatiblility and should not be used if you
-        intend on using domains.
+        Warning: this is only for backwards compatiblility and should not be used if you
+            intend on using domains.
 
-        :return: the domains intent_parsers from its IntentEngine
+        Returns: the domains intent_parsers from its IntentEngine
         """
         domain = 0
         if domain not in self.domains:
@@ -288,10 +280,10 @@ class DomainIntentDeterminationEngine(object):
         """
         A property to link into IntentEngine's _regex_strings.
 
-        warning:: this is only for backwards compatiblility and should not be used if you
-        intend on using domains.
+        Warning: this is only for backwards compatiblility and should not be used if you
+            intend on using domains.
 
-        :return: the domains _regex_strings from its IntentEngine
+        Returns: the domains _regex_strings from its IntentEngine
         """
         domain = 0
         if domain not in self.domains:
@@ -303,10 +295,10 @@ class DomainIntentDeterminationEngine(object):
         """
         A property to link into IntentEngine's regular_expressions_entities.
 
-        warning:: this is only for backwards compatiblility and should not be used if you
-        intend on using domains.
+        Warning: this is only for backwards compatiblility and should not be used if you
+            intend on using domains.
 
-        :return: the domains regular_expression_entities from its IntentEngine
+        Returns: the domains regular_expression_entities from its IntentEngine
         """
         domain = 0
         if domain not in self.domains:
@@ -317,11 +309,10 @@ class DomainIntentDeterminationEngine(object):
         """
         Register a domain with the intent engine.
 
-        :param tokenizer: The tokenizer you wish to use.
-
-        :param trie: the Trie() you wish to use.
-
-        :param domain: a string representing the domain you wish to add
+        Args:
+            tokenizer(tokenizer): The tokenizer you wish to use.
+            trie(Trie): the Trie() you wish to use.
+            domain(str): a string representing the domain you wish to add
         """
         self.domains[domain] = IntentDeterminationEngine(
             tokenizer=tokenizer, trie=trie)
@@ -335,14 +326,11 @@ class DomainIntentDeterminationEngine(object):
         """
         Register an entity to be tagged in potential parse results.
 
-        :param entity_value: the value/proper name of an entity instance
-        (Ex: "The Big Bang Theory")
-
-        :param entity_type: the type/tag of an entity instance (Ex: "Television Show")
-
-        :param domain: a string representing the domain you wish to add the entity to
-
-        :return: None
+        Args:
+            entity_value(str): the value/proper name of an entity instance
+                (Ex: "The Big Bang Theory")
+            entity_type(str): the type/tag of an entity instance (Ex: "Television Show")
+            domain(str): a string representing the domain you wish to add the entity to
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
@@ -356,11 +344,9 @@ class DomainIntentDeterminationEngine(object):
 
         Example: (?P<Artist>.*)
 
-        :param regex_str: a string representing a regular expression as defined above
-
-        :param domain: a string representing the domain you wish to add the entity to
-
-        :return: None
+        Args:
+            regex_str(str): a string representing a regular expression as defined above
+            domain(str): a string representing the domain you wish to add the entity to
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
@@ -370,11 +356,10 @@ class DomainIntentDeterminationEngine(object):
         """
         Given an utterance, provide a valid intent.
 
-        :param utterance: an ascii or unicode string representing natural language speech
+        utterance(str): an ascii or unicode string representing natural language speech
+        num_results(int): a maximum number of results to be returned.
 
-        :param num_results: a maximum number of results to be returned.
-
-        :return: A generator the yields dictionaries.
+        Returns: A generator the yields dictionaries.
         """
         intents = []
         for domain in self.domains:
@@ -392,10 +377,10 @@ class DomainIntentDeterminationEngine(object):
         """
         Register a intent parser with a domain.
 
-        :param intent_parser: The intent parser you wish to register.
-
-        :param domain: a string representing the domain you wish register the intent
-        parser to.
+        Args:
+            intent_parser(intent): The intent parser you wish to register.
+            domain(str): a string representing the domain you wish register the intent
+                parser to.
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)

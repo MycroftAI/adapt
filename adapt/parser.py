@@ -19,15 +19,16 @@ class Parser(pyee.EventEmitter):
     def parse(self, utterance, context=None, N=1):
         """Used to find tags within utterance with a given confidence
 
-        :param utterance: conversational piece given by the user
-        :param context: a list of entities
-        :param N:
-        :return: yield an object with the following fields
-        utterance: the value passed in
-        tags : a list of tags found in utterance
-        time : duration since call of function
-        confidence : float indicating how confident of a match to the
-        utterance. This might be used to determan the most likely intent.
+        Args:
+            utterance(str): conversational piece given by the user
+            context(list): a list of entities
+            N(int): number of results
+        Returns: yield an object with the following fields
+            utterance(str): the value passed in
+            tags(list) : a list of tags found in utterance
+            time(time) : duration since call of function
+            confidence(float) : float indicating how confident of a match to the
+                utterance. This might be used to determan the most likely intent.
 
         """
         start = time.time()

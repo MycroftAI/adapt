@@ -208,15 +208,28 @@ class Intent(object):
 class IntentBuilder(object):
     """
     IntentBuilder, used to construct intent parsers.
+
+    Attributes:
+        at_least_one(list): A list of Entities where one is required.
+            These are seperated into lists so you can have one of (A or B) and
+            then require one of (D or F).
+        requires(list): A list of Required Entities
+        optional(list): A list of optional Entities
+        name(str): Name of intent
+
+    Notes:
+        This is designed to allow construction of intents in one line.
+
+    Example:
+        IntentBuilder("Intent").requires("A").one_of("C","D").optional("G").build()
     """
 
     def __init__(self, intent_name):
         """
         Constructor
 
-        :param intent_name: the name of the intents that this parser parses/validates
-
-        :return: an instance of IntentBuilder
+        Args:
+            intent_name(str): the name of the intents that this parser parses/validates
         """
         self.at_least_one = []
         self.requires = []
@@ -227,9 +240,11 @@ class IntentBuilder(object):
         """
         The intent parser should require one of the provided entity types to validate this clause.
 
-        :param args: *args notation list of entity names
+        Args:
+            args(args): *args notation list of entity names
 
-        :return: self
+        Returns:
+            self: to continue modifications.
         """
         self.at_least_one.append(args)
         return self
@@ -238,11 +253,12 @@ class IntentBuilder(object):
         """
         The intent parser should require an entity of the provided type.
 
-        :param entity_type: string, an entity type
+        Args:
+            entity_type(str): an entity type
+            attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.
 
-        :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.
-
-        :return: self
+        Returns:
+            self: to continue modifications.
         """
         if not attribute_name:
             attribute_name = entity_type
@@ -253,11 +269,12 @@ class IntentBuilder(object):
         """
         Parsed intents from this parser can optionally include an entity of the provided type.
 
-        :param entity_type: string, an entity type
+        Args:
+            entity_type(str): an entity type
+            attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.
 
-        :param attribute_name: string, the name of the attribute on the parsed intent. Defaults to match entity_type.
-
-        :return: self
+        Returns:
+            self: to continue modifications.
         """
         if not attribute_name:
             attribute_name = entity_type
@@ -268,7 +285,7 @@ class IntentBuilder(object):
         """
         Constructs an intent from the builder's specifications.
 
-        :return: an Intent instance.
+        Returns: an Intent instance.
         """
         return Intent(
             self.name,
