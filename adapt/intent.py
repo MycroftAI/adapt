@@ -88,8 +88,10 @@ def resolve_one_of(tags, at_least_one):
         for entity_type in pr:
             last_end_index = -1
             if entity_type in resolution:
-                last_end_index = resolution.get[entity_type][-1].get('end_token')
-            tag, value, c = find_first_tag(tags, entity_type, after_index=last_end_index)
+                last_end_index = resolution.get[entity_type][-1].get(
+                    'end_token')
+            tag, value, c = find_first_tag(
+                tags, entity_type, after_index=last_end_index)
             if not tag:
                 break
             else:
@@ -138,7 +140,7 @@ class Intent(object):
         entities = []
         thelist = self.requires + self.at_least_one + self.optional
         for entity in thelist:
-            if type(entity) is tuple:
+            if isinstance(entity, tuple):
                 entityx, name = entity
                 entities.append(entityx)
             else:
@@ -165,7 +167,8 @@ class Intent(object):
         used_tags = []
 
         for require_type, attribute_name in self.requires:
-            required_tag, canonical_form, confidence = find_first_tag(local_tags, require_type)
+            required_tag, canonical_form, confidence = find_first_tag(
+                local_tags, require_type)
             if not required_tag:
                 result['confidence'] = 0.0
                 return result, []
@@ -184,14 +187,16 @@ class Intent(object):
                 return result, []
             else:
                 for key in best_resolution:
-                    result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
+                    # TODO: at least one must support aliases
+                    result[key] = best_resolution[key][0].get('key')
                     intent_confidence += 1.0
                 used_tags.append(best_resolution)
                 if best_resolution in local_tags:
                     local_tags.remove(best_resolution)
 
         for optional_type, attribute_name in self.optional:
-            optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
+            optional_tag, canonical_form, conf = find_first_tag(
+                local_tags, optional_type)
             if not optional_tag or attribute_name in result:
                 continue
             result[attribute_name] = canonical_form
@@ -202,7 +207,8 @@ class Intent(object):
 
         total_confidence = intent_confidence / len(tags) * confidence
 
-        target_client, canonical_form, confidence = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
+        target_client, canonical_form, confidence = find_first_tag(
+            local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
@@ -214,6 +220,7 @@ class IntentBuilder(object):
     """
     IntentBuilder, used to construct intent parsers.
     """
+
     def __init__(self, intent_name):
         """
         Constructor
@@ -274,7 +281,11 @@ class IntentBuilder(object):
 
         :return: an Intent instance.
         """
-        return Intent(self.name, self.requires, self.at_least_one, self.optional)
+        return Intent(
+            self.name,
+            self.requires,
+            self.at_least_one,
+            self.optional)
 
 
 """ For testing locally """
@@ -291,29 +302,39 @@ if __name__ == "__main__":
             self.trie = Trie()
             self.tokenizer = EnglishTokenizer()
             self.regex_entities = []
-            self.tagger = EntityTagger(self.trie, self.tokenizer, regex_entities=self.regex_entities)
+            self.tagger = EntityTagger(
+                self.trie,
+                self.tokenizer,
+                regex_entities=self.regex_entities)
             self.trie.insert("play", ("play", "PlayVerb"))
             self.trie.insert("play", ("play", "Command"))
-            self.trie.insert("the big bang theory", ("the big bang theory", "Television Show"))
+            self.trie.insert(
+                "the big bang theory",
+                ("the big bang theory",
+                 "Television Show"))
             self.trie.insert("all that", ("all that", "Television Show"))
             self.trie.insert("all that", ("all that", "Radio Station"))
             self.trie.insert("the big", ("the big", "Not a Thing"))
-            self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
+            self.trie.insert(
+                "barenaked ladies",
+                ("barenaked ladies",
+                 "Radio Station"))
             self.trie.insert("show", ("show", "Command"))
             self.trie.insert("what", ("what", "Question"))
             self.parser = Parser(self.tokenizer, self.tagger)
-            self.intent = IntentBuilder("Test Intent").require("PlayVerb").one_of("Television Show","Radio Station").build()
+            self.intent = IntentBuilder("Test Intent").require(
+                "PlayVerb").one_of("Television Show", "Radio Station").build()
 
-        def teststring(self,stringA):
+        def teststring(self, stringA):
             results = []
             for result in self.parser.parse(stringA):
-                result_intent = self.intent.validate(result.get('tags'), result.get('confidence'))
+                result_intent = self.intent.validate(
+                    result.get('tags'), result.get('confidence'))
                 results.append(result_intent)
             return results
 
     test = IntentTest()
-    #print "Result %s " % test.teststring("show the big bang theory")
-    #print "Result %s " % test.teststring("play barenaked ladies")
+    # print "Result %s " % test.teststring("show the big bang theory")
+    # print "Result %s " % test.teststring("play barenaked ladies")
     print("Result %s " % test.teststring("play all that"))
-    #print "Result %s " % test.teststring("play pair")
-
+    # print "Result %s " % test.teststring("play pair")

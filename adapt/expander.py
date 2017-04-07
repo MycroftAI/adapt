@@ -3,13 +3,13 @@ from six.moves import xrange
 __author__ = 'seanfitz'
 
 
-
 class SimpleGraph(object):
     """This class is to graph connected nodes
     Note:
         hash is a type that is hashable so independant values and tuples
         but not objects, classes or lists.
     """
+
     def __init__(self):
         """init an empty set"""
         self.adjacency_lists = {}
@@ -24,7 +24,7 @@ class SimpleGraph(object):
 
 
         """
-        #print "SimpleGraph.add_edge",type(a), a, type(b),b
+        #print("SimpleGraph.add_edge",type(a), a, type(b),b)
         neighbors_of_a = self.adjacency_lists.get(a)
         if not neighbors_of_a:
             neighbors_of_a = set()
@@ -69,30 +69,41 @@ class SimpleGraph(object):
         """
         return "SimpleGraph adjacency_list:%s" % self.adjacency_lists
 
+
 if __name__ == "__main__":
     """ Testing SimpleGraph """
     print("Testing SimpleGraph")
     graph = SimpleGraph()
-    print("graph",graph)
-    print("vertex_set",graph.vertex_set())
-    graph.add_edge(1,2)
-    graph.add_edge(1,3)
-    graph.add_edge(3,4)
-    graph.add_edge(3,4)
-    graph.add_edge(2,3)
-    graph.add_edge(2,4)
-    graph.add_edge(1,4)
-    graph.add_edge("A","B")
-    print("graph",graph)
+    print("graph", graph)
+    print("vertex_set", graph.vertex_set())
+    graph.add_edge(1, 2)
+    graph.add_edge(1, 3)
+    graph.add_edge(3, 4)
+    graph.add_edge(3, 4)
+    graph.add_edge(2, 3)
+    graph.add_edge(2, 4)
+    graph.add_edge(1, 4)
+    graph.add_edge("A", "B")
+    print("graph", graph)
     virts = graph.vertex_set()
-    print("vertex_set",virts)
+    print("vertex_set", virts)
     for virt in virts:
-        print("neighbors of ", virt,graph.get_neighbors_of(virt))
+        print("neighbors of ", virt, graph.get_neighbors_of(virt))
     print("neighbors of E ", graph.get_neighbors_of("E"))
 
 
 def bronk(r, p, x, graph):
     """This is used to fine cliques and remove them from graph
+
+    Args:
+        graph (graph): this is the graph of verticies to search for
+            cliques
+        p (list): this is a list of the verticies to search
+        r (list): used by bronk for the search
+        x (list): used by bronk for the search
+
+    Yields:
+        list : found clique of the given graph and verticies
     """
     if len(p) == 0 and len(x) == 0:
         yield r
@@ -100,29 +111,43 @@ def bronk(r, p, x, graph):
     for vertex in p[:]:
         r_new = r[::]
         r_new.append(vertex)
-        p_new = [val for val in p if val in graph.get_neighbors_of(vertex)] # p intersects N(vertex)
-        x_new = [val for val in x if val in graph.get_neighbors_of(vertex)] # x intersects N(vertex)
+        p_new = [val for val in p if val in graph.get_neighbors_of(
+            vertex)]  # p intersects N(vertex)
+        x_new = [val for val in x if val in graph.get_neighbors_of(
+            vertex)]  # x intersects N(vertex)
         for result in bronk(r_new, p_new, x_new, graph):
             yield result
         p.remove(vertex)
         x.append(vertex)
 
+
 if __name__ == "__main__":
     """testing bronk"""
     print("testing bronk")
     results = list(bronk([], graph.vertex_set(), [], graph))
-    print("results",results)
+    print("results", results)
+
 
 def get_cliques(vertices, graph):
-    """get cliques"""
+    """get cliques
+
+    Args:
+        verticies (list) : list of the verticies to search for cliques
+        graph (graph) : a graph used to find the cliques using verticies
+
+    Yields:
+        list: a clique from the graph
+    """
     for clique in bronk([], vertices, [], graph):
         yield clique
+
 
 if __name__ == "__main__":
     """testing cliques"""
     print("testing cliques")
-    cliques = list(get_cliques(graph.vertex_set(),graph))
-    print("cliques",cliques)
+    cliques = list(get_cliques(graph.vertex_set(), graph))
+    print("cliques", cliques)
+
 
 def graph_key_from_tag(tag, entity_index):
     """Returns a key from a tag entity
@@ -136,7 +161,8 @@ def graph_key_from_tag(tag, entity_index):
     """
     start_token = tag.get('start_token')
     entity = tag.get('entities', [])[entity_index]
-    return str(start_token) + '-' + entity.get('key') + '-' + str(entity.get('confidence'))
+    return str(start_token) + '-' + entity.get('key') + \
+        '-' + str(entity.get('confidence'))
 
 
 class Lattice(object):
@@ -147,6 +173,7 @@ class Lattice(object):
             This is used to track items and lists that are a part of the
             Lattice
     """
+
     def __init__(self):
         """Creates the Lattice with an empty list"""
         self.nodes = []
@@ -184,7 +211,7 @@ class Lattice(object):
         """
         if index < len(self.nodes):
             for entity in self.nodes[index]:
-                for next_result in self.traverse(index=index+1):
+                for next_result in self.traverse(index=index + 1):
                     if isinstance(entity, list):
                         yield entity + next_result
                     else:
@@ -192,16 +219,17 @@ class Lattice(object):
         else:
             yield []
 
+
 if __name__ == "__main__":
     """testing lattice"""
     print("testing lattice")
     lattice = Lattice()
-    lattice.append([1,2,3])
-    lattice.append([1,2,3])
-    lattice.append([1,2,3])
-    lattice.append([1,2,3])
-    print("Lattice is ",lattice)
-    print("Traverse",list(lattice.traverse()))
+    lattice.append([1, 2, 3])
+    lattice.append([1, 2, 3])
+    lattice.append([1, 2, 3])
+    lattice.append([1, 2, 3])
+    print("Lattice is ", lattice)
+    print("Traverse", list(lattice.traverse()))
 
 
 class BronKerboschExpander(object):
@@ -221,6 +249,7 @@ class BronKerboschExpander(object):
     By considering tagged entities that do not overlap to be "neighbors", BronKerbosch will yield a set of maximal
     cliques that are also valid parse results.
     """
+
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
 
@@ -238,19 +267,30 @@ class BronKerboschExpander(object):
         graph = SimpleGraph()
         for tag_index in xrange(len(tags)):
             for entity_index in xrange(len(tags[tag_index].get('entities'))):
-                a_entity_name = graph_key_from_tag(tags[tag_index], entity_index)
-                tokens = self.tokenizer.tokenize(tags[tag_index].get('entities', [])[entity_index].get('match'))
+                a_entity_name = graph_key_from_tag(
+                    tags[tag_index], entity_index)
+                tokens = self.tokenizer.tokenize(
+                    tags[tag_index].get(
+                        'entities', [])[entity_index].get('match'))
                 for tag in tags[tag_index + 1:]:
                     start_token = tag.get('start_token')
-                    if start_token >= tags[tag_index].get('start_token') + len(tokens):
+                    if start_token >= tags[tag_index].get(
+                            'start_token') + len(tokens):
                         for b_entity_index in xrange(len(tag.get('entities'))):
-                            b_entity_name = graph_key_from_tag(tag, b_entity_index)
+                            b_entity_name = graph_key_from_tag(
+                                tag, b_entity_index)
                             graph.add_edge(a_entity_name, b_entity_name)
 
         return graph
 
     def _sub_expand(self, tags):
-        """This called by expand to find clique
+        """This called by expand to find cliques
+
+        Args:
+            tags (list): a list of the tags used to get cliques
+
+        Yields:
+            list : list of sorted tags by start_token this is a clique
         """
         entities = {}
         graph = self._build_graph(tags)
@@ -259,7 +299,7 @@ class BronKerboschExpander(object):
         for tag in tags:
             for entity_index in xrange(len(tag.get('entities'))):
                 node_name = graph_key_from_tag(tag, entity_index)
-                if not node_name in entities:
+                if node_name not in entities:
                     entities[node_name] = []
                 entities[node_name] += [
                     tag.get('entities', [])[entity_index],
@@ -274,19 +314,32 @@ class BronKerboschExpander(object):
                 old_tag = entities[entity_name][2]
                 tag = {
                     'start_token': start_token,
-                    'entities': [entities.get(entity_name)[0]],
-                    'confidence': entities.get(entity_name)[1] * old_tag.get('confidence', 1.0),
+                    'entities': [
+                        entities.get(entity_name)[0]],
+                    'confidence': entities.get(entity_name)[1] *
+                    old_tag.get(
+                        'confidence',
+                        1.0),
                     'end_token': old_tag.get('end_token'),
                     'match': old_tag.get('entities')[0].get('match'),
                     'key': old_tag.get('entities')[0].get('key'),
-                    'from_context': old_tag.get('from_context', False)
-                }
+                    'from_context': old_tag.get(
+                        'from_context',
+                        False)}
                 result.append(tag)
             result = sorted(result, key=lambda e: e.get('start_token'))
             yield result
 
     def expand(self, tags, clique_scoring_func=None):
-        """
+        """This is the main function to expand tags into cliques
+
+        Args:
+            tags (list): a list of tags to find the cliques.
+            clique_scoring_func (func): a function that returns a float
+                value for the clique
+
+        Returns:
+            list : a list of cliques
         """
         lattice = Lattice()
         overlapping_spans = []
@@ -297,13 +350,16 @@ class BronKerboschExpander(object):
         for i in xrange(len(tags)):
             tag = tags[i]
 
-            if len(overlapping_spans) > 0 and end_token_index() >= tag.get('start_token'):
+            if len(overlapping_spans) > 0 and end_token_index(
+            ) >= tag.get('start_token'):
                 overlapping_spans.append(tag)
             elif len(overlapping_spans) > 1:
                 cliques = list(self._sub_expand(overlapping_spans))
-                #print "y overlapping_spans",overlapping_spans,"cliques",cliques
+                # print "y
+                # overlapping_spans",overlapping_spans,"cliques",cliques
                 if clique_scoring_func:
-                    cliques = sorted(cliques, key=lambda e: -1 * clique_scoring_func(e))
+                    cliques = sorted(
+                        cliques, key=lambda e: -1 * clique_scoring_func(e))
                 lattice.append(cliques)
                 overlapping_spans = [tag]
             else:
@@ -311,14 +367,16 @@ class BronKerboschExpander(object):
                 overlapping_spans = [tag]
         if len(overlapping_spans) > 1:
             cliques = list(self._sub_expand(overlapping_spans))
-            #print "x overlapping_spans",overlapping_spans,"cliques",cliques
+            # print "x overlapping_spans",overlapping_spans,"cliques",cliques
             if clique_scoring_func:
-                    cliques = sorted(cliques, key=lambda e: -1 * clique_scoring_func(e))
+                cliques = sorted(
+                    cliques, key=lambda e: -1 * clique_scoring_func(e))
             lattice.append(cliques)
         else:
             lattice.append(overlapping_spans)
 
         return lattice.traverse()
+
 
 if __name__ == "__main__":
     """testing BronKerboschExpander"""
@@ -341,16 +399,15 @@ if __name__ == "__main__":
     trie.insert("bang theory", "Scientific Theory")
     tagger = EntityTagger(trie, tokenizer)
     tags = tagger.tag("play season 2 the big 1 of the big bang theory")
-    Bke= BronKerboschExpander(tokenizer)
+    Bke = BronKerboschExpander(tokenizer)
     graphA = Bke._build_graph(tags)
     for v in graphA.vertex_set():
-        print("vertex",v,list(graphA.get_neighbors_of(v)))
+        print("vertex", v, list(graphA.get_neighbors_of(v)))
     parse_results = list(Bke.expand(tags))
     for r in parse_results:
         print("Bke ----- ")
         for x in r:
             pprint.pprint(x)
-    #print "Results X ",parse_results
-    #print "GraphA",graphA
-    #print "vertexes",graphA.vertex_set()
-
+    # print "Results X ",parse_results
+    # print "GraphA",graphA
+    # print "vertexes",graphA.vertex_set()

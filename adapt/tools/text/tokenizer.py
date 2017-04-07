@@ -6,14 +6,61 @@ regex_separator = r"[\\?!()\";/\\|`]"
 
 regex_clitics = r"'|:|-|'S|'D|'M|'LL|'RE|'VE|N'T|'s|'d|'m|'ll|'re|'ve|n't"
 
-abbreviations_list = [ "Co.", "Corp.",
-            "vs.", "e.g.", "etc.", "ex.", "cf.", "eg.", "Jan.", "Feb.", "Mar.",
-            "Apr.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.",
-            "jan.", "feb.", "mar.", "apr.", "jun.", "jul.", "aug.", "sept.",
-            "oct.", "nov.", "dec.", "ed.", "eds.", "repr.", "trans.", "vol.",
-            "vols.", "rev.", "est.", "b.", "m.", "bur.", "d.", "r.", "M.",
-            "Dept.", "MM.", "U.", "Mr.", "Jr.", "Ms.", "Mme.", "Mrs.", "Dr.",
-            "Ph.D."]
+abbreviations_list = [
+    "Co.",
+    "Corp.",
+    "vs.",
+    "e.g.",
+    "etc.",
+    "ex.",
+    "cf.",
+    "eg.",
+    "Jan.",
+    "Feb.",
+    "Mar.",
+    "Apr.",
+    "Jun.",
+    "Jul.",
+    "Aug.",
+    "Sept.",
+    "Oct.",
+    "Nov.",
+    "Dec.",
+    "jan.",
+    "feb.",
+    "mar.",
+    "apr.",
+    "jun.",
+    "jul.",
+    "aug.",
+    "sept.",
+    "oct.",
+    "nov.",
+    "dec.",
+    "ed.",
+    "eds.",
+    "repr.",
+    "trans.",
+    "vol.",
+    "vols.",
+    "rev.",
+    "est.",
+    "b.",
+    "m.",
+    "bur.",
+    "d.",
+    "r.",
+    "M.",
+    "Dept.",
+    "MM.",
+    "U.",
+    "Mr.",
+    "Jr.",
+    "Ms.",
+    "Mme.",
+    "Mrs.",
+    "Dr.",
+    "Ph.D."]
 
 
 class EnglishTokenizer(object):
@@ -50,11 +97,19 @@ class EnglishTokenizer(object):
         s = re.sub("^(')", "\g<1> ", s)
         s = re.sub("(" + regex_not_letter_number + ")'", "\g<1> '", s)
         s = re.sub("(" + regex_clitics + ")$", " \g<1>", s)
-        s = re.sub("(" + regex_clitics + ")(" + regex_not_letter_number + ")", " \g<1> \g<2>", s)
+        s = re.sub(
+            "(" +
+            regex_clitics +
+            ")(" +
+            regex_not_letter_number +
+            ")",
+            " \g<1> \g<2>",
+            s)
 
         words = s.strip().split()
         p1 = re.compile(".*" + regex_letter_number + "\\.")
-        p2 = re.compile("^([A-Za-z]\\.([A-Za-z]\\.)+|[A-Z][bcdfghj-nptvxz]+\\.)$")
+        p2 = re.compile(
+            "^([A-Za-z]\\.([A-Za-z]\\.)+|[A-Z][bcdfghj-nptvxz]+\\.)$")
 
         token_list = []
 
@@ -84,6 +139,7 @@ def tokenize_string(text):
     """
     tk = EnglishTokenizer()
     return tk.tokenize(text)
+
 
 if __name__ == "__main__":
     """When ran with python demonstrat function"""

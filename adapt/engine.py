@@ -21,6 +21,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of
     computation.
     """
+
     def __init__(self, tokenizer=None, trie=None):
         """
         Initialize the IntentDeterminationEngine

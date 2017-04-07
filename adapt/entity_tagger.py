@@ -9,6 +9,7 @@ class EntityTagger(object):
     Known Entity Tagger
     Given an index of known entities, can efficiently search for those entities within a provided utterance.
     """
+
     def __init__(self, trie, tokenizer, regex_entities=[], max_tokens=20):
         self.trie = trie
         self.tokenizer = tokenizer
@@ -28,7 +29,8 @@ class EntityTagger(object):
                 yield ' '.join(tokens[start_idx:end_idx]), start_idx
 
     def _sort_and_merge_tags(self, tags):
-        decorated = [(tag['start_token'], tag['end_token'], tag) for tag in tags]
+        decorated = [(tag['start_token'], tag['end_token'], tag)
+                     for tag in tags]
         decorated.sort(key=lambda x: (x[0], x[1]))
         return [tag for start_token, end_token, tag in decorated]
 
@@ -64,7 +66,8 @@ class EntityTagger(object):
                     for key in list(groups):
                         match_str = groups.get(key)
                         local_trie.insert(match_str, (match_str, key))
-                sub_tagger = EntityTagger(local_trie, self.tokenizer, max_tokens=self.max_tokens)
+                sub_tagger = EntityTagger(
+                    local_trie, self.tokenizer, max_tokens=self.max_tokens)
                 for sub_entity in sub_tagger.tag(part):
                     sub_entity['start_token'] += idx
                     sub_entity['end_token'] += idx
@@ -91,7 +94,8 @@ class EntityTagger(object):
             if context_trie:
                 for new_entity in context_trie.gather(part):
                     new_entity['data'] = list(new_entity['data'])
-                    new_entity['confidence'] *= 2.0  # context entities get double the weight!
+                    # context entities get double the weight!
+                    new_entity['confidence'] *= 2.0
                     context_entities.append({
                         'match': new_entity.get('match'),
                         'key': new_entity.get('key'),

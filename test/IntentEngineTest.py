@@ -37,7 +37,8 @@ class IntentEngineTests(unittest.TestCase):
         assert intent
         assert intent['intent_type'] == 'Parser1'
 
-        parser2 = IntentBuilder("Parser2").require("Entity1").require("Entity2").build()
+        parser2 = IntentBuilder("Parser2").require(
+            "Entity1").require("Entity2").build()
         self.engine.register_entity("house", "Entity2")
         self.engine.register_intent_parser(parser2)
         intent = next(self.engine.determine_intent(utterance))
@@ -47,17 +48,18 @@ class IntentEngineTests(unittest.TestCase):
     def testIntentMissingEntity(self):
         utterance1 = "give me One home"
         utterance2 = "give me One or Two"
-        parser3 = IntentBuilder("Parser3").require("One").require("Two").build()
-        self.engine.register_entity("One","One")
-        self.engine.register_entity("Two","Two")
+        parser3 = IntentBuilder("Parser3").require(
+            "One").require("Two").build()
+        self.engine.register_entity("One", "One")
+        self.engine.register_entity("Two", "Two")
         self.engine.register_intent_parser(parser3)
         intent2 = self.engine.determine_intent(utterance2)
         try:
             intent2 = next(intent2)
-        except:
+        except BaseException:
             pass
         intent1 = self.engine.determine_intent(utterance1)
         try:
             intent1 = next(intent1)
-        except:
+        except BaseException:
             pass

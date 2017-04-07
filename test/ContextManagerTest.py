@@ -30,7 +30,7 @@ class ContextManagerTest(unittest.TestCase):
         assert len(context) == 2
         assert context[0].get('confidence') == 0.5
         assert context[0].get('data') == 'Film'
-        assert context[1].get('confidence') == 1.0/3.0
+        assert context[1].get('confidence') == 1.0 / 3.0
         assert context[1].get('data') == 'Book'
 
     def testNewContextWithMetadataSameFrame(self):
@@ -50,4 +50,3 @@ class ContextManagerTest(unittest.TestCase):
         assert context[0].get('data') == 'Book'
         assert context[1].get('confidence') == 0.5
         assert context[1].get('data') == 'Film'
-

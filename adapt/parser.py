@@ -10,6 +10,7 @@ class Parser(pyee.EventEmitter):
     """
     Coordinate a tagger and expander to yield valid parse results.
     """
+
     def __init__(self, tokenizer, tagger):
         pyee.EventEmitter.__init__(self)
         self._tokenizer = tokenizer
@@ -57,9 +58,10 @@ class Parser(pyee.EventEmitter):
         def score_clique(clique):
             score = 0.0
             for tagged_entity in clique:
-                ec = tagged_entity.get('entities', [{'confidence': 0.0}])[0].get('confidence')
-                score += ec * len(tagged_entity.get('entities', [{'match': ''}])[0].get('match')) / (
-                    len(utterance) + 1)
+                ec = tagged_entity.get('entities', [{'confidence': 0.0}])[
+                    0].get('confidence')
+                score += ec * len(tagged_entity.get('entities',
+                                                    [{'match': ''}])[0].get('match')) / (len(utterance) + 1)
             return score
 
         parse_results = bke.expand(tagged, clique_scoring_func=score_clique)
