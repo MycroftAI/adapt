@@ -1,8 +1,7 @@
 """
 This is to Manage Context of a Conversation
 
-Notes
------
+Notes:
     Comments are subject to evaluation and may not reflect intent.
     Comments should be updated as code is clearly understood.
 """
@@ -16,25 +15,18 @@ class ContextManagerFrame(object):
     Manages entities and context for a single frame of conversation.
     Provides simple equality querying.
 
-    Attributes
-    ----------
-    entities : []
-        Entities that belong to ContextManagerFrame
-    metadata : {}
-        metadata to describe context belonging to ContextManagerFrame
+    Attributes:
+        entities(list): Entities that belong to ContextManagerFrame
+        metadata(object): metadata to describe context belonging to ContextManagerFrame
     """
 
     def __init__(self, entities=[], metadata={}):
         """
         Initialize ContextManagerFrame
 
-        Parameters
-        ----------
-        entities : []
-            List of Entities...
-        metadata : {}
-            metadata to describe context?
-
+        Parameters:
+        entities(list): List of Entities...
+        metadata(object): metadata to describe context?
         """
         self.entities = entities
         self.metadata = metadata
@@ -47,18 +39,15 @@ class ContextManagerFrame(object):
         returning true if every key is in metadata.  query without keys
         return false.
 
-        Parameters
-        ----------
-        query : {}
-            metadata for matching
+        Parameters:
+            query(object): metadata for matching
 
-        Returns
-        -------
-        bool
-            True: when key count in query is > 0 and all keys in query in
-                self.metadata
-            False: if key count in query is <= 0 or any key in query not
-                found in self.metadata
+        Returns:
+            bool:
+                True: when key count in query is > 0 and all keys in query in
+                    self.metadata
+                False: if key count in query is <= 0 or any key in query not
+                    found in self.metadata
 
         """
         result = len(query.keys()) > 0
@@ -74,12 +63,9 @@ class ContextManagerFrame(object):
         Appends tag as new entity and adds keys in metadata to keys in
         self.metadata.
 
-        Parameters
-        ----------
-        tag : string
-            entity to be added to self.entities
-        metadata : {}
-            metadata containes keys to be added to self.metadata
+        Parameters:
+            tag(str): entity to be added to self.entities
+            metadata(object): metadata containes keys to be added to self.metadata
         """
         self.entities.append(tag)
         for k in metadata.keys():
@@ -100,17 +86,13 @@ class ContextManager(object):
 
     def inject_context(self, entity, metadata={}):
         """
-        Parameters
-        ----------
-        entity: {}
-            format {'data': 'Entity tag as <str>',
-            'key': 'entity proper name as <str>',
-             'confidence': <float>'
-             }
-
-        metadata: {}
-            dict, arbitrary metadata about the entity being added
-
+        Parameters:
+            entity(object):
+                format {'data': 'Entity tag as <str>',
+                        'key': 'entity proper name as <str>',
+                         'confidence': <float>'
+                         }
+            metadata(object): dict, arbitrary metadata about the entity being added
         """
         top_frame = self.frame_stack[0] if len(self.frame_stack) > 0 else None
         if top_frame and top_frame.metadata_matches(metadata):
@@ -124,17 +106,12 @@ class ContextManager(object):
         """
         Constructs a list of entities from the context.
 
-        Parameters
-        ----------
-        max_frames: integer
-            maximum number of frames to look back
+        Parameters:
+            max_frames(int): maximum number of frames to look back
+            missing_entities(list of str): a list or set of tag names, as strings
 
-        missing_entities: [] of strings
-            a list or set of tag names, as strings
-
-        Returns
-        -------
-        [] - a list of entities
+        Returns:
+            list: a list of entities
         """
         if not max_frames:
             max_frames = len(self.frame_stack)

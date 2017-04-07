@@ -26,10 +26,10 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         Initialize the IntentDeterminationEngine
 
-        Parameters
-        ----------
-        tokenizer :  EnglishTokenizer()
-        trie : Trie()
+        Parameters:
+            tokenizer(tokenizer) : tokenizer used to break up spoken text
+                example EnglishTokenizer()
+            trie(Trie): tree of matches to Entites
         """
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
@@ -46,16 +46,14 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         Decide the best intent
 
-        Parameters
-        ----------
-        parse_result :
-        context : []
+        Parameters:
+            parse_result(list): results used to match the best intent.
+            context(list): ?
 
-        Returns
-        -------
-        (best_intent, best_tags)
-            best_intent :
-            best_tags :
+        Returns:
+            best_intent, best_tags:
+                best_intent : The best intent for given results
+                best_tags : The Tags for result
         """
         best_intent = None
         best_tags = None
@@ -74,17 +72,14 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """ Used to get unused context from context.  Any keys not in
         parse_result
 
-        Parameters
-        ----------
-        parse_results:  [] - parsed results used to identify what keys
-            in the context are used.
-        context: [] - this is the context used to match with parsed results
-            keys missing in the parsed results are the unused context
+        Parameters:
+            parse_results(list): parsed results used to identify what keys
+                in the context are used.
+            context(list): this is the context used to match with parsed results
+                keys missing in the parsed results are the unused context
 
-        Returns
-        -------
-        [] - A list of the unused context results.
-
+        Returns:
+            list: A list of the unused context results.
         """
         tags_keys = set([t['key']
                          for t in parse_result['tags'] if t['from_context']])
@@ -170,18 +165,15 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     def check_intent_entities(self, intent_parser):
         """Used to check intents for entities that are not registered yet
 
-        Parameters
-        ----------
-        intent_parser: class intent - This is the intent to check the
-        Entities for.
+        Parameters:
+            intent_parser(intent): This is the intent to check the
+                Entities for.
 
-        Returns
-        -------
-        [] - Returns a list of entities missing from intent_parser.
+        Returns:
+            list: Returns a list of entities missing from intent_parser.
 
-        Note
-        ----
-        It's up to the caller to deside how to handle missing entities.
+        Note:
+            It's up to the caller to deside how to handle missing entities.
         """
         return self.trie.checkForMissingEntites(intent_parser.entities())
 

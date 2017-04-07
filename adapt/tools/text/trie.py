@@ -4,10 +4,9 @@ __author__ = 'seanfitz'
 class TrieNode(object):
     def __init__(self, data=None, is_terminal=False):
         """Init the TrieNode with data and is_terminal settings
-        Parameters
-        ----------
-        data: data index by the node
-        is_terminal: bool that is used to set is_terminal
+        Args:
+            data(object): data index by the node
+            is_terminal(bool): that is used to set is_terminal
         """
         self.data = set()
         if data:
@@ -22,13 +21,11 @@ class TrieNode(object):
     def __str__(self):
         """Used to show the content of the Node object as a string
 
-        Notes
-        -----
-        This will look to child nodes and include them as well.
+        Notes:
+            This will look to child nodes and include them as well.
 
-        Returns
-        -------
-        string - this returns a string representation of a Node Object.
+        Returns:
+            str: this returns a string representation of a Node Object.
         """
         return str(self.json())
         children = ""
@@ -43,9 +40,8 @@ class TrieNode(object):
     def json(self):
         """Used to show the tree from this node
 
-        Returns
-        -------
-        {} - a json object of this node and all child nodes.
+        Returns:
+            object: a json object of this node and all child nodes.
         """
         results = {
             'key': self.key,
@@ -60,10 +56,9 @@ class TrieNode(object):
     def entities(self):
         """ Used to list the entities included in Trie
 
-        Returns
-        -------
-        [] - List of entity strings included in the tree.
-            set could be empty
+        Returns:
+            list: List of entity strings included in the tree.
+                set could be empty
         """
         result = list(self.data)
         for item in result:
@@ -90,17 +85,16 @@ class TrieNode(object):
         """Used for looking up values within this tree
         TODO: Implement trie lookup with edit distance
 
-        Parameters
-        ----------
-        iterable: key used to find what is requested
-        index: index of what is requested
-        gather: bool of weather to gather or not
-        edit_distance: int of the distance -- currently not used
-        max_edit_distance: int of the max distance -- not currently used
+        Args:
+            iterable(list?): key used to find what is requested this could
+                be a generator.
+            index(int): index of what is requested
+            gather(bool): of weather to gather or not
+            edit_distance(int): the distance -- currently not used
+            max_edit_distance(int): the max distance -- not currently used
 
-        Returns
-        -------
-        yields the results of the search
+        yields:
+            object: yields the results of the search
         """
         if self.is_terminal:
             if index == len(iterable) or (gather and index < len(
@@ -163,12 +157,11 @@ class TrieNode(object):
     def insert(self, iterable, index=0, data=None, weight=1.0):
         """Insert new node into tree
 
-        Parameters
-        ----------
-        iterable: key used to find what is to be removed
-        data: data associated with the key
-        index: int
-        weight: float
+        Args:
+            iterable(hashable): key used to find in the future.
+            data(object): data associated with the key
+            index(int): an index used for insertion.
+            weight(float): the wait given for the item added.
         """
         if index == len(iterable):
             self.is_terminal = True
@@ -192,11 +185,10 @@ class TrieNode(object):
     def remove(self, iterable, data=None, index=0):
         """Remove an element from the trie
 
-        Parameters
-        ----------
-        iterable: key used to find what is to be removed
-        data: data associated with the key
-        index: index of what is to me removed
+        Args
+            iterable(hashable): key used to find what is to be removed
+            data(object): data associated with the key
+            index(int): index of what is to me removed
 
         Returns:
         bool:
@@ -223,7 +215,14 @@ class TrieNode(object):
 
 
 class Trie(object):
-    """Interface for the tree"""
+    """Interface for the tree
+
+        Attributes:
+            root(TrieNode): parent node to start the tree
+            max_edit_distance(int): ?
+            match_threshold(int): ?
+
+    """
 
     def __init__(self, max_edit_distance=0, match_threshold=0.0):
         """Init the Trie object and create root node.
@@ -231,14 +230,12 @@ class Trie(object):
         Creates an Trie object with a root node with the passed in
         max_edit_distance and match_threshold.
 
-        Parameters
-        ----------
-        max_edit_distance: int
-        match_threshold: int
+        Args:
+            max_edit_distance(int): ?
+            match_threshold(int): ?
 
-        Notes
-        -----
-        This never seems to get called with max_edit_distance or match_threshold
+        Notes:
+            This never seems to get called with max_edit_distance or match_threshold
         """
         self.root = TrieNode('root')
         self.max_edit_distance = max_edit_distance
@@ -247,14 +244,17 @@ class Trie(object):
     def __str__(self):
         """Use to get a string represntation of the Trie from Root Node
 
-        Returns
-        -------
-        string - A String representation of the entire Trie
+        Returns:
+            string: A String representation of the entire Trie
         """
         return str("Trie Object{%s}" % str(self.root))
 
     def json(self):
-        """Created to show the tree"""
+        """Created to show the tree
+
+        Returns:
+            json: a json represntation of the trie
+        """
         return self.root.json()
 
     def gather(self, iterable):
@@ -267,14 +267,12 @@ class Trie(object):
     def checkForMissingEntites(self, entities):
         """Used for checking a given list for missing Entities
 
-        Parameters
-        ----------
-        entities - []/string - representing entities to search for
+        Args
+            entities(list or str): representing entities to search for
 
-        Returns
-        -------
-        [] - a list of the missing entities
-        Will be None if all the entites are found
+        Returns:
+            list - a list of the missing entities
+                Will be None if all the entites are found
         """
         Trie_entites = self.root.entities()
         missing_entities = None
@@ -289,16 +287,12 @@ class Trie(object):
     def lookup(self, iterable, gather=False):
         """Call the lookup on the root node with the given parameters.
 
-        Parameters
-        ----------
-        iterable: index or key
-            Used to retrive nodes from tree
-        gather: bool
-            this is passed down to the root node lookup
+        Args
+            iterable(index or key): Used to retrive nodes from tree
+            gather(bool): this is passed down to the root node lookup
 
-        Notes
-        -----
-        max_edit_distance and match_threshold come from the init
+        Notes:
+            max_edit_distance and match_threshold come from the init
         """
         for result in self.root.lookup(
                 iterable,
@@ -311,19 +305,18 @@ class Trie(object):
     def insert(self, iterable, data=None, weight=1.0):
         """Used to insert into he root node
 
-        Parameters
-        ----------
-        iterable: index or key used to identify
-        data: data to be paired with the key
+        Args
+            iterable(hashable): index or key used to identify
+            data(object): data to be paired with the key
         """
         self.root.insert(iterable, index=0, data=data, weight=1.0)
 
     def remove(self, iterable, data=None):
         """Used to remove from the root node
 
-        Parameters
-        ----------
-        iterable: index or key used to identify
-        data: data to be paired with the key
+        Args:
+            iterable(hashable): index or key used to identify
+                item to remove
+            data: data to be paired with the key
         """
         return self.root.remove(iterable, data=data)

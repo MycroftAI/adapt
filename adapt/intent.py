@@ -16,18 +16,16 @@ def is_entity(tag, entity_name):
 def find_first_tag(tags, entity_type, after_index=-1):
     """Searches tags for entity type after given index
 
-    Parameters
-    ----------
-    tags: [] - a list of tags with entity types to be compaired too entity_type
-    entity_type: str - This is he entity type to be looking for in tags
-    after_index: int - the start token must be greaterthan this.
+    Args:
+        tags(list): a list of tags with entity types to be compaired too entity_type
+        entity_type(str): This is he entity type to be looking for in tags
+        after_index(int): the start token must be greaterthan this.
 
-    Returns
-    -------
-    ( tag, v, confidence )
-    tag: str - is the tag that matched
-    v: str - ? the word that matched?
-    confidence: double - is a mesure of accuacy.  1 is full confidence and 0 is none.
+    Returns:
+        ( tag, v, confidence ):
+            tag(str): is the tag that matched
+            v(str): ? the word that matched?
+            confidence(float): is a mesure of accuacy.  1 is full confidence and 0 is none.
     """
     for tag in tags:
         for entity in tag.get('entities'):
@@ -51,14 +49,12 @@ def choose_1_from_each(lists):
     by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght
     of each sub list should be same as the length of lists passed in.
 
-    Properties
-    ----------
-    lists: [[]] - A list of lists
+    Args:
+        lists(list of Lists):  A list of lists
 
-    Returns
-    -------
-    [[]] - returns a list of lists constructions of one item from each
-    list in lists.
+    Returns:
+        list of lists: returns a list of lists constructions of one item from each
+            list in lists.
     """
     if len(lists) == 0:
         yield []
@@ -71,14 +67,12 @@ def choose_1_from_each(lists):
 def resolve_one_of(tags, at_least_one):
     """This searches tags for Entites in at_least_one and returns any match
 
-    Parameters
-    ----------
-    tags: [] - List of tags with Entities to search for Entities
-    at_least_one: [] - List of Entities to find in tags
+    Args:
+        tags(list): List of tags with Entities to search for Entities
+        at_least_one(list): List of Entities to find in tags
 
-    Returns
-    -------
-    {} - returns None if no match is found but returns any match as an object
+    Returns:
+        object: returns None if no match is found but returns any match as an object
     """
     if len(tags) < len(at_least_one):
         return None
@@ -107,12 +101,11 @@ class Intent(object):
     def __init__(self, name, requires, at_least_one, optional):
         """Create Intent object
 
-        Parameters
-        ----------
-        name - str - Name for Intent
-        requires - Entities that are required
-        at_least_one - One of these Entities are required
-        optional - Optional Entities used by the intent
+        Args:
+            name(str): Name for Intent
+            requires(list): Entities that are required
+            at_least_one(list): One of these Entities are required
+            optional(list): Optional Entities used by the intent
         """
         self.name = name
         self.requires = requires
@@ -122,9 +115,8 @@ class Intent(object):
     def validate(self, tags, confidence):
         """Using this method removes tags from the result of validate_with_tags
 
-        Returns
-        -------
-        intent - class intent - Resuts from validate_with_tags
+        Returns:
+            intent(intent): Resuts from validate_with_tags
         """
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
@@ -132,10 +124,9 @@ class Intent(object):
     def entities(self):
         """Used to get the Entities the intent is looking for.
 
-        Returns
-        -------
-        [] - A list of Entities the intent is looking for.  This should
-        never be empty but still could be.
+        Returns:
+            list: A list of Entities the intent is looking for.  This should
+                never be empty but still could be.
         """
         entities = []
         thelist = self.requires + self.at_least_one + self.optional
@@ -150,16 +141,14 @@ class Intent(object):
     def validate_with_tags(self, tags, confidence):
         """Validate weather tags has required entites for this intent to fire
 
-        Parameters
-        ----------
-        tags - Tags and Entities used for validation
-        confidence - ?
+        Args:
+            tags(list): Tags and Entities used for validation
+            confidence(float): ?
 
-        Returns
-        -------
-        (intent, tags) - Returns intent and tags used by the intent on
-        falure to meat required entities then returns intent with confidence
-        of 0.0 and an empty list for tags.
+        Returns:
+            intent, tags: Returns intent and tags used by the intent on
+                falure to meat required entities then returns intent with confidence
+                of 0.0 and an empty list for tags.
         """
         result = {'intent_type': self.name}
         intent_confidence = 0.0
