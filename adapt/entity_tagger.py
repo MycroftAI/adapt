@@ -16,7 +16,7 @@ class EntityTagger(object):
         self.max_tokens = max_tokens
         self.regex_entities = regex_entities
 
-    def _iterate_subsequences(self, tokens):
+    def iterate_subsequences(self, tokens):
         """
         Using regex invokes this function, which significantly impacts performance of adapt. it is an N! operation.
 
@@ -39,22 +39,30 @@ class EntityTagger(object):
     def tag(self, utterance, context_trie=None):
         """
         Tag known entities within the utterance.
+
         Args:
             utterance(str): a string of natural language text
-            context_trie(trie): optional, a trie containing only entities from context
-                for this request
+            context_trie(trie): optional, a trie containing only entities from context for this request
 
-        Returns: dictionary, with the following keys
-            match(str): the proper entity matched
-            key(str): the string that was matched to the entity
-            start_token(int): 0-based index of the first token matched
-            end_token(int): 0-based index of the last token matched
-            entities(list): a list of entity kinds as strings (Ex: Artist, Location)
+        Returns:
+             dictionary (dict) : with the following keys
+                {
+                    match(str): the proper entity matched
+
+                    key(str): the string that was matched to the entity
+
+                    start_token(int): 0-based index of the first token matched
+
+                    end_token(int): 0-based index of the last token matched
+
+                    entities(list): a list of entity kinds as strings (Ex: Artist, Location)
+                }
+
         """
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
         if len(self.regex_entities) > 0:
-            for part, idx in self._iterate_subsequences(tokens):
+            for part, idx in self.iterate_subsequences(tokens):
                 local_trie = Trie()
                 for regex_entity in self.regex_entities:
                     match = regex_entity.match(part)

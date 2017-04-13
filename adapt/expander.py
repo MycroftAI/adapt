@@ -4,10 +4,9 @@ __author__ = 'seanfitz'
 
 
 class SimpleGraph(object):
-    """This class is to graph connected nodes
+    """This is a class to graph connected nodes
     Note:
-        hash is a type that is hashable so independant values and tuples
-        but not objects, classes or lists.
+        Hash is a type that is hashable so independent values and tuples but not objects, classes or lists.
     """
 
     def __init__(self):
@@ -15,16 +14,14 @@ class SimpleGraph(object):
         self.adjacency_lists = {}
 
     def add_edge(self, a, b):
-        """Used to add edges to the graph. 'a' and 'b' are vertexes and
-        if 'a' or 'b' doesn't exisit then the vertex is created
+        """Used to add edges to the graph. 'a' and 'b' are vertexes and if 'a' or 'b' doesn't exist then the vertex is
+        created
 
         Args:
             a (hash): is one vertex of the edge
             b (hash): is another vertext of the edge
-
-
         """
-        #print("SimpleGraph.add_edge",type(a), a, type(b),b)
+        # print("SimpleGraph.add_edge",type(a), a, type(b),b)
         neighbors_of_a = self.adjacency_lists.get(a)
         if not neighbors_of_a:
             neighbors_of_a = set()
@@ -46,9 +43,7 @@ class SimpleGraph(object):
             a (hash): is the vertex to get the neighbors for
 
         Returns:
-            [] : a list of neighbors_of 'a'
-                Will return an empty set if 'a' doesn't exist or has no
-                neightbors.
+            [] : a list of neighbors_of 'a' Will return an empty set if 'a' doesn't exist or has no neighbors.
 
         """
         return self.adjacency_lists.get(a, set())
@@ -103,7 +98,7 @@ def bronk(r, p, x, graph):
         x (list): used by bronk for the search
 
     Yields:
-        list : found clique of the given graph and verticies
+        list : found clique of the given graph and vertices
     """
     if len(p) == 0 and len(x) == 0:
         yield r
@@ -132,8 +127,8 @@ def get_cliques(vertices, graph):
     """get cliques
 
     Args:
-        verticies (list) : list of the verticies to search for cliques
-        graph (graph) : a graph used to find the cliques using verticies
+        vertices (list) : list of the vertices to search for cliques
+        graph (graph) : a graph used to find the cliques using vertices
 
     Yields:
         list: a clique from the graph
@@ -170,8 +165,7 @@ class Lattice(object):
 
     Attributes:
         nodes (list) : is a list of items or lists.
-            This is used to track items and lists that are a part of the
-            Lattice
+            This is used to track items and lists that are a part of the Lattice
     """
 
     def __init__(self):
@@ -198,13 +192,11 @@ class Lattice(object):
             self.nodes.append([data])
 
     def traverse(self, index=0):
-        """ This is used to produce a list of lists where each each item
-        in that list is a diffrent combination of items from the lists
-        within with every combination of such values.
+        """ This is used to produce a list of lists where each each item in that list is a different combination of
+        items from the lists within with every combination of such values.
 
         Args:
-            index (int) : the index at witch to start the list.
-                Note this is used only in the function as a processing
+            index (int) : the index at witch to start the list. Note this is used only in the function as a processing
 
         Returns:
             list : is every combination.
@@ -236,15 +228,16 @@ class BronKerboschExpander(object):
     """
     BronKerboschExpander
 
-    Given a list of tagged entities (from the existing entity tagger implementation or another), expand out
-    valid parse results.
+    Given a list of tagged entities (from the existing entity tagger implementation or another), expand out valid parse
+    results.
 
     A parse result is considered valid if it contains no overlapping spans.
 
-    Since total confidence of a parse result is based on the sum of confidences of the entities, there is no sense
-    in yielding any potential parse results that are a subset/sequence of a larger valid parse result. By comparing
-    this concept to that of maximal cliques (https://en.wikipedia.org/wiki/Clique_problem), we can use well known
-    solutions to the maximal clique problem like the Bron/Kerbosch algorithm (https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm).
+    Since total confidence of a parse result is based on the sum of confidences of the entities, there is no sense in
+    yielding any potential parse results that are a subset/sequence of a larger valid parse result. By comparing this
+    concept to that of maximal cliques (https://en.wikipedia.org/wiki/Clique_problem), we can use well known solutions
+    to the maximal clique problem like the Bron/Kerbosch algorithm
+    (https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm)
 
     By considering tagged entities that do not overlap to be "neighbors", BronKerbosch will yield a set of maximal
     cliques that are also valid parse results.
@@ -254,15 +247,13 @@ class BronKerboschExpander(object):
         self.tokenizer = tokenizer
 
     def _build_graph(self, tags):
-        """Builds a graph from the entities included in the tags.
-        Note this is used internally.
+        """Builds a graph from the entities included in the tags. Note this is used internally.
 
         Args:
             tags (list): A list of the tags to include in graph
 
         Returns:
             graph : this is the resulting graph of the tagged entities.
-
         """
         graph = SimpleGraph()
         for tag_index in xrange(len(tags)):

@@ -17,15 +17,20 @@ def find_first_tag(tags, entity_type, after_index=-1):
     """Searches tags for entity type after given index
 
     Args:
-        tags(list): a list of tags with entity types to be compaired too entity_type
+        tags(list): a list of tags with entity types to be compared to entity_type
         entity_type(str): This is he entity type to be looking for in tags
-        after_index(int): the start token must be greaterthan this.
+        after_index(int): the start token must be greater than this.
 
-    Returns:
-        ( tag, v, confidence ):
+    Yields:
+        obj: contains the following fields
+
+        {
             tag(str): is the tag that matched
+
             v(str): ? the word that matched?
-            confidence(float): is a mesure of accuacy.  1 is full confidence and 0 is none.
+
+            confidence(float): is a measure of accuracy.  1 is full confidence and 0 is none.
+        }
     """
     for tag in tags:
         for entity in tag.get('entities'):
@@ -46,15 +51,14 @@ def find_next_tag(tags, end_index=0):
 def choose_1_from_each(lists):
     """Takes a list of lists and returns a list of lists with one item
     from each list.  This new list should be the length of each list multiplied
-    by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght
+    by the others.  18 for an list with lists of 3, 2 and 3.  Also the length
     of each sub list should be same as the length of lists passed in.
 
     Args:
         lists(list of Lists):  A list of lists
 
     Returns:
-        list of lists: returns a list of lists constructions of one item from each
-            list in lists.
+        list of lists: returns a list of lists constructions of one item from each list in lists.
     """
     if len(lists) == 0:
         yield []
@@ -65,14 +69,14 @@ def choose_1_from_each(lists):
 
 
 def resolve_one_of(tags, at_least_one):
-    """This searches tags for Entites in at_least_one and returns any match
+    """This searches tags for Entities in at_least_one and returns any match
 
     Args:
         tags(list): List of tags with Entities to search for Entities
         at_least_one(list): List of Entities to find in tags
 
     Returns:
-        object: returns None if no match is found but returns any match as an object
+        object: Returns None if no match is found but returns any match as an object
     """
     if len(tags) < len(at_least_one):
         return None
@@ -116,7 +120,7 @@ class Intent(object):
         """Using this method removes tags from the result of validate_with_tags
 
         Returns:
-            intent(intent): Resuts from validate_with_tags
+            intent(intent): Results from validate_with_tags
         """
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
@@ -125,8 +129,7 @@ class Intent(object):
         """Used to get the Entities the intent is looking for.
 
         Returns:
-            list: A list of Entities the intent is looking for.  This should
-                never be empty but still could be.
+            list: A list of Entities the intent is looking for. This should never be empty but still could be.
         """
         entities = []
         thelist = self.requires + self.at_least_one + self.optional
@@ -146,8 +149,7 @@ class Intent(object):
             confidence(float): ?
 
         Returns:
-            intent, tags: Returns intent and tags used by the intent on
-                falure to meat required entities then returns intent with confidence
+            intent, tags: intent and tags used by the intent on failure to meet required entities then returnsintent with confidence
                 of 0.0 and an empty list for tags.
         """
         result = {'intent_type': self.name}
@@ -211,8 +213,7 @@ class IntentBuilder(object):
 
     Attributes:
         at_least_one(list): A list of Entities where one is required.
-            These are seperated into lists so you can have one of (A or B) and
-            then require one of (D or F).
+            These are separated into lists so you can have one of (A or B) and then require one of (D or F).
         requires(list): A list of Required Entities
         optional(list): A list of optional Entities
         name(str): Name of intent
@@ -258,7 +259,7 @@ class IntentBuilder(object):
             attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.
 
         Returns:
-            self: to continue modifications.
+            self: Returns self to continue modifications.
         """
         if not attribute_name:
             attribute_name = entity_type
@@ -274,7 +275,7 @@ class IntentBuilder(object):
             attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.
 
         Returns:
-            self: to continue modifications.
+            self: Returns self to continue modifications.
         """
         if not attribute_name:
             attribute_name = entity_type
