@@ -8,11 +8,15 @@ class ContextManagerFrame(object):
     Manages entities and context for a single frame of conversation.
     Provides simple equality querying.
     """
-    def __init__(self, entities=[], metadata={}):
+    def __init__(self, entities=None, metadata=None):
         self.entities = entities
         self.metadata = metadata
 
-    def metadata_matches(self, query={}):
+    def metadata_matches(self, query=None):
+        if self.metadata is None:
+            self.metadata = {}
+        if query is None:
+            query = {}
         result = len(query.keys()) > 0
         for key in query.keys():
             result = result and query[key] == self.metadata.get(key)
@@ -20,6 +24,10 @@ class ContextManagerFrame(object):
         return result
 
     def merge_context(self, tag, metadata):
+        if metadata is None:
+            metadata = {}
+        if self.entities is None:
+            self.entities = []
         self.entities.append(tag)
         for k in metadata.keys():
             if k not in self.metadata:
@@ -35,7 +43,7 @@ class ContextManager(object):
     def __init__(self):
         self.frame_stack = []
 
-    def inject_context(self, entity, metadata={}):
+    def inject_context(self, entity, metadata=None):
         """
         :param entity:
             format {'data': 'Entity tag as <str>', 'key': 'entity proper name as <str>', 'confidence': <float>'}
@@ -44,6 +52,9 @@ class ContextManager(object):
 
         :return:
         """
+        if metadata is None:
+            metadata = {}
+
         top_frame = self.frame_stack[0] if len(self.frame_stack) > 0 else None
         if top_frame and top_frame.metadata_matches(metadata):
             top_frame.merge_context(entity, metadata)
@@ -51,7 +62,7 @@ class ContextManager(object):
             frame = ContextManagerFrame(entities=[entity], metadata=metadata.copy())
             self.frame_stack.insert(0, frame)
 
-    def get_context(self, max_frames=None, missing_entities=[]):
+    def get_context(self, max_frames=None, missing_entities=None):
         """
         Constructs a list of entities from the context.
 
@@ -61,6 +72,10 @@ class ContextManager(object):
 
         :return: a list of entities
         """
+
+        if missing_entities is None:
+            missing_entities = []
+
         if not max_frames:
             max_frames = len(self.frame_stack)
 

@@ -30,7 +30,9 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         self.tagger = EntityTagger(self.trie, self.tokenizer, self.regular_expressions_entities)
         self.intent_parsers = []
 
-    def __best_intent(self, parse_result, context=[]):
+    def __best_intent(self, parse_result, context=None):
+        if context is None:
+            context = []
         best_intent = None
         best_tags = None
         context_as_entities = [{'entities': [c]} for c in context]
