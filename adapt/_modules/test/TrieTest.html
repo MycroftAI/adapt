@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>test.TrieTest &#8212; adapt  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for test.TrieTest</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">adapt.tools.text.trie</span> <span class="k">import</span> <span class="n">Trie</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;seanfitz&#39;</span>
+
+
+<div class="viewcode-block" id="TrieTest"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest">[docs]</a><span class="k">class</span> <span class="nc">TrieTest</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TrieTest.setUp"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_missing_entities"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_missing_entities">[docs]</a>    <span class="k">def</span> <span class="nf">test_missing_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">,</span> <span class="s2">&quot;Concept&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="s2">&quot;Concept&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;restaurant2&quot;</span><span class="p">,</span> <span class="s2">&quot;Fast&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">entities</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;Concept&#39;</span><span class="p">,</span> <span class="s1">&#39;Fast&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">(</span><span class="s2">&quot;Concept&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">(</span><span class="s2">&quot;Fast&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">([</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;Concept&#39;</span><span class="p">,</span> <span class="s1">&#39;Fast&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;root2&#39;</span><span class="p">,</span> <span class="s1">&#39;Concept&#39;</span><span class="p">,</span> <span class="s1">&#39;Fast&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;root2&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">checkForMissingEntites</span><span class="p">(</span>
+            <span class="p">(</span><span class="s1">&#39;root2&#39;</span><span class="p">,</span> <span class="s1">&#39;Concept&#39;</span><span class="p">,</span> <span class="s1">&#39;Fast&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;root2&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_data_is_correct_on_insert"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_data_is_correct_on_insert">[docs]</a>    <span class="k">def</span> <span class="nf">test_data_is_correct_on_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">,</span> <span class="s2">&quot;Concept&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Concept&#39;</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_gather"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_gather">[docs]</a>    <span class="k">def</span> <span class="nf">test_gather</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;restaurant&quot;</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_retrieval_based_on_insertion_order"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_retrieval_based_on_insertion_order">[docs]</a>    <span class="k">def</span> <span class="nf">test_retrieval_based_on_insertion_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_retrieval_of_multi_word_entity"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_retrieval_of_multi_word_entity">[docs]</a>    <span class="k">def</span> <span class="nf">test_retrieval_of_multi_word_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;play&quot;</span><span class="p">,</span> <span class="s2">&quot;PlayVerb&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;the big bang theory&quot;</span><span class="p">,</span> <span class="s2">&quot;Television Series&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;1 of the big bang theory&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_insert_single_character_entity"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_insert_single_character_entity">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_single_character_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;Number&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;1 of the big bang theory&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_simple_remove"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_simple_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_simple_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;Number&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span>
+
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_named_remove"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_named_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_named_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;Number&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;The Loneliest&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span>
+
+        <span class="k">assert</span> <span class="n">trie</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;Number&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_edit_distance"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_edit_distance">[docs]</a>    <span class="k">def</span> <span class="nf">test_edit_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">(</span><span class="n">max_edit_distance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;restaurant&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;restauran&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;estaurant&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;estauran&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_edit_distance_confidence"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_edit_distance_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">test_edit_distance_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">(</span><span class="n">max_edit_distance</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;bb&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;ccc&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;dddd&quot;</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.5</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;1 of&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="TrieTest.test_edit_distance_no_confidence"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.test_edit_distance_no_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">test_edit_distance_no_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trie</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">(</span><span class="n">max_edit_distance</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">trie</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;Number&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trie</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="s2">&quot;of the big bang theory&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="TrieTest.tearDown"><a class="viewcode-back" href="../../test.html#test.TrieTest.TrieTest.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
