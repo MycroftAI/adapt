@@ -9,12 +9,16 @@ class ContextManagerFrame(object):
     Provides simple equality querying.
     """
     def __init__(self, entities=None, metadata=None):
-        self.entities = entities
-        self.metadata = metadata
+        if entities is None:
+            self.entities = []
+        else:
+            self.entities = entities
+        if metadata is None:
+            self.metadata = {}
+        else:
+            self.metadata = metadata
 
     def metadata_matches(self, query=None):
-        if self.metadata is None:
-            self.metadata = {}
         if query is None:
             query = {}
         result = len(query.keys()) > 0
@@ -24,10 +28,6 @@ class ContextManagerFrame(object):
         return result
 
     def merge_context(self, tag, metadata):
-        if metadata is None:
-            metadata = {}
-        if self.entities is None:
-            self.entities = []
         self.entities.append(tag)
         for k in metadata.keys():
             if k not in self.metadata:

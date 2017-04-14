@@ -13,7 +13,10 @@ class EntityTagger(object):
         self.trie = trie
         self.tokenizer = tokenizer
         self.max_tokens = max_tokens
-        self.regex_entities = regex_entities
+        if regex_entities is None:
+            self.regex_entities = []
+        else:
+            self.regex_entities = regex_entities
 
     def _iterate_subsequences(self, tokens):
         """
@@ -53,9 +56,6 @@ class EntityTagger(object):
 
         entities: list - a list of entity kinds as strings (Ex: Artist, Location)
         """
-
-        if self.regex_entities is None:
-            self.regex_entities = []
 
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
