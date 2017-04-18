@@ -16,7 +16,7 @@ class EntityTagger(object):
         self.max_tokens = max_tokens
         self.regex_entities = regex_entities
 
-    def iterate_subsequences(self, tokens):
+    def _iterate_subsequences(self, tokens):
         """
         Using regex invokes this function, which significantly impacts performance of adapt. it is an N! operation.
 
@@ -62,7 +62,7 @@ class EntityTagger(object):
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
         if len(self.regex_entities) > 0:
-            for part, idx in self.iterate_subsequences(tokens):
+            for part, idx in self._iterate_subsequences(tokens):
                 local_trie = Trie()
                 for regex_entity in self.regex_entities:
                     match = regex_entity.match(part)
