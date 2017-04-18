@@ -9,14 +9,8 @@ class ContextManagerFrame(object):
     Provides simple equality querying.
     """
     def __init__(self, entities=None, metadata=None):
-        if entities is None:
-            self.entities = []
-        else:
-            self.entities = entities
-        if metadata is None:
-            self.metadata = {}
-        else:
-            self.metadata = metadata
+        self.entities = entities or []
+        self.metadata = metadata or {}
 
     def metadata_matches(self, query=None):
         if query is None:
@@ -52,8 +46,7 @@ class ContextManager(object):
 
         :return:
         """
-        if metadata is None:
-            metadata = {}
+        metadata = metadata or {}
 
         top_frame = self.frame_stack[0] if len(self.frame_stack) > 0 else None
         if top_frame and top_frame.metadata_matches(metadata):
@@ -73,8 +66,7 @@ class ContextManager(object):
         :return: a list of entities
         """
 
-        if missing_entities is None:
-            missing_entities = []
+        missing_entities = missing_entities or []
 
         if not max_frames:
             max_frames = len(self.frame_stack)

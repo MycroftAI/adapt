@@ -31,8 +31,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         self.intent_parsers = []
 
     def __best_intent(self, parse_result, context=None):
-        if context is None:
-            context = []
+        context = context or []
         best_intent = None
         best_tags = None
         context_as_entities = [{'entities': [c]} for c in context]
