@@ -15,8 +15,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
     The IntentDeterminationEngine is a greedy and naive implementation of intent determination. Given an utterance,
     it uses the Adapt parsing tools to come up with a sorted collection of tagged parses. A valid parse result contains
-    no overlapping tagged entities, and it's confidence is the sum of the tagged entity confidences, which are
-    weighted based on the percentage of the utterance (per character) that the entity match represents.
+    no overlapping tagged entities, and it's confidence is the sum of the tagged entity confidences, which are weighted
+    based on the percentage of the utterance (per character) that the entity match represents.
 
     This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of
     computation.
@@ -27,9 +27,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         Initialize the IntentDeterminationEngine
 
         Args:
-            tokenizer(tokenizer) : tokenizer used to break up spoken text
-                example EnglishTokenizer()
-            trie(Trie): tree of matches to Entites
+            tokenizer(tokenizer) : tokenizer used to break up spoken text. Example EnglishTokenizer()
+            trie(Trie): tree of matches to Entities
         """
         pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()

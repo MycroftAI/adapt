@@ -23,14 +23,21 @@ class Parser(pyee.EventEmitter):
             utterance(str): conversational piece given by the user
             context(list): a list of entities
             N(int): number of results
-        Returns: yield an object with the following fields
-            utterance(str): the value passed in
-            tags(list) : a list of tags found in utterance
-            time(time) : duration since call of function
-            confidence(float) : float indicating how confident of a match to the
-                utterance. This might be used to determan the most likely intent.
+        Yields:
+            obj: contains the following fields
 
-        """
+            {
+                utterance(str): the value passed in
+
+                tags(list): a list of tags found in utterance
+
+                time(time): duration since call of function
+
+                confidence(float):
+                    A value indicating how confident of a match to the utterance. This might be used to determine
+                    the most likely intent.
+            }
+       """
         start = time.time()
         context_trie = None
         if context and isinstance(context, list):

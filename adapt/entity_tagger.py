@@ -39,17 +39,25 @@ class EntityTagger(object):
     def tag(self, utterance, context_trie=None):
         """
         Tag known entities within the utterance.
+
         Args:
             utterance(str): a string of natural language text
-            context_trie(trie): optional, a trie containing only entities from context
-                for this request
+            context_trie(trie): optional, a trie containing only entities from context for this request
 
-        Returns: dictionary, with the following keys
-            match(str): the proper entity matched
-            key(str): the string that was matched to the entity
-            start_token(int): 0-based index of the first token matched
-            end_token(int): 0-based index of the last token matched
-            entities(list): a list of entity kinds as strings (Ex: Artist, Location)
+        Returns:
+             dictionary (dict) : with the following keys
+                {
+                    match(str): the proper entity matched
+
+                    key(str): the string that was matched to the entity
+
+                    start_token(int): 0-based index of the first token matched
+
+                    end_token(int): 0-based index of the last token matched
+
+                    entities(list): a list of entity kinds as strings (Ex: Artist, Location)
+                }
+
         """
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
