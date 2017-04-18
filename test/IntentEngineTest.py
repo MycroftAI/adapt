@@ -29,17 +29,37 @@ class IntentEngineTests(unittest.TestCase):
 
     def testSelectBestIntent(self):
         parser1 = IntentBuilder("Parser1").require("Entity1").build()
-        self.engine.register_intent_parser(parser1)
         self.engine.register_entity("tree", "Entity1")
+        self.engine.register_intent_parser(parser1)
 
         utterance = "go to the tree house"
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser1'
 
-        parser2 = IntentBuilder("Parser2").require("Entity1").require("Entity2").build()
-        self.engine.register_intent_parser(parser2)
+        parser2 = IntentBuilder("Parser2").require(
+            "Entity1").require("Entity2").build()
         self.engine.register_entity("house", "Entity2")
+        self.engine.register_intent_parser(parser2)
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser2'
+
+    def testIntentMissingEntity(self):
+        utterance1 = "give me One home"
+        utterance2 = "give me One or Two"
+        parser3 = IntentBuilder("Parser3").require(
+            "One").require("Two").build()
+        self.engine.register_entity("One", "One")
+        self.engine.register_entity("Two", "Two")
+        self.engine.register_intent_parser(parser3)
+        intent2 = self.engine.determine_intent(utterance2)
+        try:
+            intent2 = next(intent2)
+        except BaseException:
+            pass
+        intent1 = self.engine.determine_intent(utterance1)
+        try:
+            intent1 = next(intent1)
+        except BaseException:
+            pass

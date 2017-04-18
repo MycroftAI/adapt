@@ -10,19 +10,34 @@ class Parser(pyee.EventEmitter):
     """
     Coordinate a tagger and expander to yield valid parse results.
     """
+
     def __init__(self, tokenizer, tagger):
         pyee.EventEmitter.__init__(self)
         self._tokenizer = tokenizer
         self._tagger = tagger
 
     def parse(self, utterance, context=None, N=1):
-        """
+        """Used to find tags within utterance with a given confidence
 
-        :param utterance:
-        :param context: a list of entities
-        :param N:
-        :return:
-        """
+        Args:
+            utterance(str): conversational piece given by the user
+            context(list): a list of entities
+            N(int): number of results
+        Yields:
+            obj: contains the following fields
+
+            {
+                utterance(str): the value passed in
+
+                tags(list): a list of tags found in utterance
+
+                time(time): duration since call of function
+
+                confidence(float):
+                    A value indicating how confident of a match to the utterance. This might be used to determine
+                    the most likely intent.
+            }
+       """
         start = time.time()
         context_trie = None
         if context and isinstance(context, list):
@@ -51,9 +66,10 @@ class Parser(pyee.EventEmitter):
         def score_clique(clique):
             score = 0.0
             for tagged_entity in clique:
-                ec = tagged_entity.get('entities', [{'confidence': 0.0}])[0].get('confidence')
-                score += ec * len(tagged_entity.get('entities', [{'match': ''}])[0].get('match')) / (
-                    len(utterance) + 1)
+                ec = tagged_entity.get('entities', [{'confidence': 0.0}])[
+                    0].get('confidence')
+                score += ec * len(tagged_entity.get('entities',
+                                                    [{'match': ''}])[0].get('match')) / (len(utterance) + 1)
             return score
 
         parse_results = bke.expand(tagged, clique_scoring_func=score_clique)

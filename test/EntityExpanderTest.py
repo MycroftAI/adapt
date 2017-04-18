@@ -38,7 +38,6 @@ class BronKerboschExpanderTest(unittest.TestCase):
         assert len(parse_results) == 1
         assert len(parse_results[0]) == 2
 
-
     def testConsistentExpandWithSameOverlapMultipleTimes(self):
         """
         example: play season 1 of the big bang theory play season one of the big bang theory
@@ -51,26 +50,42 @@ class BronKerboschExpanderTest(unittest.TestCase):
         def score_clique(clique):
             score = 0.0
             for tagged_entity in clique:
-                ec = tagged_entity.get('entities', [{'confidence': 0.0}])[0].get('confidence')
-                score += ec * len(tagged_entity.get('entities', [{'match': ''}])[0].get('match')) / (
-                    len(utterance) + 1)
+                ec = tagged_entity.get('entities', [{'confidence': 0.0}])[
+                    0].get('confidence')
+                score += ec * len(tagged_entity.get('entities',
+                                                    [{'match': ''}])[0].get('match')) / (len(utterance) + 1)
             return score
         expander = BronKerboschExpander(self.tokenizer)
-        parse_results = list(expander.expand(tags, clique_scoring_func=score_clique))
+        parse_results = list(
+            expander.expand(
+                tags, clique_scoring_func=score_clique))
         assert len(parse_results) == 6
-        result_text = ' '.join([tag.get('entities')[0].get('key') for tag in parse_results[0]])
-        result_parse = ', '.join(
-            [tag.get('entities')[0].get('data')[0][1] for tag in parse_results[0]]
-        )
+        result_text = ' '.join([tag.get('entities')[0].get('key')
+                                for tag in parse_results[0]])
+        result_parse = ', '.join([tag.get('entities')[0].get('data')[
+            0][1] for tag in parse_results[0]])
 
         assert result_text == 'play season 1 the big bang theory'
 
     def testExpandWithRegexAndLiteralTokenMatch(self):
-        # two tags for the same token, different confidence, should expand to two cliques
-        tags = [{'end_token': 0, 'start_token': 0, 'key': u'spell', 'match': u'spell',
-                 'entities': [{'confidence': 0.5, 'data': [u'SearchTerms'], 'match': u'spell', 'key': u'spell'}]},
-                {'end_token': 0, 'start_token': 0, 'key': u'spell', 'match': u'spell',
-                 'entities': [{'confidence': 1.0, 'data': [u'SpellingKeyword'], 'match': u'spell', 'key': u'spell'}]}]
+        # two tags for the same token, different confidence, should expand to
+        # two cliques
+        tags = [{'end_token': 0,
+                 'start_token': 0,
+                 'key': u'spell',
+                 'match': u'spell',
+                 'entities': [{'confidence': 0.5,
+                               'data': [u'SearchTerms'],
+                               'match': u'spell',
+                               'key': u'spell'}]},
+                {'end_token': 0,
+                 'start_token': 0,
+                 'key': u'spell',
+                 'match': u'spell',
+                 'entities': [{'confidence': 1.0,
+                               'data': [u'SpellingKeyword'],
+                               'match': u'spell',
+                               'key': u'spell'}]}]
 
         expander = BronKerboschExpander(self.tokenizer)
 

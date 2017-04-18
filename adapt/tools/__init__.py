@@ -1,2 +1,2 @@
 __author__ = "seanfitz"
-__doc__=""
+__doc__ = ""

@@ -9,11 +9,22 @@ class TrieTest(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_basic_retrieval(self):
+    def test_missing_entities(self):
         trie = Trie()
-        trie.insert("restaurant")
-        results = list(trie.lookup("restaurant"))
+        trie.insert("restaurant", "Concept")
+        trie.insert("rest", "Concept")
+        trie.insert("restaurant2", "Fast")
+        results = list(trie.gather("restaurant"))
         assert len(results) == 1
+        assert trie.root.entities() == ['root', 'Concept', 'Fast']
+        assert trie.checkForMissingEntites("Concept") is None
+        assert trie.checkForMissingEntites("root") is None
+        assert trie.checkForMissingEntites("Fast") is None
+        assert trie.checkForMissingEntites(['root', 'Concept', 'Fast']) is None
+        assert trie.checkForMissingEntites(
+            ['root2', 'Concept', 'Fast']) == ["root2"]
+        assert trie.checkForMissingEntites(
+            ('root2', 'Concept', 'Fast')) == ["root2"]
 
     def test_data_is_correct_on_insert(self):
         trie = Trie()
@@ -102,14 +113,11 @@ class TrieTest(unittest.TestCase):
         results = list(trie.gather("1 of"))
         assert len(results) == 3
 
-
-
     def test_edit_distance_no_confidence(self):
         trie = Trie(max_edit_distance=2)
         trie.insert("1", "Number")
         results = list(trie.gather("of the big bang theory"))
         assert len(results) == 0
-
 
     def tearDown(self):
         pass

@@ -139,17 +139,18 @@ class SelectBestIntentTests(unittest.TestCase):
         in the IntentEngine.
         """
         parser1 = IntentBuilder("Parser1").require("Entity1").build()
-        self.engine.register_intent_parser(parser1)
         self.engine.register_entity("tree", "Entity1")
+        self.engine.register_intent_parser(parser1)
 
         utterance = "go to the tree house"
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         self.assertEqual(intent['intent_type'], 'Parser1')
 
-        parser2 = IntentBuilder("Parser2").require("Entity1").require("Entity2").build()
-        self.engine.register_intent_parser(parser2)
+        parser2 = IntentBuilder("Parser2").require(
+            "Entity1").require("Entity2").build()
         self.engine.register_entity("house", "Entity2")
+        self.engine.register_intent_parser(parser2)
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         self.assertEqual(intent['intent_type'], 'Parser2')
@@ -161,13 +162,13 @@ class SelectBestIntentTests(unittest.TestCase):
 
         # Creating first intent domain
         parser1 = IntentBuilder("Parser1").require("Entity1").build()
-        self.engine.register_intent_parser(parser1, domain='Domain1')
         self.engine.register_entity("tree", "Entity1", domain='Domain1')
+        self.engine.register_intent_parser(parser1, domain='Domain1')
 
         # Creating second intent domain
         parser2 = IntentBuilder("Parser1").require("Entity2").build()
-        self.engine.register_intent_parser(parser2, domain="Domain2")
         self.engine.register_entity("house", "Entity2", domain="Domain2")
+        self.engine.register_intent_parser(parser2, domain="Domain2")
 
         utterance = "Entity1 Entity2 go to the tree house"
         intents = self.engine.determine_intent(utterance, 2)
@@ -180,20 +181,21 @@ class SelectBestIntentTests(unittest.TestCase):
         assert intent
         self.assertEqual(intent['intent_type'], 'Parser1')
 
-    def test_select_best_intent_enuse_enitities_dont_register_in_multiple_domains(self):
+    def test_select_best_intent_enuse_enitities_dont_register_in_multiple_domains(
+            self):
         """Test to make sure that 1 entity does not end up in multiple domains."""
         self.engine.register_domain('Domain1')
         self.engine.register_domain('Domain2')
 
         # Creating first intent domain
         parser1 = IntentBuilder("Parser1").require("Entity1").build()
-        self.engine.register_intent_parser(parser1, domain='Domain1')
         self.engine.register_entity("tree", "Entity1", domain='Domain1')
+        self.engine.register_intent_parser(parser1, domain='Domain1')
 
         # Creating second intent domain
         parser2 = IntentBuilder("Parser2").require("Entity2").build()
-        self.engine.register_intent_parser(parser2, domain="Domain2")
         self.engine.register_entity("house", "Entity2", domain="Domain2")
+        self.engine.register_intent_parser(parser2, domain="Domain2")
 
         utterance = "go to the house"
         intents = self.engine.determine_intent(utterance, 1)
