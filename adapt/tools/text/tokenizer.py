@@ -21,6 +21,23 @@ class EnglishTokenizer(object):
         pass
 
     def tokenize(self, string):
+        """Used to parce a string into tokens
+
+        This function is to take in a string and return a list of tokens
+
+        Args:
+            string(str): This is a string of words or a sentance to be parsed into tokens
+
+        Returns:
+            list: a list of tokens from the string passed in.
+
+        Notes:
+            Doesn't seem to parse contractions correctly for example don't
+            would parse as two tokens 'do' and "n't" and this seems to be not
+            what we would want.  Maybe should be "don't" or maybe contractions
+            should be expanded into "do not" or "do","not".  This could be
+            done with a contraction dictionary and some preprocessing.
+        """
         s = string
         s = re.sub('\t', " ", s)
         s = re.sub("(" + regex_separator + ")", " \g<1> ", s)
@@ -51,6 +68,14 @@ class EnglishTokenizer(object):
 
 
 def tokenize_string(text):
+    """To assist with testing strings returns the token list from text
+
+    Args:
+        text(str): String to be parsed into tokens
+
+    Returns:
+        list: A list of tokens found in the text.
+    """
     tk = EnglishTokenizer()
     return tk.tokenize(text)
 

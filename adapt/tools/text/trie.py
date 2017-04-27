@@ -16,12 +16,17 @@ class TrieNode(object):
     def lookup(self, iterable, index=0, gather=False, edit_distance=0, max_edit_distance=0, match_threshold=0.0, matched_length=0):
         """
         TODO: Implement trie lookup with edit distance
-        :param iterable:
-        :param index:
-        :param gather:
-        :param edit_distance:
-        :param max_edit_distance:
-        :return:
+
+        Args:
+            iterable(list?): key used to find what is requested this could
+                be a generator.
+            index(int): index of what is requested
+            gather(bool): of weather to gather or not
+            edit_distance(int): the distance -- currently not used
+            max_edit_distance(int): the max distance -- not currently used
+
+        yields:
+            object: yields the results of the search
         """
         if self.is_terminal:
             if index == len(iterable) or \
@@ -64,6 +69,14 @@ class TrieNode(object):
                         yield result
 
     def insert(self, iterable, index=0, data=None, weight=1.0):
+        """Insert new node into tree
+
+        Args:
+            iterable(hashable): key used to find in the future.
+            data(object): data associated with the key
+            index(int): an index used for insertion.
+            weight(float): the wait given for the item added.
+        """
         if index == len(iterable):
             self.is_terminal = True
             self.key = iterable
@@ -82,12 +95,17 @@ class TrieNode(object):
             return False
 
     def remove(self, iterable, data=None, index=0):
-        """
-        Remove an element from the trie
-        :param iterable:
-        :param data:
-        :param index:
-        :return: boolean indicating whether or not the trie was modified
+        """Remove an element from the trie
+
+        Args
+            iterable(hashable): key used to find what is to be removed
+            data(object): data associated with the key
+            index(int): index of what is to me removed
+
+        Returns:
+        bool:
+            True: if it was removed
+            False: if it was not removed
         """
         if index == len(iterable):
             if self.is_terminal:
@@ -108,16 +126,49 @@ class TrieNode(object):
 
 
 class Trie(object):
+    """Interface for the tree
+
+        Attributes:
+            root(TrieNode): parent node to start the tree
+            max_edit_distance(int): ?
+            match_threshold(int): ?
+
+    """
+
     def __init__(self, max_edit_distance=0, match_threshold=0.0):
+        """Init the Trie object and create root node.
+
+        Creates an Trie object with a root node with the passed in
+        max_edit_distance and match_threshold.
+
+        Args:
+            max_edit_distance(int): ?
+            match_threshold(int): ?
+
+        Notes:
+            This never seems to get called with max_edit_distance or match_threshold
+        """
         self.root = TrieNode('root')
         self.max_edit_distance = max_edit_distance
         self.match_threshold = match_threshold
 
     def gather(self, iterable):
+        """Calls the lookup with gather True Passing iterable and yields
+        the result.
+        """
         for result in self.lookup(iterable, gather=True):
             yield result
 
     def lookup(self, iterable, gather=False):
+        """Call the lookup on the root node with the given parameters.
+
+        Args
+            iterable(index or key): Used to retrive nodes from tree
+            gather(bool): this is passed down to the root node lookup
+
+        Notes:
+            max_edit_distance and match_threshold come from the init
+        """
         for result in self.root.lookup(iterable,
                                        gather=gather,
                                        edit_distance=0,
@@ -126,7 +177,20 @@ class Trie(object):
             yield result
 
     def insert(self, iterable, data=None, weight=1.0):
+        """Used to insert into he root node
+
+        Args
+            iterable(hashable): index or key used to identify
+            data(object): data to be paired with the key
+        """
         self.root.insert(iterable, index=0, data=data, weight=1.0)
 
     def remove(self, iterable, data=None):
+        """Used to remove from the root node
+
+        Args:
+            iterable(hashable): index or key used to identify
+                item to remove
+            data: data to be paired with the key
+        """
         return self.root.remove(iterable, data=data)
