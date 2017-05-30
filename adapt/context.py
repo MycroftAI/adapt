@@ -109,7 +109,7 @@ class ContextManager(object):
         Returns:
             list: a list of entities
         """
-        if not max_frames:
+        if not max_frames or max_frames > len(self.frame_stack):
             max_frames = len(self.frame_stack)
 
         missing_entities = list(missing_entities)
