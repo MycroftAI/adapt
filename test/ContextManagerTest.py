@@ -15,6 +15,15 @@ class ContextManagerTest(unittest.TestCase):
         assert len(context) == 1
         assert context[0].get('confidence') == 0.5
 
+    def testInjectRetrieveContextMaxFrames(self):
+        manager = ContextManager()
+        entity = {'key': 'The hitchhikers guide to the galaxy',
+                  'data': 'Book', 'confidence': 1.0}
+        manager.inject_context(entity)
+        context = manager.get_context(max_frames=2)
+        assert len(context) == 1
+        assert context[0].get('confidence') == 0.5
+
     def testNewContextNoMetadataResultsInNewFrame(self):
         manager = ContextManager()
         entity1 = {'key': 'Grapes of Wrath', 'data': 'Book', 'confidence': 1.0}
