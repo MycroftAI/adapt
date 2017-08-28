@@ -74,6 +74,7 @@ def resolve_one_of(tags, at_least_one):
     """
     if len(tags) < len(at_least_one):
         return None
+    valid_entities={}
     for possible_resolution in choose_1_from_each(at_least_one):
         resolution = {}
         pr = possible_resolution[:]
@@ -88,8 +89,10 @@ def resolve_one_of(tags, at_least_one):
                 if entity_type not in resolution:
                     resolution[entity_type] = []
                 resolution[entity_type].append(tag)
-        if len(resolution) == len(possible_resolution):
-            return resolution
+        if len(resolution) >= len(possible_resolution):
+            valid_entities.update(resolution)
+    if len(valid_entities):
+        return valid_entities
 
     return None
 
@@ -155,11 +158,12 @@ class Intent(object):
                 return result, []
             else:
                 for key in best_resolution:
-                    result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
-                    intent_confidence += 1.0
-                used_tags.append(best_resolution)
-                if best_resolution in local_tags:
-                    local_tags.remove(best_resolution)
+                    oneof_tag, canonical_form, confidence = find_first_tag(local_tags, key)
+                    intent_confidence += confidence
+                    result[key] = canonical_form
+                    used_tags.append(oneof_tag)
+                    if oneof_tag in local_tags:
+                        local_tags.remove(oneof_tag)
 
         for optional_type, attribute_name in self.optional:
             optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
