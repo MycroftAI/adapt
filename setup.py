@@ -14,7 +14,7 @@ setup(
     packages = ["adapt", "adapt.tools", "adapt.tools.text"],
 
     install_requires = [
-        "pyee==1.0.1",
+        "pyee==5.0.0",
         "six==1.10.0"
     ]
 )
