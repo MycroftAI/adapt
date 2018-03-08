@@ -13,6 +13,7 @@ TOP=$(cd $(dirname $0)/.. && pwd -L)
 echo "The working directory top is ${TOP}"
 
 # set virtualenv root
+SETUP_VIRTUALENV="${HOME}/.virtualenvs/adapt-setup"
 VIRTUALENV_ROOT=${VIRTUALENV_ROOT:-"${HOME}/.virtualenvs/adapt"}
 echo "The virtualenv root location is ${VIRTUALENV_ROOT}"
 
@@ -23,9 +24,21 @@ echo "The latest adapt release version is ${VERSION}"
 # check out tagged version
 git checkout release/v${VERSION}
 
+# create virtualenv
+if [ ! -d ${SETUP_VIRTUALENV} ]; then
+    echo "Creating virtualenv"
+    virtualenv ${SETUP_VIRTUALENV}
+fi
+# activate setup virtualenv
+. ${SETUP_VIRTUALENV}/bin/activate
+
 # get setup.py version
 PYPI_VERSION=$(python ${TOP}/setup.py --version)
 echo "The adapt version found in setup.py is ${PYPI_VERSION}"
+
+# clean virtualenv and remove previous test results
+echo "Removing previous virtualenv and test results if they exist"
+rm -rf ${VIRTUALENV_ROOT} TEST-*.xml
 
 # verify release tag and setup.py version are equal
 if [[ ${VERSION} != ${PYPI_VERSION} ]]; then
@@ -35,11 +48,7 @@ if [[ ${VERSION} != ${PYPI_VERSION} ]]; then
 
 fi
 
-# clean virtualenv and remove previous test results
-echo "Removing previous virtualenv and test results if they exist"
-rm -rf ${VIRTUALENV_ROOT} TEST-*.xml
-
-# create virtualenv
+# create test virtualenv
 echo "Creating virtualenv"
 virtualenv ${VIRTUALENV_ROOT}
 # activate virtualenv
@@ -75,9 +84,9 @@ replace ${PYPIRC_FILE} %%TESTPYPI_PASSWORD%% ${TESTPYPI_PASSWORD}
 # make .pyric private
 chmod -v 600 ${PYPIRC_FILE}
 
-echo "Registering at pypitest.python.org"
+echo "Registering at test.pypi.org"
 python setup.py register -r pypitest
-echo "Uploading to pypitest.python.org"
+echo "Uploading to test.pypi.org"
 python setup.py sdist upload -r pypitest
 
 echo "testing installation from testpypi.python.org"
@@ -87,7 +96,7 @@ virtualenv ${PYPI_TEST_VIRTUALENV}
 deactivate
 . ${PYPI_TEST_VIRTUALENV}/bin/activate
 pip install -r requirements.txt
-pip install -i https://testpypi.python.org/pypi adapt-parser==${VERSION}
+pip install -i https://test.pypi.org/simple adapt-parser==${VERSION}
 deactivate
 rm -Rvf ${PYPI_TEST_VIRTUALENV}
 
