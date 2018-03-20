@@ -41,6 +41,17 @@ def find_next_tag(tags, end_index=0):
     return None
 
 
+def find_all_tags(tags, entity_type, after_index=-1):
+    result = []
+    for tag in tags:
+        for entity in tag.get('entities'):
+            for v, t in entity.get('data'):
+                if t.lower() == entity_type.lower() and tag.get('start_token', 0) > after_index:
+                    result.append(v)
+
+    return result
+
+
 def choose_1_from_each(lists):
     """Takes a list of lists and returns a list of lists with one item
     from each list.  This new list should be the length of each list multiplied
@@ -141,7 +152,12 @@ class Intent(object):
                 result['confidence'] = 0.0
                 return result, []
 
-            result[attribute_name] = canonical_form
+            matching_entities = find_all_tags(local_tags, require_type)
+            if len(matching_entities) > 1:
+                result[attribute_name] = matching_entities
+            else:
+                result[attribute_name] = canonical_form
+
             if required_tag in local_tags:
                 local_tags.remove(required_tag)
             used_tags.append(required_tag)
@@ -165,7 +181,13 @@ class Intent(object):
             optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
             if not optional_tag or attribute_name in result:
                 continue
-            result[attribute_name] = canonical_form
+
+            matching_entities = find_all_tags(local_tags, require_type)
+            if len(matching_entities) > 1:
+                result[attribute_name] = matching_entities
+            else:
+                result[attribute_name] = canonical_form
+
             if optional_tag in local_tags:
                 local_tags.remove(optional_tag)
             used_tags.append(optional_tag)
