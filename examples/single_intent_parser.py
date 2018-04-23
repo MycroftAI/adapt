@@ -1,4 +1,3 @@
-__author__ = 'seanfitz'
 """
 A sample intent that uses a fixed vocabulary to extract entities for an intent
 

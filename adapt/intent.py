@@ -13,8 +13,6 @@
 # limitations under the License.
 #
 
-__author__ = 'seanfitz'
-
 CLIENT_ENTITY_NAME = 'Client'
 
 

@@ -17,8 +17,6 @@ import unittest
 from adapt.engine import IntentDeterminationEngine
 from adapt.intent import IntentBuilder
 
-__author__ = 'seanfitz'
-
 
 class IntentEngineTests(unittest.TestCase):
     def setUp(self):

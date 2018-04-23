@@ -22,8 +22,6 @@ Notes:
 """
 from six.moves import xrange
 
-__author__ = "seanfitz, Art McGee"
-
 
 class ContextManagerFrame(object):
     """

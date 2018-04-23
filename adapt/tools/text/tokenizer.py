@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-__author__ = 'seanfitz'
 import re
 regex_letter_number = r"[a-zA-Z0-9]"
 regex_not_letter_number = r"[^a-zA-Z0-9]"

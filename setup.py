@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-__author__ = 'seanfitz'
 
 from setuptools import setup
 

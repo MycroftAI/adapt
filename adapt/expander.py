@@ -15,8 +15,6 @@
 
 from six.moves import xrange
 
-__author__ = 'seanfitz'
-
 
 class SimpleGraph(object):
     """This class is to graph connected nodes

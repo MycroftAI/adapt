@@ -21,8 +21,6 @@ from adapt.parser import Parser
 from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 
-__author__ = 'seanfitz'
-
 
 class IntentDeterminationEngine(pyee.EventEmitter):
     """

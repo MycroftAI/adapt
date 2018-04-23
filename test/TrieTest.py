@@ -16,8 +16,6 @@
 import unittest
 from adapt.tools.text.trie import Trie
 
-__author__ = 'seanfitz'
-
 
 class TrieTest(unittest.TestCase):
 

@@ -16,8 +16,6 @@
 from adapt.tools.text.trie import Trie
 from six.moves import xrange
 
-__author__ = 'seanfitz'
-
 
 class EntityTagger(object):
     """

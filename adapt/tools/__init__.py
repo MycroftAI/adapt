@@ -13,5 +13,4 @@
 # limitations under the License.
 #
 
-__author__ = "seanfitz"
 __doc__=""

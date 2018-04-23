@@ -20,8 +20,6 @@ from adapt.entity_tagger import EntityTagger
 from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 
-__author__ = 'seanfitz'
-
 
 class TokenizerTests(unittest.TestCase):
     """All tests related to the DomainIntentDeterminationEngine."""

@@ -19,8 +19,6 @@ from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 import re
 
-__author__ = 'seanfitz'
-
 
 class EntityTaggerTest(unittest.TestCase):
 

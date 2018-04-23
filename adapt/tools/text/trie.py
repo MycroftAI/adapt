@@ -13,8 +13,6 @@
 # limitations under the License.
 #
 
-__author__ = 'seanfitz'
-
 
 class TrieNode(object):
     def __init__(self, data=None, is_terminal=False):

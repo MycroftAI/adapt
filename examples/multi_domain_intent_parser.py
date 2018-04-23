@@ -1,4 +1,3 @@
-__author__ = 'the-kid89'
 """
 A sample program that uses multiple intents and disambiguates by
 intent confidence

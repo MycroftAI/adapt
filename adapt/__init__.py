@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-__author__ = 'seanfitz'
 import os
 if os.path.exists('README.md'):
   import codecs

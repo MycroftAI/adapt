@@ -1,4 +1,3 @@
-__author__ = 'seanfitz'
 """
 A sample intent that uses a regular expression entity to
 extract location from a query

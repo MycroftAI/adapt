@@ -17,8 +17,6 @@ from adapt.context import ContextManager
 from adapt.engine import IntentDeterminationEngine
 from adapt.intent import IntentBuilder
 
-__author__ = "seanfitz"
-
 import unittest
 
 
