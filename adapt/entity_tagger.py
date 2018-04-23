@@ -13,10 +13,7 @@ class EntityTagger(object):
         self.trie = trie
         self.tokenizer = tokenizer
         self.max_tokens = max_tokens
-        if regex_entities is None:
-            self.regex_entities = []
-        else:
-            self.regex_entities = regex_entities
+        self.regex_entities = regex_entities or []
 
     def _iterate_subsequences(self, tokens):
         """
