@@ -4,10 +4,26 @@ __author__ = 'seanfitz'
 
 
 class SimpleGraph(object):
+    """This class is to graph connected nodes
+    Note:
+        hash is a type that is hashable so independant values and tuples
+        but not objects, classes or lists.
+    """
+
     def __init__(self):
+        """init an empty set"""
         self.adjacency_lists = {}
 
     def add_edge(self, a, b):
+        """Used to add edges to the graph. 'a' and 'b' are vertexes and
+        if 'a' or 'b' doesn't exisit then the vertex is created
+
+        Args:
+            a (hash): is one vertex of the edge
+            b (hash): is another vertext of the edge
+
+
+        """
         neighbors_of_a = self.adjacency_lists.get(a)
         if not neighbors_of_a:
             neighbors_of_a = set()
@@ -23,13 +39,41 @@ class SimpleGraph(object):
         neighbors_of_b.add(a)
 
     def get_neighbors_of(self, a):
+        """This will return the neighbors of the vertex
+
+        Args:
+            a (hash): is the vertex to get the neighbors for
+
+        Returns:
+            [] : a list of neighbors_of 'a'
+                Will return an empty set if 'a' doesn't exist or has no
+                neightbors.
+
+        """
         return self.adjacency_lists.get(a, set())
 
     def vertex_set(self):
+        """This returns a list of vertexes included in graph
+
+        Returns:
+            [] : a list of vertexes include in graph
+        """
         return list(self.adjacency_lists)
 
 
 def bronk(r, p, x, graph):
+    """This is used to fine cliques and remove them from graph
+
+    Args:
+        graph (graph): this is the graph of verticies to search for
+            cliques
+        p (list): this is a list of the verticies to search
+        r (list): used by bronk for the search
+        x (list): used by bronk for the search
+
+    Yields:
+        list : found clique of the given graph and verticies
+    """
     if len(p) == 0 and len(x) == 0:
         yield r
         return
@@ -45,27 +89,70 @@ def bronk(r, p, x, graph):
 
 
 def get_cliques(vertices, graph):
+    """get cliques
+
+    Args:
+        verticies (list) : list of the verticies to search for cliques
+        graph (graph) : a graph used to find the cliques using verticies
+
+    Yields:
+        list: a clique from the graph
+    """
     for clique in bronk([], vertices, [], graph):
         yield clique
 
 
 def graph_key_from_tag(tag, entity_index):
+    """Returns a key from a tag entity
+
+    Args:
+        tag (tag) : this is the tag selected to get the key from
+        entity_index (int) : this is the index of the tagged entity
+
+    Returns:
+        str : String representing the key for the given tagged entity.
+    """
     start_token = tag.get('start_token')
     entity = tag.get('entities', [])[entity_index]
     return str(start_token) + '-' + entity.get('key') + '-' + str(entity.get('confidence'))
 
 
 class Lattice(object):
+    """This manages a list of items or lists
+
+    Attributes:
+        nodes (list) : is a list of items or lists.
+            This is used to track items and lists that are a part of the
+            Lattice
+    """
+
     def __init__(self):
+        """Creates the Lattice with an empty list"""
         self.nodes = []
 
     def append(self, data):
+        """Appends items or lists to the Lattice
+
+        Args:
+            data (item,list) : The Item or List to be added to the Lattice
+        """
         if isinstance(data, list) and len(data) > 0:
             self.nodes.append(data)
         else:
             self.nodes.append([data])
 
     def traverse(self, index=0):
+        """ This is used to produce a list of lists where each each item
+        in that list is a diffrent combination of items from the lists
+        within with every combination of such values.
+
+        Args:
+            index (int) : the index at witch to start the list.
+                Note this is used only in the function as a processing
+
+        Returns:
+            list : is every combination.
+        """
         if index < len(self.nodes):
             for entity in self.nodes[index]:
                 for next_result in self.traverse(index=index+1):
@@ -98,6 +185,16 @@ class BronKerboschExpander(object):
         self.tokenizer = tokenizer
 
     def _build_graph(self, tags):
+        """Builds a graph from the entities included in the tags.
+        Note this is used internally.
+
+        Args:
+            tags (list): A list of the tags to include in graph
+
+        Returns:
+            graph : this is the resulting graph of the tagged entities.
+
+        """
         graph = SimpleGraph()
         for tag_index in xrange(len(tags)):
             for entity_index in xrange(len(tags[tag_index].get('entities'))):
@@ -113,6 +210,14 @@ class BronKerboschExpander(object):
         return graph
 
     def _sub_expand(self, tags):
+        """This called by expand to find cliques
+
+        Args:
+            tags (list): a list of the tags used to get cliques
+
+        Yields:
+            list : list of sorted tags by start_token this is a clique
+        """
         entities = {}
         graph = self._build_graph(tags)
 
@@ -147,6 +252,16 @@ class BronKerboschExpander(object):
             yield result
 
     def expand(self, tags, clique_scoring_func=None):
+        """This is the main function to expand tags into cliques
+
+        Args:
+            tags (list): a list of tags to find the cliques.
+            clique_scoring_func (func): a function that returns a float
+                value for the clique
+
+        Returns:
+            list : a list of cliques
+        """
         lattice = Lattice()
         overlapping_spans = []
 
