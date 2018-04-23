@@ -13,8 +13,7 @@ class ContextManagerFrame(object):
         self.metadata = metadata or {}
 
     def metadata_matches(self, query=None):
-        if query is None:
-            query = {}
+        query = query or {}
         result = len(query.keys()) > 0
         for key in query.keys():
             result = result and query[key] == self.metadata.get(key)
