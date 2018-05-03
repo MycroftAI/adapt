@@ -214,12 +214,12 @@ class IntentBuilder(object):
     Example:
         IntentBuilder("Intent").requires("A").one_of("C","D").optional("G").build()
     """
-    def __init__(self, intent_name):
+    def __init__(self, intent_name=None):
         """
         Constructor
 
         Args:
-            intent_name(str): the name of the intents that this parser parses/validates
+            intent_name(str, optional): the name of the intents that this parser parses/validates
         """
         self.at_least_one = []
         self.requires = []
