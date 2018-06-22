@@ -136,11 +136,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
             entity_type(str): the type/tag of an entity instance (Ex: "Television Show")
         """
         if type(entity_values) is not list: entity_values = [ entity_values ]
-	if alias_of:
-	    for e_val in entity_values:
+        if alias_of:
+            for e_val in entity_values:
                 self.trie.insert(e_val.lower(), data=(alias_of, entity_type))
         else:
-	    for e_val in entity_values:
+            for e_val in entity_values:
                 self.trie.insert(e_val.lower(), data=(e_val, entity_type))
                 self.trie.insert(e_val.lower(), data=(entity_type, 'Concept'))
 
