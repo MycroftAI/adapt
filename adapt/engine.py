@@ -131,14 +131,17 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         Register an entity to be tagged in potential parse results
 
         Args:
-            entity_value(str): the value/proper name of an entity instance (Ex: "The Big Bang Theory")
+            entity_value(str/arr): the value/proper nameS of an entity instances
+                    (Ex: "The Big Bang Theory", ["The Office", "Community"])
             entity_type(str): the type/tag of an entity instance (Ex: "Television Show")
         """
-        if alias_of:
-            self.trie.insert(entity_value.lower(), data=(alias_of, entity_type))
-        else:
-            self.trie.insert(entity_value.lower(), data=(entity_value, entity_type))
-            self.trie.insert(entity_type.lower(), data=(entity_type, 'Concept'))
+        if type(entity_value) is not list: entity_value = [ entity_value ]
+        for e_val in entity_value:
+            if alias_of:
+                self.trie.insert(e_val.lower(), data=(alias_of, entity_type))
+            else:
+                self.trie.insert(e_val.lower(), data=(entity_value, entity_type))
+                self.trie.insert(e_val.lower(), data=(entity_type, 'Concept'))
 
     def register_regex_entity(self, regex_str):
         """
