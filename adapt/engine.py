@@ -126,21 +126,22 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                     best_intent['__tags__'] = tags
                 yield best_intent
 
-    def register_entity(self, entity_value, entity_type, alias_of=None):
+    def register_entity(self, entity_values, entity_type, alias_of=None):
         """
         Register an entity to be tagged in potential parse results
 
         Args:
-            entity_value(str/arr): the value/proper nameS of an entity instances
+            entity_values(str/arr): the value/proper nameS of an entity instances
                     (Ex: "The Big Bang Theory", ["The Office", "Community"])
             entity_type(str): the type/tag of an entity instance (Ex: "Television Show")
         """
-        if type(entity_value) is not list: entity_value = [ entity_value ]
-        for e_val in entity_value:
-            if alias_of:
+        if type(entity_values) is not list: entity_values = [ entity_values ]
+	if alias_of:
+	    for e_val in entity_values:
                 self.trie.insert(e_val.lower(), data=(alias_of, entity_type))
-            else:
-                self.trie.insert(e_val.lower(), data=(entity_value, entity_type))
+        else:
+	    for e_val in entity_values:
+                self.trie.insert(e_val.lower(), data=(e_val, entity_type))
                 self.trie.insert(e_val.lower(), data=(entity_type, 'Concept'))
 
     def register_regex_entity(self, regex_str):
@@ -299,7 +300,7 @@ class DomainIntentDeterminationEngine(object):
         self.domains[domain] = IntentDeterminationEngine(
             tokenizer=tokenizer, trie=trie)
 
-    def register_entity(self, entity_value, entity_type, alias_of=None, domain=0):
+    def register_entity(self, entity_values, entity_type, alias_of=None, domain=0):
         """
         Register an entity to be tagged in potential parse results.
 
@@ -311,7 +312,7 @@ class DomainIntentDeterminationEngine(object):
         """
         if domain not in self.domains:
             self.register_domain(domain=domain)
-        self.domains[domain].register_entity(entity_value=entity_value,
+        self.domains[domain].register_entity(entity_values=entity_values,
                                              entity_type=entity_type,
                                              alias_of=alias_of)
 
