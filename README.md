@@ -1,4 +1,15 @@
-[![Stories in Ready](https://badge.waffle.io/MycroftAI/adapt.png?label=ready&title=Ready)](https://waffle.io/MycroftAI/adapt)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md) [![CLA](https://img.shields.io/badge/CLA%3F-Required-blue.svg)](https://mycroft.ai/cla) [![Team](https://img.shields.io/badge/Team-Mycroft_Core-violetblue.svg)](https://github.com/MycroftAI/contributors/blob/master/team/Mycroft%20Core.md) ![Status](https://img.shields.io/badge/-Production_ready-green.svg)
+
+[![Build Status](https://travis-ci.org/MycroftAI/adapt.svg?branch=master)](https://travis-ci.org/MycroftAI/adapt) [![Coverage Status](https://coveralls.io/repos/github/MycroftAI/adapt/badge.svg?branch=dev)](https://coveralls.io/github/MycroftAI/adapt?branch=master)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Join chat](https://img.shields.io/badge/Mattermost-join_chat-brightgreen.svg)](https://chat.mycroft.ai)
+
+Adapt Intent Parser
+==================
+The Adapt Intent Parser is a flexible and extensible intent definition and determination framework. It is intended to parse natural language text into a structured intent that can then be invoked programatically.
+
+[![Introducing the Adapt Intent Parser](https://mycroft.ai/wp-content/uploads/2019/05/Adapt-video-still.png)](https://www.youtube.com/watch?v=zR9xvPtM6Ro)
+
 Getting Started
 ===============
 To take a dependency on Adapt, it's recommended to use virtualenv and pip to install source from github.
@@ -12,10 +23,6 @@ $ pip install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 Examples
 ========
 Executable examples can be found in the [examples folder](https://github.com/MycroftAI/adapt/tree/master/examples).
-
-Overview
-==================
-The Adapt Intent Parser is a flexible and extensible intent definition and determination framework. It is intended to parse natural language text into a structured intent that can then be invoked programatically.
 
 Intent Modelling
 ================
