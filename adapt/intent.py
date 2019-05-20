@@ -78,7 +78,7 @@ def choose_1_from_each(lists):
 
 
 def resolve_one_of(tags, at_least_one):
-    """This searches tags for Entites in at_least_one and returns any match
+    """This searches tags for Entities in at_least_one and returns any match
 
     Args:
         tags(list): List of tags with Entities to search for Entities
@@ -95,7 +95,7 @@ def resolve_one_of(tags, at_least_one):
         for entity_type in pr:
             last_end_index = -1
             if entity_type in resolution:
-                last_end_index = resolution.get(entity_type)[-1].get('end_token')
+                last_end_index = resolution[entity_type][-1].get('end_token')
             tag, value, c = find_first_tag(tags, entity_type, after_index=last_end_index)
             if not tag:
                 break
