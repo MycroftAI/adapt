@@ -71,6 +71,24 @@ class IntentTest(unittest.TestCase):
             assert result_intent.get('PlayVerb') == 'play'
             assert result_intent.get('Radio Station') == "barenaked ladies"
 
+    def test_at_least_one_with_tag_in_multiple_slots(self):
+        self.trie.insert("temperature", ("temperature", "temperature"))
+        self.trie.insert("living room", ("living room", "living room"))
+        self.trie.insert("what is", ("what is", "what is"))
+
+        intent = IntentBuilder("test intent")\
+            .one_of("what is")\
+            .one_of("temperature", "living room")\
+            .one_of("temperature")\
+            .build()
+
+        for result in self.parser.parse("what is the temperature in the living room"):
+            result_intent = intent.validate(result.get("tags"), result.get("confidence"))
+            assert result_intent.get("confidence") > 0.0
+            assert result_intent.get("temperature") == "temperature"
+            assert result_intent.get("living room") == "living room"
+            assert result_intent.get("what is") == "what is"
+
     def test_at_least_on_no_required(self):
         intent = IntentBuilder("play intent") \
             .one_of("Television Show", "Radio Station") \
