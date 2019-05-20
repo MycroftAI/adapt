@@ -24,10 +24,6 @@ from adapt.tools.text.trie import Trie
 __author__ = 'seanfitz'
 
 
-
-
-
-
 class IntentTest(unittest.TestCase):
 
     def setUp(self):
