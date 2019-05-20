@@ -17,11 +17,15 @@ import re
 import unittest
 from adapt.parser import Parser
 from adapt.entity_tagger import EntityTagger
-from adapt.intent import IntentBuilder
+from adapt.intent import IntentBuilder, resolve_one_of
 from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 
 __author__ = 'seanfitz'
+
+
+
+
 
 
 class IntentTest(unittest.TestCase):
@@ -32,6 +36,7 @@ class IntentTest(unittest.TestCase):
         self.regex_entities = []
         self.tagger = EntityTagger(self.trie, self.tokenizer, regex_entities=self.regex_entities)
         self.trie.insert("play", ("play", "PlayVerb"))
+        self.trie.insert("stop", ("stop", "StopVerb"))
         self.trie.insert("the big bang theory", ("the big bang theory", "Television Show"))
         self.trie.insert("the big", ("the big", "Not a Thing"))
         self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
@@ -134,3 +139,162 @@ class IntentTest(unittest.TestCase):
             assert result_intent.get('Play Verb') == 'play'
             assert result_intent.get('series') == "the big bang theory"
 
+    def test_resolve_one_of(self):
+        tags = [
+            {
+                "confidence": 1.0,
+                "end_token": 1,
+                "entities": [
+                    {
+                        "confidence": 1.0,
+                        "data": [
+                            [
+                                "what is",
+                                "skill_iot_controlINFORMATION_QUERY"
+                            ]
+                        ],
+                        "key": "what is",
+                        "match": "what is"
+                    }
+                ],
+                "from_context": False,
+                "key": "what is",
+                "match": "what is",
+                "start_token": 0
+            },
+            {
+                "end_token": 3,
+                "entities": [
+                    {
+                        "confidence": 1.0,
+                        "data": [
+                            [
+                                "temperature",
+                                "skill_weatherTemperature"
+                            ],
+                            [
+                                "temperature",
+                                "skill_iot_controlTEMPERATURE"
+                            ]
+                        ],
+                        "key": "temperature",
+                        "match": "temperature"
+                    }
+                ],
+                "from_context": False,
+                "key": "temperature",
+                "match": "temperature",
+                "start_token": 3
+            },
+            {
+                "confidence": 1.0,
+                "end_token": 7,
+                "entities": [
+                    {
+                        "confidence": 1.0,
+                        "data": [
+                            [
+                                "living room",
+                                "skill_iot_controlENTITY"
+                            ]
+                        ],
+                        "key": "living room",
+                        "match": "living room"
+                    }
+                ],
+                "from_context": False,
+                "key": "living room",
+                "match": "living room",
+                "start_token": 6
+            }
+        ]
+
+        at_least_one = [
+            [
+                "skill_iot_controlINFORMATION_QUERY"
+            ],
+            [
+                "skill_iot_controlTEMPERATURE",
+                "skill_iot_controlENTITY"
+            ],
+            [
+                "skill_iot_controlTEMPERATURE"
+            ]
+        ]
+
+        result = {
+            "skill_iot_controlENTITY": [
+                {
+                    "confidence": 1.0,
+                    "end_token": 7,
+                    "entities": [
+                        {
+                            "confidence": 1.0,
+                            "data": [
+                                [
+                                    "living room",
+                                    "skill_iot_controlENTITY"
+                                ]
+                            ],
+                            "key": "living room",
+                            "match": "living room"
+                        }
+                    ],
+                    "from_context": False,
+                    "key": "living room",
+                    "match": "living room",
+                    "start_token": 6
+                }
+            ],
+            "skill_iot_controlINFORMATION_QUERY": [
+                {
+                    "confidence": 1.0,
+                    "end_token": 1,
+                    "entities": [
+                        {
+                            "confidence": 1.0,
+                            "data": [
+                                [
+                                    "what is",
+                                    "skill_iot_controlINFORMATION_QUERY"
+                                ]
+                            ],
+                            "key": "what is",
+                            "match": "what is"
+                        }
+                    ],
+                    "from_context": False,
+                    "key": "what is",
+                    "match": "what is",
+                    "start_token": 0
+                }
+            ],
+            "skill_iot_controlTEMPERATURE": [
+                {
+                    "end_token": 3,
+                    "entities": [
+                        {
+                            "confidence": 1.0,
+                            "data": [
+                                [
+                                    "temperature",
+                                    "skill_weatherTemperature"
+                                ],
+                                [
+                                    "temperature",
+                                    "skill_iot_controlTEMPERATURE"
+                                ]
+                            ],
+                            "key": "temperature",
+                            "match": "temperature"
+                        }
+                    ],
+                    "from_context": False,
+                    "key": "temperature",
+                    "match": "temperature",
+                    "start_token": 3
+                }
+            ]
+        }
+
+        assert resolve_one_of(tags, at_least_one) == result
