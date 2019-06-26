@@ -30,6 +30,6 @@ setup(
 
     install_requires = [
         "pyee==5.0.0",
-        "six==1.10.0"
+        "six>=1.10.0"
     ]
 )
