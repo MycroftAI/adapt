@@ -19,7 +19,7 @@ from setuptools import setup
 
 setup(
     name = "adapt-parser",
-    version = "0.3.3",
+    version = "0.3.4",
     author = "Sean Fitzgerald",
     author_email = "sean@fitzgeralds.me",
     description = ("A text-to-intent parsing framework."),
@@ -30,6 +30,6 @@ setup(
 
     install_requires = [
         "pyee==5.0.0",
-        "six==1.10.0"
+        "six>=1.10.0"
     ]
 )
