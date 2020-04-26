@@ -43,7 +43,8 @@ def find_first_tag(tags, entity_type, after_index=-1):
     for tag in tags:
         for entity in tag.get('entities'):
             for v, t in entity.get('data'):
-                if t.lower() == entity_type.lower() and tag.get('start_token', 0) > after_index:
+                if t.lower() == entity_type.lower() and \
+                        (tag.get('start_token', 0) > after_index or tag.get('from_context', False)):
                     return tag, v, entity.get('confidence')
 
     return None, None, None
@@ -171,7 +172,7 @@ class Intent(object):
             else:
                 for key in best_resolution:
                     result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
-                    intent_confidence += 1.0
+                    intent_confidence += 1.0 * best_resolution[key][0]['entities'][0].get('confidence', 1.0)
                 used_tags.append(best_resolution)
                 if best_resolution in local_tags:
                     local_tags.remove(best_resolution)

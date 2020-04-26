@@ -77,5 +77,39 @@ class ContextManagerIntegrationTest(unittest.TestCase):
         assert intent['intent_type'] == "DummyIntent"
         assert not (intent.get("Foo") and intent.get("Foo2"))
 
+    def testContextAndOneOf(self):
+        # test to cover https://github.com/MycroftAI/adapt/issues/86
+        engine = IntentDeterminationEngine()
+        context_manager = ContextManager()
+
+        # define vocabulary
+        weather_keyword = [
+            "weather"
+        ]
+
+        for wk in weather_keyword:
+            engine.register_entity(wk, "WeatherKeyword")
+
+        # structure intent
+        weather_intent = IntentBuilder("WeatherIntent") \
+            .require("WeatherKeyword") \
+            .one_of("Location", "LocationContext").build()
+
+        engine.register_intent_parser(weather_intent)
+        word = 'lizard'
+        context = 'LocationContext'
+        entity = {}
+        entity['data'] = [(word, context)]
+        entity['match'] = word
+        entity['key'] = word
+        context_manager.inject_context(entity)
+
+        intents = list(engine.determine_intent('weather', context_manager=context_manager))
+        self.assertEqual(1, len(intents), "Incorrect number of intents")
+        result = intents[0]
+        self.assertEqual("lizard", result.get("LocationContext"), "Context not matched")
+        self.assertEqual(0.75, result.get('confidence'), "Context confidence not properly applied.")
+
+
 
 
