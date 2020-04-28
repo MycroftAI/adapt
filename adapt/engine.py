@@ -68,7 +68,15 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         """
         best_intent = None
         best_tags = None
-        context_as_entities = [{'entities': [c]} for c in context]
+        # TODO: there's a bunch of subtlety here around what the values of `match` and `key` should be
+        # Longer term, this should probably be typed, barring any performance regressions.
+        context_as_entities = [
+            {
+                'key': c['key'],
+                'entities': [c],
+                'from_context': True
+             } for c in context
+        ]
         for intent in self.intent_parsers:
             i, tags = intent.validate_with_tags(parse_result.get('tags') + context_as_entities, parse_result.get('confidence'))
             if not best_intent or (i and i.get('confidence') > best_intent.get('confidence')):
