@@ -89,4 +89,4 @@ def register_pandora_vocab(emitter):
 Learn More
 ========
 
-Further documentation can be found at https://adapt.mycroft.ai
+Further documentation can be found at https://mycroft-ai.gitbook.io/docs/mycroft-technologies/adapt
