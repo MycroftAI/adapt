@@ -24,7 +24,7 @@ from adapt.tools.text.trie import Trie
 __author__ = 'seanfitz'
 
 
-class IntentDeterminationEngine(pyee.EventEmitter):
+class IntentDeterminationEngine(pyee.BaseEventEmitter):
     """
     IntentDeterminationEngine
 
@@ -45,7 +45,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                 example EnglishTokenizer()
             trie(Trie): tree of matches to Entites
         """
-        pyee.EventEmitter.__init__(self)
+        pyee.BaseEventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
         self.trie = trie or Trie()
         self.regular_expressions_entities = []
