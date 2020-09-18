@@ -9,18 +9,9 @@ PYTHONPATH=. python examples/multi_intent_parser.py "play some music by the clas
 
 import json
 import sys
-from adapt.entity_tagger import EntityTagger
-from adapt.tools.text.tokenizer import EnglishTokenizer
-from adapt.tools.text.trie import Trie
 from adapt.intent import IntentBuilder
-from adapt.parser import Parser
 from adapt.engine import DomainIntentDeterminationEngine
 
-
-tokenizer = EnglishTokenizer()
-trie = Trie()
-tagger = EntityTagger(trie, tokenizer)
-parser = Parser(tokenizer, tagger)
 
 engine = DomainIntentDeterminationEngine()
 
