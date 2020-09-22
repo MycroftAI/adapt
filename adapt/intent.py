@@ -135,7 +135,7 @@ class Intent(object):
         return intent
 
     def validate_with_tags(self, tags, confidence):
-        """Validate weather tags has required entites for this intent to fire
+        """Validate whether tags has required entites for this intent to fire
 
         Args:
             tags(list): Tags and Entities used for validation
