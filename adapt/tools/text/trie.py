@@ -36,7 +36,7 @@ class TrieNode(object):
             iterable(list?): key used to find what is requested this could
                 be a generator.
             index(int): index of what is requested
-            gather(bool): of weather to gather or not
+            gather(bool): of whether to gather or not
             edit_distance(int): the distance -- currently not used
             max_edit_distance(int): the max distance -- not currently used
 
