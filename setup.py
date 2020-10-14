@@ -29,7 +29,7 @@ setup(
     packages = ["adapt", "adapt.tools", "adapt.tools.text"],
 
     install_requires = [
-        "pyee==7.0.1",
+        "pyee==8.1.0",
         "six>=1.10.0"
     ]
 )
