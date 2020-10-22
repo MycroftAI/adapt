@@ -17,18 +17,35 @@ __author__ = 'seanfitz'
 
 from setuptools import setup
 
-setup(
-    name = "adapt-parser",
-    version = "0.3.6",
-    author = "Sean Fitzgerald",
-    author_email = "sean@fitzgeralds.me",
-    description = ("A text-to-intent parsing framework."),
-    license = ("Apache License 2.0"),
-    keywords = "natural language processing",
-    url = "https://github.com/MycroftAI/adapt",
-    packages = ["adapt", "adapt.tools", "adapt.tools.text"],
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
-    install_requires = [
+setup(
+    name="adapt-parser",
+    version="0.3.7",
+    author="Sean Fitzgerald",
+    author_email="sean@fitzgeralds.me",
+    description=("A text-to-intent parsing framework."),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    license=("Apache License 2.0"),
+    keywords="natural language processing",
+    url="https://github.com/MycroftAI/adapt",
+    packages=["adapt", "adapt.tools", "adapt.tools.text"],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Topic :: Text Processing :: Linguistic',
+        'License :: OSI Approved :: Apache Software License',
+
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+    ],
+
+    install_requires=[
         "pyee==8.1.0",
         "six>=1.10.0"
     ]
