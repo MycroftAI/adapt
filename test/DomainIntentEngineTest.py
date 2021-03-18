@@ -238,3 +238,21 @@ class SelectBestIntentTests(unittest.TestCase):
         self.engine.drop_intent_parser(domain="Domain2",
                                        parser_names=['Parser2'])
         self.assertEqual(len(self.engine.domains['Domain2'].intent_parsers), 0)
+
+    def test_drop_entity_from_domain(self):
+        """Test that entity is dropped from domain."""
+        self.engine.register_domain('Domain1')
+        self.engine.register_domain('Domain2')
+
+        # Creating first intent domain
+        parser1 = IntentBuilder("Parser1").require("Entity1").build()
+        self.engine.register_intent_parser(parser1, domain='Domain1')
+        self.engine.register_entity("tree", "Entity1", domain='Domain1')
+
+        # Creating second intent domain
+        parser2 = IntentBuilder("Parser2").require("Entity2").build()
+        self.engine.register_intent_parser(parser2, domain="Domain2")
+        self.engine.register_entity("house", "Entity2", domain="Domain2")
+
+        self.assertTrue(self.engine.drop_entity(domain="Domain2",
+                                                entity_type='Entity2'))

@@ -79,3 +79,64 @@ class IntentEngineTests(unittest.TestCase):
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser1'
+
+    def testDropEntity(self):
+        parser1 = IntentBuilder("Parser1").require("Entity1").build()
+        self.engine.register_intent_parser(parser1)
+        self.engine.register_entity("laboratory", "Entity1")
+        self.engine.register_entity("lab", "Entity1")
+
+        utterance = "get out of my lab"
+        utterance2 = "get out of my laboratory"
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        # Remove Entity and re-register laboratory and make sure only that
+        # matches.
+        self.engine.drop_entity(entity_type='Entity1')
+        self.engine.register_entity("laboratory", "Entity1")
+
+        # Sentence containing lab should not produce any results
+        with self.assertRaises(StopIteration):
+            intent = next(self.engine.determine_intent(utterance))
+
+        # But sentence with laboratory should
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+    def testCustomDropEntity(self):
+        parser1 = (IntentBuilder("Parser1").one_of("Entity1", "Entity2")
+                   .build())
+        self.engine.register_intent_parser(parser1)
+        self.engine.register_entity("laboratory", "Entity1")
+        self.engine.register_entity("lab", "Entity2")
+
+        utterance = "get out of my lab"
+        utterance2 = "get out of my laboratory"
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        def matcher(data):
+            return data[1].startswith('Entity')
+
+        self.engine.drop_entity(match_func=matcher)
+        self.engine.register_entity("laboratory", "Entity1")
+
+        # Sentence containing lab should not produce any results
+        with self.assertRaises(StopIteration):
+            intent = next(self.engine.determine_intent(utterance))
+
+        # But sentence with laboratory should
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent

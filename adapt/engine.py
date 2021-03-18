@@ -195,6 +195,26 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         return len(self.intent_parsers) != num_original_parsers
 
+    def drop_entity(self, entity_type=None, match_func=None):
+        """Drop all entities mathching the given entity type or match function
+
+        Arguments:
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        def default_match_func(data):
+            return data and data[1] == entity_type
+
+        ent_tuples = self.trie.scan(match_func or default_match_func)
+        for entity in ent_tuples:
+            self.trie.remove(*entity)
+
+        return len(ent_tuples) != 0
+
+
 class DomainIntentDeterminationEngine(object):
     """
     DomainIntentDeterminationEngine.
@@ -399,3 +419,17 @@ class DomainIntentDeterminationEngine(object):
             (bool) True if an intent parser was dropped else false.
         """
         return self.domains[domain].drop_intent_parser(parser_names)
+
+    def drop_entity(self, domain, entity_type=None, match_func=None):
+        """Drop all entities mathching the given entity type or match function.
+
+        Arguments:
+            domain (str): intent domain
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        return self.domains[domain].drop_entity(entity_type=entity_type,
+                                                match_func=match_func)
