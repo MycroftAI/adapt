@@ -175,6 +175,25 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         else:
             raise ValueError("%s is not an intent parser" % str(intent_parser))
 
+    def drop_intent_parser(self, parser_names):
+        """Drop a registered intent parser.
+
+        Arguments:
+            parser_names (str or iterable): parser name to drop or list of
+                                            names
+
+        Returns:
+            (bool) True if a parser was dropped else False
+        """
+        if isinstance(parser_names, str):
+            parser_names = [parser_names]
+
+        new_parsers = [p for p in self.intent_parsers
+                       if p.name not in parser_names]
+        num_original_parsers = len(self.intent_parsers)
+        self.intent_parsers = new_parsers
+
+        return len(self.intent_parsers != num_original_parsers)
 
 class DomainIntentDeterminationEngine(object):
     """
@@ -368,3 +387,15 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(domain=domain)
         self.domains[domain].register_intent_parser(
             intent_parser=intent_parser)
+
+    def drop_intent_parser(self, parser_names, domain):
+        """Drop a registered intent parser.
+
+        Arguments:
+            parser_names (list, str): parser names to drop.
+            domain (str): domain to drop from
+
+        Returns:
+            (bool) True if an intent parser was dropped else false.
+        """
+        return self.domains[domain].drop_intent_parser(parser_name)
