@@ -125,6 +125,42 @@ class TrieTest(unittest.TestCase):
         results = list(trie.gather("of the big bang theory"))
         assert len(results) == 0
 
+    def test_remove(self):
+        trie = Trie(max_edit_distance=2)
+        trie.insert("1", "Number")
+        trie.insert("2", "Number")
+        trie.remove("2")
+
+        one_lookup = list(trie.gather("1"))
+        two_lookup = list(trie.gather("2"))
+        assert len(one_lookup) == 1  # One match found
+        assert len(two_lookup) == 0  # Zero matches since removed
+
+    def test_remove_multi_last(self):
+        trie = Trie(max_edit_distance=2)
+        trie.insert("Kermit", "Muppets")
+        trie.insert("Kermit", "Frogs")
+        kermit_lookup = list(trie.lookup("Kermit"))[0]
+        assert 'Frogs' in kermit_lookup['data']
+        assert 'Muppets' in kermit_lookup['data']
+
+        trie.remove("Kermit", "Frogs")
+
+        kermit_lookup = list(trie.gather("Kermit"))[0]
+        assert kermit_lookup['data'] == {"Muppets"}  # Right data remains
+
+    def test_remove_multi_first(self):
+        trie = Trie(max_edit_distance=2)
+        trie.insert("Kermit", "Muppets")
+        trie.insert("Kermit", "Frogs")
+        kermit_lookup = list(trie.lookup("Kermit"))[0]
+        assert 'Frogs' in kermit_lookup['data']
+        assert 'Muppets' in kermit_lookup['data']
+
+        trie.remove("Kermit", "Muppets")
+
+        kermit_lookup = list(trie.lookup("Kermit"))[0]
+        assert kermit_lookup['data'] == {"Frogs"}  # Right data remains
 
     def tearDown(self):
         pass
