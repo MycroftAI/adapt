@@ -209,3 +209,35 @@ class Trie(object):
             data: data to be paired with the key
         """
         return self.root.remove(iterable, data=data)
+
+    def scan(self, match_func):
+        """Traverse the trie scanning for end nodes with matching data.
+
+        Arguments:
+            match_func (callable): function used to match data.
+
+        Returns:
+            (list) list with matching (data, value) pairs.
+        """
+        result = []
+
+        def _traverse(node, current=''):
+            """Traverse Trie searching for nodes with matching data
+
+            Performs recursive depth first search of Trie and collects
+            value / data pairs matched by the match_func
+
+            Arguments:
+                node (trie node): Node to parse
+                current (str): string "position" in Trie
+            """
+            nonlocal result
+            nonlocal match_func
+            # Check if node matches
+            result += [(current, d) for d in node.data if match_func(d)]
+
+            for c in node.children:
+                _traverse(node.children[c], current + c)
+
+        _traverse(self.root)
+        return result

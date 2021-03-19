@@ -162,5 +162,22 @@ class TrieTest(unittest.TestCase):
         kermit_lookup = list(trie.lookup("Kermit"))[0]
         assert kermit_lookup['data'] == {"Frogs"}  # Right data remains
 
+    def test_scan(self):
+        trie = Trie(max_edit_distance=2)
+        trie.insert("Kermit", "Muppets")
+        trie.insert("Gonzo", "Muppets")
+        trie.insert("Rowlf", "Muppets")
+        trie.insert("Gobo", "Fraggles")
+
+        def match_func(data):
+            return data == "Muppets"
+
+        results = trie.scan(match_func)
+        assert len(results) == 3
+        muppet_names = [r[0] for r in results]
+        assert "Kermit" in muppet_names
+        assert "Gonzo" in muppet_names
+        assert "Rowlf" in muppet_names
+
     def tearDown(self):
         pass
