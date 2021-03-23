@@ -219,9 +219,7 @@ class Trie(object):
         Returns:
             (list) list with matching (data, value) pairs.
         """
-        result = []
-
-        def _traverse(node, current=''):
+        def _traverse(node, match_func, current=''):
             """Traverse Trie searching for nodes with matching data
 
             Performs recursive depth first search of Trie and collects
@@ -229,15 +227,18 @@ class Trie(object):
 
             Arguments:
                 node (trie node): Node to parse
+                match_func (callable): Function performing match
                 current (str): string "position" in Trie
+
+            Returns:
+                (list) list with matching (data, value) pairs.
             """
-            nonlocal result
-            nonlocal match_func
             # Check if node matches
-            result += [(current, d) for d in node.data if match_func(d)]
+            result = [(current, d) for d in node.data if match_func(d)]
 
+            # Traverse further down into the tree
             for c in node.children:
-                _traverse(node.children[c], current + c)
+                result += _traverse(node.children[c], match_func, current + c)
+            return result
 
-        _traverse(self.root)
-        return result
+        return _traverse(self.root, match_func)
