@@ -58,3 +58,24 @@ class IntentEngineTests(unittest.TestCase):
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser2'
+
+    def testDropIntent(self):
+        parser1 = IntentBuilder("Parser1").require("Entity1").build()
+        self.engine.register_intent_parser(parser1)
+        self.engine.register_entity("tree", "Entity1")
+
+        parser2 = (IntentBuilder("Parser2").require("Entity1")
+                   .require("Entity2").build())
+        self.engine.register_intent_parser(parser2)
+        self.engine.register_entity("house", "Entity2")
+
+        utterance = "go to the tree house"
+
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser2'
+
+        assert self.engine.drop_intent_parser('Parser2') is True
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'

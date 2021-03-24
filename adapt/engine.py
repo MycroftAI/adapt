@@ -193,7 +193,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         num_original_parsers = len(self.intent_parsers)
         self.intent_parsers = new_parsers
 
-        return len(self.intent_parsers != num_original_parsers)
+        return len(self.intent_parsers) != num_original_parsers
 
 class DomainIntentDeterminationEngine(object):
     """
@@ -398,4 +398,4 @@ class DomainIntentDeterminationEngine(object):
         Returns:
             (bool) True if an intent parser was dropped else false.
         """
-        return self.domains[domain].drop_intent_parser(parser_name)
+        return self.domains[domain].drop_intent_parser(parser_names)
