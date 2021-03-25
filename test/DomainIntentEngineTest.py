@@ -256,3 +256,16 @@ class SelectBestIntentTests(unittest.TestCase):
 
         self.assertTrue(self.engine.drop_entity(domain="Domain2",
                                                 entity_type='Entity2'))
+
+    def testDropRegexEntity(self):
+        self.engine.register_domain("Domain1")
+        self.engine.register_domain("Domain2")
+
+        self.engine.register_regex_entity(r"the dog (?P<Dog>.*)",
+                                          "Domain1")
+        self.engine.register_regex_entity(r"the cat (?P<Cat>.*)",
+                                          "Domain2")
+        self.assertTrue(self.engine.drop_regex_entity(domain='Domain2',
+                                                      entity_type='Cat'))
+        self.assertFalse(self.engine.drop_regex_entity(domain='Domain1',
+                                                       entity_type='Cat'))

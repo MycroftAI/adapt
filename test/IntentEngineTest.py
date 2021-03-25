@@ -140,3 +140,28 @@ class IntentEngineTests(unittest.TestCase):
         # But sentence with laboratory should
         intent = next(self.engine.determine_intent(utterance2))
         assert intent
+
+    def testDropRegexEntity(self):
+        self.engine.register_regex_entity(r"the dog (?P<Dog>.*)")
+        self.engine.register_regex_entity(r"the cat (?P<Cat>.*)")
+        assert len(self.engine._regex_strings) == 2
+        assert len(self.engine.regular_expressions_entities) == 2
+        self.engine.drop_regex_entity(entity_type='Cat')
+        assert len(self.engine._regex_strings) == 1
+        assert len(self.engine.regular_expressions_entities) == 1
+
+    def testCustomDropRegexEntity(self):
+        self.engine.register_regex_entity(r"the dog (?P<SkillADog>.*)")
+        self.engine.register_regex_entity(r"the cat (?P<SkillACat>.*)")
+        self.engine.register_regex_entity(r"the mangy dog (?P<SkillBDog>.*)")
+        assert len(self.engine._regex_strings) == 3
+        assert len(self.engine.regular_expressions_entities) == 3
+
+        def matcher(regexp):
+            """Matcher for all match groups defined for SkillB"""
+            match_groups = regexp.groupindex.keys()
+            return any([k.startswith('SkillB') for k in match_groups])
+
+        self.engine.drop_regex_entity(match_func=matcher)
+        assert len(self.engine._regex_strings) == 2
+        assert len(self.engine.regular_expressions_entities) == 2

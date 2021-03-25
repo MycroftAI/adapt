@@ -214,6 +214,33 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         return len(ent_tuples) != 0
 
+    def drop_regex_entity(self, entity_type=None, match_func=None):
+        """Remove registered regex entity.
+
+        Arguments:
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        def default_match_func(regexp):
+            return entity_type in regexp.groupindex.keys()
+
+        match_func = match_func or default_match_func
+        matches = [r for r in self.regular_expressions_entities
+                   if match_func(r)]
+        matching_patterns = [r.pattern for r in matches]
+
+        self.regular_expressions_entities = [
+            r for r in self.regular_expressions_entities if r not in matches
+        ]
+        self._regex_strings = [
+            r for r in self._regex_strings if r not in matching_patterns
+        ]
+
+        return len(matches) != 0
+
 
 class DomainIntentDeterminationEngine(object):
     """
@@ -433,3 +460,17 @@ class DomainIntentDeterminationEngine(object):
         """
         return self.domains[domain].drop_entity(entity_type=entity_type,
                                                 match_func=match_func)
+
+    def drop_regex_entity(self, domain, entity_type=None, match_func=None):
+        """Remove registered regex entity.
+
+        Arguments:
+            domain (str): intent domain
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        return self.domains[domain].drop_regex_entity(entity_type=entity_type,
+                                                      match_func=match_func)
