@@ -54,18 +54,18 @@ class EnglishTokenizer(object):
             done with a contraction dictionary and some preprocessing.
         """
         s = string
-        s = re.sub('\t', " ", s)
-        s = re.sub("(" + regex_separator + ")", " \g<1> ", s)
-        s = re.sub("([^0-9]),", "\g<1> , ", s)
-        s = re.sub(",([^0-9])", " , \g<1>", s)
-        s = re.sub("^(')", "\g<1> ", s)
-        s = re.sub("(" + regex_not_letter_number + ")'", "\g<1> '", s)
-        s = re.sub("(" + regex_clitics + ")$", " \g<1>", s)
-        s = re.sub("(" + regex_clitics + ")(" + regex_not_letter_number + ")", " \g<1> \g<2>", s)
+        s = re.sub(r'\t', " ", s)
+        s = re.sub(r"(" + regex_separator + ")", r" \g<1> ", s)
+        s = re.sub(r"([^0-9]),", r"\g<1> , ", s)
+        s = re.sub(r",([^0-9])", r" , \g<1>", s)
+        s = re.sub(r"^(')", r"\g<1> ", s)
+        s = re.sub(r"(" + regex_not_letter_number + r")'", r"\g<1> '", s)
+        s = re.sub(r"(" + regex_clitics + r")$", r" \g<1>", s)
+        s = re.sub(r"(" + regex_clitics + r")(" + regex_not_letter_number + r")", r" \g<1> \g<2>", s)
 
         words = s.strip().split()
-        p1 = re.compile(".*" + regex_letter_number + "\\.")
-        p2 = re.compile("^([A-Za-z]\\.([A-Za-z]\\.)+|[A-Z][bcdfghj-nptvxz]+\\.)$")
+        p1 = re.compile(r".*" + regex_letter_number + r"\.")
+        p2 = re.compile(r"^([A-Za-z]\.([A-Za-z]\.)+|[A-Z][bcdfghj-nptvxz]+\.)$")
 
         token_list = []
 
