@@ -58,3 +58,110 @@ class IntentEngineTests(unittest.TestCase):
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser2'
+
+    def testDropIntent(self):
+        parser1 = IntentBuilder("Parser1").require("Entity1").build()
+        self.engine.register_intent_parser(parser1)
+        self.engine.register_entity("tree", "Entity1")
+
+        parser2 = (IntentBuilder("Parser2").require("Entity1")
+                   .require("Entity2").build())
+        self.engine.register_intent_parser(parser2)
+        self.engine.register_entity("house", "Entity2")
+
+        utterance = "go to the tree house"
+
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser2'
+
+        assert self.engine.drop_intent_parser('Parser2') is True
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+    def testDropEntity(self):
+        parser1 = IntentBuilder("Parser1").require("Entity1").build()
+        self.engine.register_intent_parser(parser1)
+        self.engine.register_entity("laboratory", "Entity1")
+        self.engine.register_entity("lab", "Entity1")
+
+        utterance = "get out of my lab"
+        utterance2 = "get out of my laboratory"
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        # Remove Entity and re-register laboratory and make sure only that
+        # matches.
+        self.engine.drop_entity(entity_type='Entity1')
+        self.engine.register_entity("laboratory", "Entity1")
+
+        # Sentence containing lab should not produce any results
+        with self.assertRaises(StopIteration):
+            intent = next(self.engine.determine_intent(utterance))
+
+        # But sentence with laboratory should
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+    def testCustomDropEntity(self):
+        parser1 = (IntentBuilder("Parser1").one_of("Entity1", "Entity2")
+                   .build())
+        self.engine.register_intent_parser(parser1)
+        self.engine.register_entity("laboratory", "Entity1")
+        self.engine.register_entity("lab", "Entity2")
+
+        utterance = "get out of my lab"
+        utterance2 = "get out of my laboratory"
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        def matcher(data):
+            return data[1].startswith('Entity')
+
+        self.engine.drop_entity(match_func=matcher)
+        self.engine.register_entity("laboratory", "Entity1")
+
+        # Sentence containing lab should not produce any results
+        with self.assertRaises(StopIteration):
+            intent = next(self.engine.determine_intent(utterance))
+
+        # But sentence with laboratory should
+        intent = next(self.engine.determine_intent(utterance2))
+        assert intent
+
+    def testDropRegexEntity(self):
+        self.engine.register_regex_entity(r"the dog (?P<Dog>.*)")
+        self.engine.register_regex_entity(r"the cat (?P<Cat>.*)")
+        assert len(self.engine._regex_strings) == 2
+        assert len(self.engine.regular_expressions_entities) == 2
+        self.engine.drop_regex_entity(entity_type='Cat')
+        assert len(self.engine._regex_strings) == 1
+        assert len(self.engine.regular_expressions_entities) == 1
+
+    def testCustomDropRegexEntity(self):
+        self.engine.register_regex_entity(r"the dog (?P<SkillADog>.*)")
+        self.engine.register_regex_entity(r"the cat (?P<SkillACat>.*)")
+        self.engine.register_regex_entity(r"the mangy dog (?P<SkillBDog>.*)")
+        assert len(self.engine._regex_strings) == 3
+        assert len(self.engine.regular_expressions_entities) == 3
+
+        def matcher(regexp):
+            """Matcher for all match groups defined for SkillB"""
+            match_groups = regexp.groupindex.keys()
+            return any([k.startswith('SkillB') for k in match_groups])
+
+        self.engine.drop_regex_entity(match_func=matcher)
+        assert len(self.engine._regex_strings) == 2
+        assert len(self.engine.regular_expressions_entities) == 2

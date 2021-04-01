@@ -22,7 +22,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="adapt-parser",
-    version="0.3.7",
+    version="0.4.0",
     author="Sean Fitzgerald",
     author_email="sean@fitzgeralds.me",
     description=("A text-to-intent parsing framework."),

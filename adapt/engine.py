@@ -175,6 +175,72 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         else:
             raise ValueError("%s is not an intent parser" % str(intent_parser))
 
+    def drop_intent_parser(self, parser_names):
+        """Drop a registered intent parser.
+
+        Arguments:
+            parser_names (str or iterable): parser name to drop or list of
+                                            names
+
+        Returns:
+            (bool) True if a parser was dropped else False
+        """
+        if isinstance(parser_names, str):
+            parser_names = [parser_names]
+
+        new_parsers = [p for p in self.intent_parsers
+                       if p.name not in parser_names]
+        num_original_parsers = len(self.intent_parsers)
+        self.intent_parsers = new_parsers
+
+        return len(self.intent_parsers) != num_original_parsers
+
+    def drop_entity(self, entity_type=None, match_func=None):
+        """Drop all entities mathching the given entity type or match function
+
+        Arguments:
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        def default_match_func(data):
+            return data and data[1] == entity_type
+
+        ent_tuples = self.trie.scan(match_func or default_match_func)
+        for entity in ent_tuples:
+            self.trie.remove(*entity)
+
+        return len(ent_tuples) != 0
+
+    def drop_regex_entity(self, entity_type=None, match_func=None):
+        """Remove registered regex entity.
+
+        Arguments:
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        def default_match_func(regexp):
+            return entity_type in regexp.groupindex.keys()
+
+        match_func = match_func or default_match_func
+        matches = [r for r in self.regular_expressions_entities
+                   if match_func(r)]
+        matching_patterns = [r.pattern for r in matches]
+
+        self.regular_expressions_entities = [
+            r for r in self.regular_expressions_entities if r not in matches
+        ]
+        self._regex_strings = [
+            r for r in self._regex_strings if r not in matching_patterns
+        ]
+
+        return len(matches) != 0
+
 
 class DomainIntentDeterminationEngine(object):
     """
@@ -368,3 +434,43 @@ class DomainIntentDeterminationEngine(object):
             self.register_domain(domain=domain)
         self.domains[domain].register_intent_parser(
             intent_parser=intent_parser)
+
+    def drop_intent_parser(self, parser_names, domain):
+        """Drop a registered intent parser.
+
+        Arguments:
+            parser_names (list, str): parser names to drop.
+            domain (str): domain to drop from
+
+        Returns:
+            (bool) True if an intent parser was dropped else false.
+        """
+        return self.domains[domain].drop_intent_parser(parser_names)
+
+    def drop_entity(self, domain, entity_type=None, match_func=None):
+        """Drop all entities mathching the given entity type or match function.
+
+        Arguments:
+            domain (str): intent domain
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        return self.domains[domain].drop_entity(entity_type=entity_type,
+                                                match_func=match_func)
+
+    def drop_regex_entity(self, domain, entity_type=None, match_func=None):
+        """Remove registered regex entity.
+
+        Arguments:
+            domain (str): intent domain
+            entity_type (str): entity name to match against
+            match_func (callable): match function to find entities
+
+        Returns:
+            (bool) True if vocab was found and removed otherwise False.
+        """
+        return self.domains[domain].drop_regex_entity(entity_type=entity_type,
+                                                      match_func=match_func)
