@@ -1,1 +1,3 @@
-xmlrunner==1.7.7
+flake8
+pytest
+-r requirements.txt
