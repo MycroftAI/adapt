@@ -86,6 +86,32 @@ def register_pandora_vocab(emitter):
         for match in m.groups():
             register_vocab('Pandora Station', match)
 ```
+
+Development
+=======
+
+Glad you'd like to help!
+
+To install test and development requirements run
+
+```
+pip install -r test-requirements.txt
+```
+
+This will install the test-requirements as well as the runtime requirements for adapt.
+
+To test any changes before submitting them run
+
+```
+pytest test/*
+```
+
+*flake8* can be used to check for some common errors to verify that your code passes the same checks that are run on each PR run
+
+```
+flake8 . --select=E9,F63,F7,F82  --show-source
+```
+
 Learn More
 ========
 
