@@ -31,10 +31,8 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings.
-        # Intentionally disabled until the code style of the project is fixed.
-        # flake8 . --count --exit-zero --max-complexity=10 --max-line-length=79 --statistics
+        # Code style checks disabled until the style of the project is set.
+        ./run_tests.sh lint
     - name: Test with pytest
       run: |
-        pytest test/*
+        ./run_tests.sh test
