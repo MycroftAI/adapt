@@ -88,7 +88,7 @@ def register_pandora_vocab(emitter):
 ```
 
 Development
-=======
+===========
 
 Glad you'd like to help!
 
@@ -103,14 +103,10 @@ This will install the test-requirements as well as the runtime requirements for 
 To test any changes before submitting them run
 
 ```
-pytest test/*
+./run_tests.sh
 ```
 
-*flake8* can be used to check for some common errors to verify that your code passes the same checks that are run on each PR run
-
-```
-flake8 . --select=E9,F63,F7,F82  --show-source
-```
+This will run the same checks as the Github actions and verify that your code should pass with flying colours.
 
 Learn More
 ========
