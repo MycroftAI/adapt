@@ -86,6 +86,28 @@ def register_pandora_vocab(emitter):
         for match in m.groups():
             register_vocab('Pandora Station', match)
 ```
+
+Development
+===========
+
+Glad you'd like to help!
+
+To install test and development requirements run
+
+```
+pip install -r test-requirements.txt
+```
+
+This will install the test-requirements as well as the runtime requirements for adapt.
+
+To test any changes before submitting them run
+
+```
+./run_tests.sh
+```
+
+This will run the same checks as the Github actions and verify that your code should pass with flying colours.
+
 Learn More
 ========
 
