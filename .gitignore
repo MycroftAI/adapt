@@ -5,3 +5,4 @@ dist/
 *.pyc
 TEST-*.xml
 .virtualenv
+.envrc
