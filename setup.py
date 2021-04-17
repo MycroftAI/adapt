@@ -15,10 +15,20 @@
 
 __author__ = 'seanfitz'
 
+import os
 from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+
+def required(requirements_file):
+    """Read requirements file and remove comments and empty lines."""
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(base_dir, requirements_file), 'r') as f:
+        requirements = f.read().splitlines()
+        return [pkg for pkg in requirements
+                if pkg.strip() and not pkg.startswith("#")]
 
 setup(
     name="adapt-parser",
@@ -45,8 +55,5 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
 
-    install_requires=[
-        "pyee==8.1.0",
-        "six>=1.10.0"
-    ]
+    install_requires=required('requirements.txt')
 )
