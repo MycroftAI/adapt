@@ -186,7 +186,7 @@ class Intent(object):
             if optional_tag in local_tags:
                 local_tags.remove(optional_tag)
             used_tags.append(optional_tag)
-            intent_confidence += 1.0
+            intent_confidence += tag_confidence
 
         total_confidence = (intent_confidence / len(tags) * parse_weight) if tags else 0.0
 
