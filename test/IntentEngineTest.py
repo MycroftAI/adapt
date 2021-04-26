@@ -165,3 +165,14 @@ class IntentEngineTests(unittest.TestCase):
         self.engine.drop_regex_entity(match_func=matcher)
         assert len(self.engine._regex_strings) == 2
         assert len(self.engine.regular_expressions_entities) == 2
+    def testEmptyTags(self):
+        # Validates https://github.com/MycroftAI/adapt/issues/114
+        engine = IntentDeterminationEngine()
+        engine.register_entity("Kevin",
+                               "who")  # same problem if several entities
+        builder = IntentBuilder("Buddies")
+        builder.optionally("who")  # same problem if several entity types
+        engine.register_intent_parser(builder.build())
+
+        intents = [i for i in engine.determine_intent("Julien is a friend")]
+        assert len(intents) == 0
