@@ -134,12 +134,12 @@ class Intent(object):
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
 
-    def validate_with_tags(self, tags, confidence):
+    def validate_with_tags(self, tags, parse_weight):
         """Validate whether tags has required entites for this intent to fire
 
         Args:
             tags(list): Tags and Entities used for validation
-            confidence(float): ?
+            parse_weight(float): ?
 
         Returns:
             intent, tags: Returns intent and tags used by the intent on
@@ -152,7 +152,7 @@ class Intent(object):
         used_tags = []
 
         for require_type, attribute_name in self.requires:
-            required_tag, canonical_form, confidence = find_first_tag(local_tags, require_type)
+            required_tag, canonical_form, tag_confidence = find_first_tag(local_tags, require_type)
             if not required_tag:
                 result['confidence'] = 0.0
                 return result, []
@@ -161,8 +161,7 @@ class Intent(object):
             if required_tag in local_tags:
                 local_tags.remove(required_tag)
             used_tags.append(required_tag)
-            # TODO: use confidence based on edit distance and context
-            intent_confidence += confidence
+            intent_confidence += tag_confidence
 
         if len(self.at_least_one) > 0:
             best_resolution = resolve_one_of(tags, self.at_least_one)
@@ -178,7 +177,7 @@ class Intent(object):
                     local_tags.remove(best_resolution)
 
         for optional_type, attribute_name in self.optional:
-            optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
+            optional_tag, canonical_form, tag_confidence = find_first_tag(local_tags, optional_type)
             if not optional_tag or attribute_name in result:
                 continue
             result[attribute_name] = canonical_form
@@ -187,9 +186,9 @@ class Intent(object):
             used_tags.append(optional_tag)
             intent_confidence += 1.0
 
-        total_confidence = intent_confidence / len(tags) * confidence
+        total_confidence = intent_confidence / len(tags) * parse_weight if tags else 0.0
 
-        target_client, canonical_form, confidence = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
+        target_client, canonical_form, parse_weight = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
