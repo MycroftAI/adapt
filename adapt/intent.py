@@ -139,7 +139,9 @@ class Intent(object):
 
         Args:
             tags(list): Tags and Entities used for validation
-            parse_weight(float): ?
+            parse_weight(float): The weight associate to the parse result,
+                as indicated by the parser. This is influenced by a parser
+                that uses edit distance or context.
 
         Returns:
             intent, tags: Returns intent and tags used by the intent on
