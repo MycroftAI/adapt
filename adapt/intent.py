@@ -186,7 +186,7 @@ class Intent(object):
             used_tags.append(optional_tag)
             intent_confidence += 1.0
 
-        total_confidence = intent_confidence / len(tags) * parse_weight if tags else 0.0
+        total_confidence = (intent_confidence / len(tags) * parse_weight) if tags else 0.0
 
         target_client, canonical_form, parse_weight = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
