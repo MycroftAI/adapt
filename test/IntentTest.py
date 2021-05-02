@@ -17,7 +17,7 @@ import re
 import unittest
 from adapt.parser import Parser
 from adapt.entity_tagger import EntityTagger
-from adapt.intent import IntentBuilder, resolve_one_of
+from adapt.intent import IntentBuilder, resolve_one_of, choose_1_from_each
 from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
 
@@ -312,3 +312,125 @@ class IntentTest(unittest.TestCase):
         }
 
         assert resolve_one_of(tags, at_least_one) == result
+
+
+# noinspection PyPep8Naming
+def TestTag(tag_name,
+            tag_value,
+            tag_confidence=1.0,
+            entity_confidence=1.0,
+            match=None):
+    """
+    Create a dict in the shape of a tag as yielded from parser.
+    :param tag_name: tag name (equivalent to a label)
+    :param tag_value: tag value (value being labeled)
+    :param tag_confidence: confidence of parse of the tag, influenced by
+        fuzzy matching or context
+    :param entity_confidence: weight of the entity, influenced by
+        context
+    :param match: the text matched by the parser, which may not match tag_value
+        in the case of an alias or fuzzy matching. Defaults to tag_value.
+
+    Uses "from_context" attribute to force token positioning to be ignored.
+
+    :return: a dict that matches the shape of a parser tag
+    """
+    return {
+        "confidence": tag_confidence,
+        "entities": [
+            {
+                "confidence": entity_confidence,
+                "data": [
+                    [
+                        tag_value,
+                        tag_name
+                    ]
+                ],
+                "key": tag_value,
+                "match": match or tag_value
+            }
+        ],
+        "from_context": False,
+        "key": tag_value,
+        "match": match or tag_value,
+        "start_token": -1,
+        "end_token": -1,
+        "from_context": True
+    }
+
+
+class IntentUtilityFunctionsTest(unittest.TestCase):
+    def test_choose_1_from_each_empty(self):
+        expected = []
+        actual = list(choose_1_from_each([[]]))
+        self.assertListEqual(expected, actual)
+
+    def test_choose_1_from_each_basic(self):
+        inputs = [
+            ['A', 'B'],
+            ['C', 'D']
+        ]
+        expected = [
+            ['A', 'C'],
+            ['A', 'D'],
+            ['B', 'C'],
+            ['B', 'D']
+        ]
+        actual = list(choose_1_from_each(inputs))
+        self.assertListEqual(expected, actual)
+
+    def test_choose_1_from_each_varying_sizes(self):
+        inputs = [
+            ['A'],
+            ['B', 'C'],
+            ['D', 'E', 'F']
+        ]
+
+        expected = [
+            ['A', 'B', 'D'],
+            ['A', 'B', 'E'],
+            ['A', 'B', 'F'],
+            ['A', 'C', 'D'],
+            ['A', 'C', 'E'],
+            ['A', 'C', 'F'],
+        ]
+
+        actual = list(choose_1_from_each(inputs))
+        self.assertListEqual(expected, actual)
+
+
+class IntentScoringTest(unittest.TestCase):
+    def setUp(self):
+        self.require_intent = IntentBuilder('require_intent').\
+            require('required').\
+            build()
+        self.one_of_intent = IntentBuilder('one_of_intent').\
+            one_of('one_of_1', 'one_of_2').\
+            build()
+        self.optional_intent = IntentBuilder('optional_intent').\
+            optionally('optional').\
+            build()
+        self.all_features_intent = IntentBuilder('test_intent').\
+            require('required').\
+            one_of('one_of_1').\
+            one_of('one_of_2').\
+            optionally('optional').\
+            build()
+
+    def test_basic_scoring_default_weights(self):
+        required = TestTag('required', 'foo')
+        one_of_1 = TestTag('one_of_1', 'bar')
+        one_of_2 = TestTag('one_of_2', 'baz')
+        optional = TestTag('optional', 'bing')
+
+        intent, tags = self.require_intent.validate_with_tags([required], confidence=1.0)
+        self.assertEqual(1.0, intent.get('confidence'))
+        self.assertListEqual([required], tags)
+
+        intent, tags = self.one_of_intent.validate_with_tags([one_of_1], confidence=1.0)
+        self.assertEqual(1.0, intent.get('confidence'))
+        self.assertListEqual([one_of_1], tags)
+
+        intent, tags = self.optional_intent.validate_with_tags([optional], confidence=1.0)
+        self.assertEqual(1.0, intent.get('confidence'))
+        self.assertListEqual([optional], tags)

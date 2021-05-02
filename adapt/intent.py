@@ -15,6 +15,8 @@
 
 __author__ = 'seanfitz'
 
+import itertools
+
 CLIENT_ENTITY_NAME = 'Client'
 
 
@@ -30,21 +32,24 @@ def find_first_tag(tags, entity_type, after_index=-1):
     """Searches tags for entity type after given index
 
     Args:
-        tags(list): a list of tags with entity types to be compaired too entity_type
+        tags(list): a list of tags with entity types to be compared to
+         entity_type
         entity_type(str): This is he entity type to be looking for in tags
-        after_index(int): the start token must be greaterthan this.
+        after_index(int): the start token must be greater than this.
 
     Returns:
         ( tag, v, confidence ):
             tag(str): is the tag that matched
             v(str): ? the word that matched?
-            confidence(float): is a mesure of accuacy.  1 is full confidence and 0 is none.
+            confidence(float): is a measure of accuracy.  1 is full confidence
+                and 0 is none.
     """
     for tag in tags:
         for entity in tag.get('entities'):
             for v, t in entity.get('data'):
                 if t.lower() == entity_type.lower() and \
-                        (tag.get('start_token', 0) > after_index or tag.get('from_context', False)):
+                        (tag.get('start_token', 0) > after_index or \
+                         tag.get('from_context', False)):
                     return tag, v, entity.get('confidence')
 
     return None, None, None
@@ -58,38 +63,37 @@ def find_next_tag(tags, end_index=0):
 
 
 def choose_1_from_each(lists):
-    """Takes a list of lists and returns a list of lists with one item
-    from each list.  This new list should be the length of each list multiplied
-    by the others.  18 for an list with lists of 3, 2 and 3.  Also the lenght
-    of each sub list should be same as the length of lists passed in.
+    """
+    The original implementation here was functionally equivalent to
+    :func:`~itertools.product`, except that the former returns a generator
+    of lists, and itertools returns a generator of tuples. This is going to do
+    a light transform for now, until callers can be verified to work with
+    tuples.
 
     Args:
-        lists(list of Lists):  A list of lists
+        A list of lists or tuples, expected as input to
+        :func:`~itertools.product`
 
     Returns:
-        list of lists: returns a list of lists constructions of one item from each
-            list in lists.
+        a generator of lists, see docs on :func:`~itertools.product`
     """
-    if len(lists) == 0:
-        yield []
-    else:
-        for el in lists[0]:
-            for next_list in choose_1_from_each(lists[1:]):
-                yield [el] + next_list
+    for result in itertools.product(*lists):
+        yield list(result)
 
 
 def resolve_one_of(tags, at_least_one):
-    """This searches tags for Entities in at_least_one and returns any match
+    """Search through all combinations of at_least_one rules to find a
+    combination that is covered by tags
 
     Args:
         tags(list): List of tags with Entities to search for Entities
         at_least_one(list): List of Entities to find in tags
 
     Returns:
-        object: returns None if no match is found but returns any match as an object
+        object:
+        returns None if no match is found but returns any match as an object
     """
-    if len(tags) < len(at_least_one):
-        return None
+
     for possible_resolution in choose_1_from_each(at_least_one):
         resolution = {}
         pr = possible_resolution[:]
@@ -97,13 +101,15 @@ def resolve_one_of(tags, at_least_one):
             last_end_index = -1
             if entity_type in resolution:
                 last_end_index = resolution[entity_type][-1].get('end_token')
-            tag, value, c = find_first_tag(tags, entity_type, after_index=last_end_index)
+            tag, value, c = find_first_tag(tags, entity_type,
+                                           after_index=last_end_index)
             if not tag:
                 break
             else:
                 if entity_type not in resolution:
                     resolution[entity_type] = []
                 resolution[entity_type].append(tag)
+        # Check if this is a valid resolution (all one_of rules matched)
         if len(resolution) == len(possible_resolution):
             return resolution
 
@@ -129,13 +135,13 @@ class Intent(object):
         """Using this method removes tags from the result of validate_with_tags
 
         Returns:
-            intent(intent): Resuts from validate_with_tags
+            intent(intent): Results from validate_with_tags
         """
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
 
     def validate_with_tags(self, tags, confidence):
-        """Validate whether tags has required entites for this intent to fire
+        """Validate whether tags has required entities for this intent to fire
 
         Args:
             tags(list): Tags and Entities used for validation
@@ -143,7 +149,7 @@ class Intent(object):
 
         Returns:
             intent, tags: Returns intent and tags used by the intent on
-                falure to meat required entities then returns intent with confidence
+                failure to meat required entities then returns intent with confidence
                 of 0.0 and an empty list for tags.
         """
         result = {'intent_type': self.name}
@@ -165,17 +171,22 @@ class Intent(object):
             intent_confidence += confidence
 
         if len(self.at_least_one) > 0:
-            best_resolution = resolve_one_of(tags, self.at_least_one)
+            # we want to use a copy of the original tags here, as opposed to
+            # local_tags. This allows us to have overlaps between `required`
+            # and `at_least_one`, as `at_least_one` does not currently support
+            # renaming,
+            best_resolution = resolve_one_of(local_tags, self.at_least_one)
             if not best_resolution:
                 result['confidence'] = 0.0
                 return result, []
             else:
                 for key in best_resolution:
-                    result[key] = best_resolution[key][0].get('key') # TODO: at least one must support aliases
+                    # TODO: at least one should support aliases
+                    result[key] = best_resolution[key][0].get('key')
                     intent_confidence += 1.0 * best_resolution[key][0]['entities'][0].get('confidence', 1.0)
-                used_tags.append(best_resolution)
+                used_tags.append(best_resolution[key][0])
                 if best_resolution in local_tags:
-                    local_tags.remove(best_resolution)
+                    local_tags.remove(best_resolution[key][0])
 
         for optional_type, attribute_name in self.optional:
             optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
@@ -203,7 +214,7 @@ class IntentBuilder(object):
 
     Attributes:
         at_least_one(list): A list of Entities where one is required.
-            These are seperated into lists so you can have one of (A or B) and
+            These are separated into lists so you can have one of (A or B) and
             then require one of (D or F).
         requires(list): A list of Required Entities
         optional(list): A list of optional Entities
