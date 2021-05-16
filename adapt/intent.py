@@ -141,15 +141,18 @@ class Intent(object):
         return intent
 
     def validate_with_tags(self, tags, parse_confidence):
-        """Validate whether tags has required entities for this intent to fire
+        """Validate whether tags has required entites for this intent to fire
 
         Args:
             tags(list): Tags and Entities used for validation
-            parse_confidence(float): the weighted confidence
+            parse_confidence(float): The weight associate to the parse result,
+                as indicated by the parser. This is influenced by a parser
+                that uses edit distance or context.
 
         Returns:
             intent, tags: Returns intent and tags used by the intent on
-                failure to meat required entities then returns intent with confidence
+                failure to meat required entities then returns intent with
+                confidence
                 of 0.0 and an empty list for tags.
         """
         result = {'intent_type': self.name}
@@ -158,7 +161,8 @@ class Intent(object):
         used_tags = []
 
         for require_type, attribute_name in self.requires:
-            required_tag, canonical_form, confidence = find_first_tag(local_tags, require_type)
+            required_tag, canonical_form, tag_confidence = \
+                find_first_tag(local_tags, require_type)
             if not required_tag:
                 result['confidence'] = 0.0
                 return result, []
@@ -167,8 +171,7 @@ class Intent(object):
             if required_tag in local_tags:
                 local_tags.remove(required_tag)
             used_tags.append(required_tag)
-            # TODO: use confidence based on edit distance and context
-            intent_confidence += confidence
+            intent_confidence += tag_confidence
 
         if len(self.at_least_one) > 0:
             best_resolution = resolve_one_of(local_tags, self.at_least_one)
@@ -179,24 +182,29 @@ class Intent(object):
                 for key in best_resolution:
                     # TODO: at least one should support aliases
                     result[key] = best_resolution[key][0].get('key')
-                    intent_confidence += 1.0 * best_resolution[key][0]['entities'][0].get('confidence', 1.0)
+                    intent_confidence += \
+                        1.0 * best_resolution[key][0]['entities'][0]\
+                            .get('confidence', 1.0)
                 used_tags.append(best_resolution[key][0])
                 if best_resolution in local_tags:
                     local_tags.remove(best_resolution[key][0])
 
         for optional_type, attribute_name in self.optional:
-            optional_tag, canonical_form, conf = find_first_tag(local_tags, optional_type)
+            optional_tag, canonical_form, tag_confidence = \
+                find_first_tag(local_tags, optional_type)
             if not optional_tag or attribute_name in result:
                 continue
             result[attribute_name] = canonical_form
             if optional_tag in local_tags:
                 local_tags.remove(optional_tag)
             used_tags.append(optional_tag)
-            intent_confidence += conf
+            intent_confidence += tag_confidence
 
-        total_confidence = intent_confidence / len(tags) * parse_confidence
+        total_confidence = (intent_confidence / len(tags) * parse_confidence) \
+            if tags else 0.0
 
-        target_client, canonical_form, confidence = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
+        target_client, canonical_form, parse_confidence = \
+            find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
@@ -220,14 +228,18 @@ class IntentBuilder(object):
         This is designed to allow construction of intents in one line.
 
     Example:
-        IntentBuilder("Intent").requires("A").one_of("C","D").optional("G").build()
+        IntentBuilder("Intent")\
+            .requires("A")\
+            .one_of("C","D")\
+            .optional("G").build()
     """
     def __init__(self, intent_name):
         """
         Constructor
 
         Args:
-            intent_name(str): the name of the intents that this parser parses/validates
+            intent_name(str): the name of the intents that this parser
+            parses/validates
         """
         self.at_least_one = []
         self.requires = []
@@ -236,7 +248,8 @@ class IntentBuilder(object):
 
     def one_of(self, *args):
         """
-        The intent parser should require one of the provided entity types to validate this clause.
+        The intent parser should require one of the provided entity types to
+        validate this clause.
 
         Args:
             args(args): *args notation list of entity names
@@ -253,7 +266,8 @@ class IntentBuilder(object):
 
         Args:
             entity_type(str): an entity type
-            attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.
+            attribute_name(str): the name of the attribute on the parsed intent.
+            Defaults to match entity_type.
 
         Returns:
             self: to continue modifications.
@@ -265,11 +279,13 @@ class IntentBuilder(object):
 
     def optionally(self, entity_type, attribute_name=None):
         """
-        Parsed intents from this parser can optionally include an entity of the provided type.
+        Parsed intents from this parser can optionally include an entity of the
+         provided type.
 
         Args:
             entity_type(str): an entity type
-            attribute_name(str): the name of the attribute on the parsed intent. Defaults to match entity_type.
+            attribute_name(str): the name of the attribute on the parsed intent.
+            Defaults to match entity_type.
 
         Returns:
             self: to continue modifications.
@@ -285,4 +301,5 @@ class IntentBuilder(object):
 
         :return: an Intent instance.
         """
-        return Intent(self.name, self.requires, self.at_least_one, self.optional)
+        return Intent(self.name, self.requires,
+                      self.at_least_one, self.optional)
