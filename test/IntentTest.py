@@ -30,12 +30,15 @@ class IntentTest(unittest.TestCase):
         self.trie = Trie()
         self.tokenizer = EnglishTokenizer()
         self.regex_entities = []
-        self.tagger = EntityTagger(self.trie, self.tokenizer, regex_entities=self.regex_entities)
+        self.tagger = EntityTagger(self.trie, self.tokenizer,
+                                   regex_entities=self.regex_entities)
         self.trie.insert("play", ("play", "PlayVerb"))
         self.trie.insert("stop", ("stop", "StopVerb"))
-        self.trie.insert("the big bang theory", ("the big bang theory", "Television Show"))
+        self.trie.insert("the big bang theory",
+                         ("the big bang theory", "Television Show"))
         self.trie.insert("the big", ("the big", "Not a Thing"))
-        self.trie.insert("barenaked ladies", ("barenaked ladies", "Radio Station"))
+        self.trie.insert("barenaked ladies",
+                         ("barenaked ladies", "Radio Station"))
         self.trie.insert("show", ("show", "Command"))
         self.trie.insert("what", ("what", "Question"))
         self.parser = Parser(self.tokenizer, self.tagger)
@@ -44,29 +47,32 @@ class IntentTest(unittest.TestCase):
         pass
 
     def test_basic_intent(self):
-        intent = IntentBuilder("play television intent")\
-            .require("PlayVerb")\
-            .require("Television Show")\
+        intent = IntentBuilder("play television intent") \
+            .require("PlayVerb") \
+            .require("Television Show") \
             .build()
         for result in self.parser.parse("play the big bang theory"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('PlayVerb') == 'play'
             assert result_intent.get('Television Show') == "the big bang theory"
 
     def test_at_least_one(self):
-        intent = IntentBuilder("play intent")\
-            .require("PlayVerb")\
-            .one_of("Television Show", "Radio Station")\
+        intent = IntentBuilder("play intent") \
+            .require("PlayVerb") \
+            .one_of("Television Show", "Radio Station") \
             .build()
         for result in self.parser.parse("play the big bang theory"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('PlayVerb') == 'play'
             assert result_intent.get('Television Show') == "the big bang theory"
 
         for result in self.parser.parse("play the barenaked ladies"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('PlayVerb') == 'play'
             assert result_intent.get('Radio Station') == "barenaked ladies"
@@ -76,14 +82,16 @@ class IntentTest(unittest.TestCase):
         self.trie.insert("living room", ("living room", "living room"))
         self.trie.insert("what is", ("what is", "what is"))
 
-        intent = IntentBuilder("test intent")\
-            .one_of("what is")\
-            .one_of("temperature", "living room")\
-            .one_of("temperature")\
+        intent = IntentBuilder("test intent") \
+            .one_of("what is") \
+            .one_of("temperature", "living room") \
+            .one_of("temperature") \
             .build()
 
-        for result in self.parser.parse("what is the temperature in the living room"):
-            result_intent = intent.validate(result.get("tags"), result.get("confidence"))
+        for result in self.parser.parse(
+                "what is the temperature in the living room"):
+            result_intent = intent.validate(result.get("tags"),
+                                            result.get("confidence"))
             assert result_intent.get("confidence") > 0.0
             assert result_intent.get("temperature") == "temperature"
             assert result_intent.get("living room") == "living room"
@@ -94,12 +102,14 @@ class IntentTest(unittest.TestCase):
             .one_of("Television Show", "Radio Station") \
             .build()
         for result in self.parser.parse("play the big bang theory"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Television Show') == "the big bang theory"
 
         for result in self.parser.parse("play the barenaked ladies"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Radio Station') == "barenaked ladies"
 
@@ -109,46 +119,51 @@ class IntentTest(unittest.TestCase):
             .build()
 
         for result in self.parser.parse("show"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Command') == "show"
 
     def test_basic_intent_with_alternate_names(self):
-        intent = IntentBuilder("play television intent")\
-            .require("PlayVerb", "Play Verb")\
-            .require("Television Show", "series")\
+        intent = IntentBuilder("play television intent") \
+            .require("PlayVerb", "Play Verb") \
+            .require("Television Show", "series") \
             .build()
         for result in self.parser.parse("play the big bang theory"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Play Verb') == 'play'
             assert result_intent.get('series') == "the big bang theory"
 
     def test_intent_with_regex_entity(self):
         self.trie = Trie()
-        self.tagger = EntityTagger(self.trie, self.tokenizer, self.regex_entities)
+        self.tagger = EntityTagger(self.trie, self.tokenizer,
+                                   self.regex_entities)
         self.parser = Parser(self.tokenizer, self.tagger)
         self.trie.insert("theory", ("theory", "Concept"))
         regex = re.compile(r"the (?P<Event>.*)")
         self.regex_entities.append(regex)
-        intent = IntentBuilder("mock intent")\
-            .require("Event")\
+        intent = IntentBuilder("mock intent") \
+            .require("Event") \
             .require("Concept").build()
 
         for result in self.parser.parse("the big bang theory"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Event') == 'big bang'
             assert result_intent.get('Concept') == "theory"
 
     def test_intent_using_alias(self):
         self.trie.insert("big bang", ("the big bang theory", "Television Show"))
-        intent = IntentBuilder("play television intent")\
-            .require("PlayVerb", "Play Verb")\
-            .require("Television Show", "series")\
+        intent = IntentBuilder("play television intent") \
+            .require("PlayVerb", "Play Verb") \
+            .require("Television Show", "series") \
             .build()
         for result in self.parser.parse("play the big bang theory"):
-            result_intent = intent.validate(result.get('tags'), result.get('confidence'))
+            result_intent = intent.validate(result.get('tags'),
+                                            result.get('confidence'))
             assert result_intent.get('confidence') > 0.0
             assert result_intent.get('Play Verb') == 'play'
             assert result_intent.get('series') == "the big bang theory"
@@ -401,36 +416,86 @@ class IntentUtilityFunctionsTest(unittest.TestCase):
 
 class IntentScoringTest(unittest.TestCase):
     def setUp(self):
-        self.require_intent = IntentBuilder('require_intent').\
-            require('required').\
+        self.require_intent = IntentBuilder('require_intent'). \
+            require('required'). \
             build()
-        self.one_of_intent = IntentBuilder('one_of_intent').\
-            one_of('one_of_1', 'one_of_2').\
+        self.one_of_intent = IntentBuilder('one_of_intent'). \
+            one_of('one_of_1', 'one_of_2'). \
             build()
-        self.optional_intent = IntentBuilder('optional_intent').\
-            optionally('optional').\
+        self.optional_intent = IntentBuilder('optional_intent'). \
+            optionally('optional'). \
             build()
-        self.all_features_intent = IntentBuilder('test_intent').\
-            require('required').\
-            one_of('one_of_1').\
-            one_of('one_of_2').\
-            optionally('optional').\
+        self.all_features_intent = IntentBuilder('test_intent'). \
+            require('required'). \
+            one_of('one_of_1', 'one_of_2'). \
+            optionally('optional'). \
             build()
 
     def test_basic_scoring_default_weights(self):
         required = TestTag('required', 'foo')
         one_of_1 = TestTag('one_of_1', 'bar')
-        one_of_2 = TestTag('one_of_2', 'baz')
         optional = TestTag('optional', 'bing')
 
-        intent, tags = self.require_intent.validate_with_tags([required], confidence=1.0)
+        intent, tags = \
+            self.require_intent.validate_with_tags([required],
+                                                   parse_confidence=1.0)
         self.assertEqual(1.0, intent.get('confidence'))
         self.assertListEqual([required], tags)
 
-        intent, tags = self.one_of_intent.validate_with_tags([one_of_1], confidence=1.0)
+        intent, tags = \
+            self.one_of_intent.validate_with_tags([one_of_1],
+                                                  parse_confidence=1.0)
         self.assertEqual(1.0, intent.get('confidence'))
         self.assertListEqual([one_of_1], tags)
 
-        intent, tags = self.optional_intent.validate_with_tags([optional], confidence=1.0)
+        intent, tags = \
+            self.optional_intent.validate_with_tags([optional],
+                                                    parse_confidence=1.0)
         self.assertEqual(1.0, intent.get('confidence'))
+        self.assertListEqual([optional], tags)
+
+    def test_weighted_scoring_from_regex_entities(self):
+        required = TestTag('required', 'foo', entity_confidence=0.5)
+        one_of_1 = TestTag('one_of_1', 'bar', entity_confidence=0.5)
+        optional = TestTag('optional', 'bing', entity_confidence=0.5)
+
+        intent, tags = \
+            self.require_intent.validate_with_tags([required],
+                                                   parse_confidence=1.0)
+        self.assertEqual(0.5, intent.get('confidence'))
+        self.assertListEqual([required], tags)
+
+        intent, tags = \
+            self.one_of_intent.validate_with_tags([one_of_1],
+                                                  parse_confidence=1.0)
+        self.assertEqual(0.5, intent.get('confidence'))
+        self.assertListEqual([one_of_1], tags)
+
+        intent, tags = \
+            self.optional_intent.validate_with_tags([optional],
+                                                    parse_confidence=1.0)
+        self.assertEqual(0.5, intent.get('confidence'))
+        self.assertListEqual([optional], tags)
+
+    def test_weighted_scoring_from_fuzzy_matching(self):
+        required = TestTag('required', 'foo')
+        one_of_1 = TestTag('one_of_1', 'bar')
+        optional = TestTag('optional', 'bing')
+
+        intent, tags = \
+            self.require_intent.validate_with_tags([required],
+                                                   parse_confidence=0.5)
+        self.assertEqual(0.5, intent.get('confidence'))
+        self.assertListEqual([required], tags)
+
+        intent, tags = \
+            self.one_of_intent.validate_with_tags([one_of_1],
+                                                  parse_confidence=0.5)
+        self.assertEqual(0.5, intent.get('confidence'))
+        self.assertListEqual([one_of_1], tags)
+
+        intent, tags = \
+            self.optional_intent.validate_with_tags([optional],
+                                                    parse_confidence=0.5)
+        self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([optional], tags)

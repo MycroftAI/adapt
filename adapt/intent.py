@@ -140,12 +140,12 @@ class Intent(object):
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
 
-    def validate_with_tags(self, tags, confidence):
+    def validate_with_tags(self, tags, parse_confidence):
         """Validate whether tags has required entities for this intent to fire
 
         Args:
             tags(list): Tags and Entities used for validation
-            confidence(float): ?
+            parse_confidence(float): the weighted confidence
 
         Returns:
             intent, tags: Returns intent and tags used by the intent on
@@ -196,9 +196,9 @@ class Intent(object):
             if optional_tag in local_tags:
                 local_tags.remove(optional_tag)
             used_tags.append(optional_tag)
-            intent_confidence += 1.0
+            intent_confidence += conf
 
-        total_confidence = intent_confidence / len(tags) * confidence
+        total_confidence = intent_confidence / len(tags) * parse_confidence
 
         target_client, canonical_form, confidence = find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
