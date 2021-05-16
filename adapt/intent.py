@@ -140,12 +140,12 @@ class Intent(object):
         intent, tags = self.validate_with_tags(tags, confidence)
         return intent
 
-    def validate_with_tags(self, tags, parse_confidence):
+    def validate_with_tags(self, tags, confidence):
         """Validate whether tags has required entites for this intent to fire
 
         Args:
             tags(list): Tags and Entities used for validation
-            parse_confidence(float): The weight associate to the parse result,
+            confidence(float): The weight associate to the parse result,
                 as indicated by the parser. This is influenced by a parser
                 that uses edit distance or context.
 
@@ -184,7 +184,7 @@ class Intent(object):
                     result[key] = best_resolution[key][0].get('key')
                     intent_confidence += \
                         1.0 * best_resolution[key][0]['entities'][0]\
-                            .get('confidence', 1.0)
+                        .get('confidence', 1.0)
                 used_tags.append(best_resolution[key][0])
                 if best_resolution in local_tags:
                     local_tags.remove(best_resolution[key][0])
@@ -200,10 +200,10 @@ class Intent(object):
             used_tags.append(optional_tag)
             intent_confidence += tag_confidence
 
-        total_confidence = (intent_confidence / len(tags) * parse_confidence) \
+        total_confidence = (intent_confidence / len(tags) * confidence) \
             if tags else 0.0
 
-        target_client, canonical_form, parse_confidence = \
+        target_client, canonical_form, confidence = \
             find_first_tag(local_tags, CLIENT_ENTITY_NAME)
 
         result['target'] = target_client.get('key') if target_client else None

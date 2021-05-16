@@ -438,19 +438,19 @@ class IntentScoringTest(unittest.TestCase):
 
         intent, tags = \
             self.require_intent.validate_with_tags([required],
-                                                   parse_confidence=1.0)
+                                                   confidence=1.0)
         self.assertEqual(1.0, intent.get('confidence'))
         self.assertListEqual([required], tags)
 
         intent, tags = \
             self.one_of_intent.validate_with_tags([one_of_1],
-                                                  parse_confidence=1.0)
+                                                  confidence=1.0)
         self.assertEqual(1.0, intent.get('confidence'))
         self.assertListEqual([one_of_1], tags)
 
         intent, tags = \
             self.optional_intent.validate_with_tags([optional],
-                                                    parse_confidence=1.0)
+                                                    confidence=1.0)
         self.assertEqual(1.0, intent.get('confidence'))
         self.assertListEqual([optional], tags)
 
@@ -461,19 +461,19 @@ class IntentScoringTest(unittest.TestCase):
 
         intent, tags = \
             self.require_intent.validate_with_tags([required],
-                                                   parse_confidence=1.0)
+                                                   confidence=1.0)
         self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([required], tags)
 
         intent, tags = \
             self.one_of_intent.validate_with_tags([one_of_1],
-                                                  parse_confidence=1.0)
+                                                  confidence=1.0)
         self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([one_of_1], tags)
 
         intent, tags = \
             self.optional_intent.validate_with_tags([optional],
-                                                    parse_confidence=1.0)
+                                                    confidence=1.0)
         self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([optional], tags)
 
@@ -484,18 +484,18 @@ class IntentScoringTest(unittest.TestCase):
 
         intent, tags = \
             self.require_intent.validate_with_tags([required],
-                                                   parse_confidence=0.5)
+                                                   confidence=0.5)
         self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([required], tags)
 
         intent, tags = \
             self.one_of_intent.validate_with_tags([one_of_1],
-                                                  parse_confidence=0.5)
+                                                  confidence=0.5)
         self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([one_of_1], tags)
 
         intent, tags = \
             self.optional_intent.validate_with_tags([optional],
-                                                    parse_confidence=0.5)
+                                                    confidence=0.5)
         self.assertEqual(0.5, intent.get('confidence'))
         self.assertListEqual([optional], tags)
