@@ -171,10 +171,6 @@ class Intent(object):
             intent_confidence += confidence
 
         if len(self.at_least_one) > 0:
-            # we want to use a copy of the original tags here, as opposed to
-            # local_tags. This allows us to have overlaps between `required`
-            # and `at_least_one`, as `at_least_one` does not currently support
-            # renaming,
             best_resolution = resolve_one_of(local_tags, self.at_least_one)
             if not best_resolution:
                 result['confidence'] = 0.0
