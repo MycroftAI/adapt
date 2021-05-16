@@ -21,12 +21,12 @@ from adapt.tools.text.trie import Trie
 __author__ = 'seanfitz'
 
 
-class Parser(pyee.BaseEventEmitter):
+class Parser(pyee.EventEmitter):
     """
     Coordinate a tagger and expander to yield valid parse results.
     """
     def __init__(self, tokenizer, tagger):
-        pyee.BaseEventEmitter.__init__(self)
+        pyee.EventEmitter.__init__(self)
         self._tokenizer = tokenizer
         self._tagger = tagger
 
