@@ -6,6 +6,7 @@ name: Python package
 on:
   push:
     branches: [ master ]
+    tags: [ release/* ]
   pull_request:
     branches: [ master ]
 
@@ -36,3 +37,18 @@ jobs:
     - name: Test with pytest
       run: |
         ./run_tests.sh test
+
+  publish:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '/tags/release')
+    needs: build
+    steps:
+    - uses: actions/checkout@v2
+    - name: Push to pypi
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        pip install twine
+        python setup.py sdist
+        twine upload dist/*.tar.gz
