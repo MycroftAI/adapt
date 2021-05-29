@@ -38,6 +38,20 @@ jobs:
       run: |
         ./run_tests.sh test
 
+  tag-release-if-needed:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Tag release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git remote add tag_target "https://$GITHUB_TOKEN@github.com/MycroftAI/adapt.git"
+        VERSION=$(python setup.py --version)
+        git tag -f release/v$VERSION || exit 0
+        git push tag_target --tags || exit 0
+
   publish:
     runs-on: ubuntu-latest
     if: contains(github.ref, '/tags/release')
