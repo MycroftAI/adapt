@@ -30,15 +30,19 @@ class TrieNode(object):
 
     def lookup(self, iterable, index=0, gather=False, edit_distance=0, max_edit_distance=0, match_threshold=0.0, matched_length=0):
         """
-        TODO: Implement trie lookup with edit distance
-
         Args:
-            iterable(list?): key used to find what is requested this could
-                be a generator.
-            index(int): index of what is requested
-            gather(bool): of whether to gather or not
-            edit_distance(int): the distance -- currently not used
-            max_edit_distance(int): the max distance -- not currently used
+            iterable(hashable): a list of items used to traverse the Trie
+            index(int): index of item for current position in traversal.
+                we pass the original iterable and an index to avoid
+                the cost of repeatedly copying the original iterable
+            gather(bool): whether to return intermediate results (gather
+                algorithm)
+            edit_distance(int): current edit distance in the traversal.
+            max_edit_distance(int): maximum edit distance
+            match_threshold(float): minimum confidence of match for discovery
+            matched_length(int): related to edit distance, for calculating
+                confidence of match where
+                confidence = (length - abs(matched_length - length)) / length
 
         yields:
             object: yields the results of the search
@@ -61,7 +65,8 @@ class TrieNode(object):
                             edit_distance=edit_distance, max_edit_distance=max_edit_distance, matched_length=matched_length + 1):
                 yield result
 
-        # if there's edit distance remaining and it's possible to match a word above the confidence threshold
+        # if there's edit distance remaining and it's possible to
+        # match a word above the confidence threshold, continue searching
         potential_confidence = float(index - edit_distance + (max_edit_distance - edit_distance)) / \
                                (float(index) + (max_edit_distance - edit_distance)) if index + max_edit_distance - edit_distance > 0 else 0.0
         if edit_distance < max_edit_distance and potential_confidence > match_threshold:
@@ -141,12 +146,22 @@ class TrieNode(object):
 
 
 class Trie(object):
-    """Interface for the tree
+    """Recursive implementation of a prefix trie (Trie)
+    https://en.wikipedia.org/wiki/Trie
+    Additionally supports #gather, a traversal whose results include
+    any terminal nodes visited.
 
         Attributes:
             root(TrieNode): parent node to start the tree
-            max_edit_distance(int): ?
-            match_threshold(int): ?
+            max_edit_distance(int): values > 0 allow for fuzzy matching
+                with a maximum levenshtein edit distance
+                https://en.wikipedia.org/wiki/Edit_distance
+            match_threshold(int): only return values with a higher confidence
+                than this value
+
+    While most frequently used with strings, the Trie can be populated with any
+    iterable (arrays of ints, arrays of objects, arrays of strings) as long
+    as each value responds to `__hash__`.
 
     """
 
@@ -157,19 +172,23 @@ class Trie(object):
         max_edit_distance and match_threshold.
 
         Args:
-            max_edit_distance(int): ?
-            match_threshold(int): ?
-
-        Notes:
-            This never seems to get called with max_edit_distance or match_threshold
+            max_edit_distance(int): values > 0 allow for fuzzy matching
+                with a maximum levenshtein edit distance
+                https://en.wikipedia.org/wiki/Edit_distance
+            match_threshold(int): only return values with a higher confidence
+                than this value
         """
         self.root = TrieNode('root')
         self.max_edit_distance = max_edit_distance
         self.match_threshold = match_threshold
 
     def gather(self, iterable):
-        """Calls the lookup with gather True Passing iterable and yields
-        the result.
+        """Executes a "gather" traversal of the Trie
+        Result set will include any `is_terminal` nodes encountered during
+        the traversal
+
+        Args
+            iterable(hashable): a list of items used to traverse the Trie
         """
         for result in self.lookup(iterable, gather=True):
             yield result
@@ -178,11 +197,10 @@ class Trie(object):
         """Call the lookup on the root node with the given parameters.
 
         Args
-            iterable(index or key): Used to retrive nodes from tree
-            gather(bool): this is passed down to the root node lookup
+            iterable(hashable): a list of items used to traverse the Trie
+            gather(bool): flag to indicate whether gather results
+                should be included
 
-        Notes:
-            max_edit_distance and match_threshold come from the init
         """
         for result in self.root.lookup(iterable,
                                        gather=gather,
@@ -192,21 +210,21 @@ class Trie(object):
             yield result
 
     def insert(self, iterable, data=None, weight=1.0):
-        """Used to insert into he root node
+        """Used to insert into the trie
 
         Args
-            iterable(hashable): index or key used to identify
-            data(object): data to be paired with the key
+            iterable(hashable): a list of items used to traverse the Trie
+            data(object): data to stored or merged for this iterable
         """
-        self.root.insert(iterable, index=0, data=data, weight=1.0)
+        self.root.insert(iterable, index=0, data=data, weight=weight)
 
     def remove(self, iterable, data=None):
         """Used to remove from the root node
 
         Args:
-            iterable(hashable): index or key used to identify
-                item to remove
-            data: data to be paired with the key
+            iterable(hashable): a list of items used to traverse the Trie
+            data: data to removed. If None, or node is empty as a result,
+                remove the node.
         """
         return self.root.remove(iterable, data=data)
 
