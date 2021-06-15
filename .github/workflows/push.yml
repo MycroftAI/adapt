@@ -62,6 +62,7 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        pip install twine
-        python setup.py sdist
-        twine upload dist/*.tar.gz
+        pip install twine wheel
+        python setup.py sdist bdist_wheel
+        twine check dist/*
+        twine upload dist/*
