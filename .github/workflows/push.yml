@@ -59,7 +59,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Push to pypi
       env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         pip install twine wheel
