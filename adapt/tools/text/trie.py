@@ -242,6 +242,11 @@ class Trie(object):
 
         Args:
             iterable(hashable): a list of items used to traverse the Trie
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
             data(object): data to stored or merged for this iterable
         """
         self.root.insert(iterable, index=0, data=data, weight=weight)
@@ -251,6 +256,11 @@ class Trie(object):
 
         Args:
             iterable(hashable): a list of items used to traverse the Trie
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
             data: data to removed. If None, or node is empty as a result,
                 remove the node.
         """
