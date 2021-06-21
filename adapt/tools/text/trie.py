@@ -31,7 +31,13 @@ class TrieNode(object):
     def lookup(self, iterable, index=0, gather=False, edit_distance=0, max_edit_distance=0, match_threshold=0.0, matched_length=0):
         """
         Args:
-            iterable(hashable): a list of items used to traverse the Trie
+            iterable(hashable): a list of items used to traverse the Trie.
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
+
             index(int): index of item for current position in traversal.
                 we pass the original iterable and an index to avoid
                 the cost of repeatedly copying the original iterable
@@ -45,7 +51,8 @@ class TrieNode(object):
                 confidence = (length - abs(matched_length - length)) / length
 
         yields:
-            object: yields the results of the search
+            generator[TrieNode]: a generator that vends the results of the
+                lookup, of  type TrieNode
         """
         if self.is_terminal:
             if index == len(iterable) or \
@@ -92,7 +99,12 @@ class TrieNode(object):
         """Insert new node into tree
 
         Args:
-            iterable(hashable): key used to find in the future.
+            iterable(hashable): a list of items used to traverse the Trie.
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
             data(object): data associated with the key
             index(int): an index used for insertion.
             weight(float): the wait given for the item added.
@@ -118,7 +130,12 @@ class TrieNode(object):
         """Remove an element from the trie
 
         Args
-            iterable(hashable): key used to find what is to be removed
+            iterable(hashable): a list of items used to traverse the Trie.
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
             data(object): data associated with the key
             index(int): index of what is to me removed
 
@@ -187,8 +204,14 @@ class Trie(object):
         Result set will include any `is_terminal` nodes encountered during
         the traversal
 
-        Args
+        Args:
             iterable(hashable): a list of items used to traverse the Trie
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
+
         """
         for result in self.lookup(iterable, gather=True):
             yield result
@@ -196,8 +219,13 @@ class Trie(object):
     def lookup(self, iterable, gather=False):
         """Call the lookup on the root node with the given parameters.
 
-        Args
+        Args:
             iterable(hashable): a list of items used to traverse the Trie
+                This represents the position of a node in the Trie, matching the
+                iterable used at insertion time.
+                For example:
+                trie.insert('foo', {'bar': 'baz'})
+                list(trie.lookup('foo')) == [TrieNode(data={'bar': 'baz'}, is_terminal=True)]
             gather(bool): flag to indicate whether gather results
                 should be included
 
@@ -212,7 +240,7 @@ class Trie(object):
     def insert(self, iterable, data=None, weight=1.0):
         """Used to insert into the trie
 
-        Args
+        Args:
             iterable(hashable): a list of items used to traverse the Trie
             data(object): data to stored or merged for this iterable
         """
@@ -231,7 +259,7 @@ class Trie(object):
     def scan(self, match_func):
         """Traverse the trie scanning for end nodes with matching data.
 
-        Arguments:
+        Args:
             match_func (callable): function used to match data.
 
         Returns:
