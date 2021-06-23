@@ -165,6 +165,20 @@ class IntentEngineTests(unittest.TestCase):
         self.engine.drop_regex_entity(match_func=matcher)
         assert len(self.engine._regex_strings) == 2
         assert len(self.engine.regular_expressions_entities) == 2
+
+    def testAddingOfRemovedRegexp(self):
+        self.engine.register_regex_entity(r"the cool (?P<thing>.*)")
+
+        def matcher(regexp):
+            """Matcher for all match groups defined for SkillB"""
+            match_groups = regexp.groupindex.keys()
+            return any([k.startswith('thing') for k in match_groups])
+
+        self.engine.drop_regex_entity(match_func=matcher)
+        assert len(self.engine.regular_expressions_entities) == 0
+        self.engine.register_regex_entity(r"the cool (?P<thing>.*)")
+        assert len(self.engine.regular_expressions_entities) == 1
+
     def testEmptyTags(self):
         # Validates https://github.com/MycroftAI/adapt/issues/114
         engine = IntentDeterminationEngine()
