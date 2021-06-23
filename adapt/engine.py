@@ -235,9 +235,9 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         self.regular_expressions_entities = [
             r for r in self.regular_expressions_entities if r not in matches
         ]
-        self._regex_strings = [
+        self._regex_strings = {
             r for r in self._regex_strings if r not in matching_patterns
-        ]
+        }
 
         return len(matches) != 0
 
