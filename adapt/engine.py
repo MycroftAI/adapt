@@ -232,12 +232,15 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                    if match_func(r)]
         matching_patterns = [r.pattern for r in matches]
 
-        self.regular_expressions_entities = [
-            r for r in self.regular_expressions_entities if r not in matches
+        matches = [
+            r for r in self.regular_expressions_entities if r in matches
         ]
-        self._regex_strings = [
+        for match in matches:
+            self.regular_expressions_entities.remove(match)
+
+        self._regex_strings = {
             r for r in self._regex_strings if r not in matching_patterns
-        ]
+        }
 
         return len(matches) != 0
 
