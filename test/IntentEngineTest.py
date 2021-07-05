@@ -207,3 +207,21 @@ class IntentEngineTests(unittest.TestCase):
 
         intents = [i for i in engine.determine_intent("Julien is a friend")]
         assert len(intents) == 0
+
+    def testResultsAreSortedByConfidence(self):
+        self.engine.register_entity('what is', 'Query', None)
+        self.engine.register_entity('weather', 'Weather', None)
+        self.engine.register_regex_entity('(at|in) (?P<Location>.+)')
+        self.engine.register_regex_entity('(?P<Entity>.*)')
+
+        i = IntentBuilder("CurrentWeatherIntent").require(
+            "Weather").optionally("Location").build()
+        self.engine.register_intent_parser(i)
+        utterance = "what is the weather like in stockholm"
+        intents = [
+            i for i in self.engine.determine_intent(utterance, num_results=100)
+        ]
+        confidences = [intent.get('confidence', 0.0) for intent in intents]
+        assert len(confidences) > 1
+        assert all(confidences[i] >= confidences[i+1] for i in range(len(confidences)-1))
+
