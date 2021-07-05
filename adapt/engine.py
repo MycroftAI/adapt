@@ -124,15 +124,32 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         if context_manager:
             context = context_manager.get_context()
 
-        for result in parser.parse(utterance, N=num_results, context=context):
-            self.emit("parse_result", result)
-            # create a context without entities used in result
-            remaining_context = self.__get_unused_context(result, context)
-            best_intent, tags = self.__best_intent(result, remaining_context)
-            if best_intent and best_intent.get('confidence', 0.0) > 0:
-                if include_tags:
-                    best_intent['__tags__'] = tags
-                yield best_intent
+        # Adapt assumes that results are sorted by confidence. parser
+        # will yield results sorted by utterance coverage, but regex
+        # and context entities will have different weights, and
+        # can influence final sorting.
+        requires_final_sort = self.regular_expressions_entities or context
+
+        def generate_intents():
+            for result in parser.parse(utterance, N=num_results, context=context):
+                self.emit("parse_result", result)
+                # create a context without entities used in result
+                remaining_context = self.__get_unused_context(result, context)
+                best_intent, tags = self.__best_intent(result, remaining_context)
+                if best_intent and best_intent.get('confidence', 0.0) > 0:
+                    if include_tags:
+                        best_intent['__tags__'] = tags
+                    yield best_intent
+
+        if requires_final_sort:
+            sorted_iterable = sorted([
+                i for i in generate_intents()
+            ], key=lambda x: -x.get('confidence', 0.0))
+        else:
+            sorted_iterable = generate_intents()
+
+        for intent in sorted_iterable:
+            yield intent
 
     def register_entity(self, entity_value, entity_type, alias_of=None):
         """
