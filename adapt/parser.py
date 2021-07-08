@@ -17,6 +17,10 @@ import pyee
 import time
 from adapt.expander import BronKerboschExpander
 from adapt.tools.text.trie import Trie
+from adapt.log import log_parse_tag
+from logging import getLogger
+
+_log = getLogger("Adapt Parser")
 
 __author__ = 'seanfitz'
 
@@ -83,11 +87,14 @@ class Parser(pyee.EventEmitter):
         for result in parse_results:
             count += 1
             parse_confidence = 0.0
+            self._log_parse_result(utterance, count)
             for tag in result:
                 sample_entity = tag['entities'][0]
                 entity_confidence = sample_entity.get('confidence', 0.0) * float(
                     len(sample_entity.get('match'))) / len(utterance)
                 parse_confidence += entity_confidence
+                log_parse_tag(_log, tag, entity_confidence)
+            self._log_parse_result_confidence(parse_confidence)
             yield {
                 'utterance': utterance,
                 'tags': result,
@@ -97,3 +104,12 @@ class Parser(pyee.EventEmitter):
 
             if count >= N:
                 break
+
+    def _log_parse_result(self, utterance, count):
+        _log.info("*****************************************")
+        _log.info("***   ADAPT UTTERANCE PARSE RESULTS      ")
+        _log.info(f"*** Utterance: {utterance}")
+        _log.info(f"*** Result #: {count}")
+
+    def _log_parse_result_confidence(self, confidence):
+        _log.info(f"*** Parse Result Confidence #: {confidence}")

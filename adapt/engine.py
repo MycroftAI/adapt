@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import json
 import re
 import heapq
 import pyee
@@ -20,6 +20,9 @@ from adapt.entity_tagger import EntityTagger
 from adapt.parser import Parser
 from adapt.tools.text.tokenizer import EnglishTokenizer
 from adapt.tools.text.trie import Trie
+
+from logging import getLogger
+_log = getLogger('Adapt Engine')
 
 __author__ = 'seanfitz'
 
@@ -66,6 +69,9 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                 best_intent : The best intent for given results
                 best_tags : The Tags for result
         """
+        _log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        _log.info('@@@@@  STARTING SEARCH FOR BEST INTENT  @@@@@')
+        _log.info('@@@@@ ')
         best_intent = None
         best_tags = None
         # TODO: there's a bunch of subtlety here around what the values of `match` and `key` should be
@@ -79,9 +85,16 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         ]
         for intent in self.intent_parsers:
             i, tags = intent.validate_with_tags(parse_result.get('tags') + context_as_entities, parse_result.get('confidence'))
+            if i.get('confidence', 0) > 0:
+                intent.log_validate_with_tags(parse_result.get('tags') + context_as_entities, parse_result.get('confidence'))
             if not best_intent or (i and i.get('confidence') > best_intent.get('confidence')):
+                _log.info(f'@@@@@  THIS INTENT: {intent.name}   CONFIDENCE: {i["confidence"]}')
+                _log.info(f"@@@@@  EXISTING BEST CONFIDENCE: {best_intent['confidence'] if best_intent else 'None'}")
+                _log.info(f"@@@@@  NEW BEST INTENT: {intent.name}   CONFIDENCE: {i['confidence']}")
+                _log.info('@@@@@ ')
                 best_intent = i
                 best_tags = tags
+        _log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
         return best_intent, best_tags
 
@@ -115,6 +128,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         Returns: A generator that yields dictionaries.
         """
+        _log.info('#####  STARTING INTENT DETERMINATION  #####')
+        _log.info('##### ')
         parser = Parser(self.tokenizer, self.tagger)
         parser.on('tagged_entities',
                   (lambda result:
@@ -132,6 +147,8 @@ class IntentDeterminationEngine(pyee.EventEmitter):
             if best_intent and best_intent.get('confidence', 0.0) > 0:
                 if include_tags:
                     best_intent['__tags__'] = tags
+                _log.info('Best Intent Name: ' + best_intent["intent_type"])
+                _log.info("Best intent confidence: " + str(best_intent['confidence']))
                 yield best_intent
 
     def register_entity(self, entity_value, entity_type, alias_of=None):
