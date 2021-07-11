@@ -124,7 +124,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         if context_manager:
             context = context_manager.get_context()
 
-        # Adapt assumes that results are sorted by confidence. parser
+        # Adapt consumers assume that results are sorted by confidence. parser
         # will yield results sorted by utterance coverage, but regex
         # and context entities will have different weights, and
         # can influence final sorting.
