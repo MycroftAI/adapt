@@ -82,9 +82,9 @@ class ContextManagerFrame(object):
             metadata(object): metadata containes keys to be added to self.metadata
         """
         self.entities.append(tag)
-        for k in metadata.keys():
+        for k, v in metadata.items():
             if k not in self.metadata:
-                self.metadata[k] = k
+                self.metadata[k] = v
 
 
 class ContextManager(object):

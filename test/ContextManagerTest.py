@@ -15,7 +15,43 @@
 
 import unittest
 
-from adapt.context import ContextManager
+from adapt.context import ContextManager, ContextManagerFrame
+
+
+class ContextManagerFrameTest(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def testMetadataMatches(self):
+        frame1 = ContextManagerFrame(entities=['foo'],
+                                     metadata={'domain': 'music',
+                                               'foo': 'test'})
+
+        self.assertTrue(frame1.metadata_matches({'domain': 'music'}),
+                        "Should match subset of metadata")
+
+        self.assertFalse(frame1.metadata_matches({'domain': 'weather'}),
+                         "Should not match metadata value mismatch")
+        self.assertTrue(
+            frame1.metadata_matches({'domain': 'music', 'foo': 'test'}),
+            "Should match exact metadata")
+        self.assertFalse(frame1.metadata_matches(
+            {'domain': 'music', 'foo': 'test', 'bar': 'test'}),
+            "Should not match superset of metadata")
+
+    def testMergeContext(self):
+        frame1 = ContextManagerFrame(entities=['foo'],
+                                     metadata={'domain': 'music',
+                                               'foo': 'test'})
+
+        self.assertFalse(frame1.metadata_matches({'bar': 'test'}),
+                         "Should not match before merging context")
+
+        frame1.merge_context('bar', {'domain': 'music', 'bar': 'test'})
+        self.assertTrue(frame1.metadata_matches({'domain': 'music'}),
+                        "Should continue to match subset of metadata")
+        self.assertTrue(frame1.metadata_matches({'bar': 'test'}),
+                        "Should match after merging context")
 
 
 class ContextManagerTest(unittest.TestCase):
@@ -54,7 +90,7 @@ class ContextManagerTest(unittest.TestCase):
         assert len(context) == 2
         assert context[0].get('confidence') == 0.5
         assert context[0].get('data') == 'Film'
-        assert context[1].get('confidence') == 1.0/3.0
+        assert context[1].get('confidence') == 1.0 / 3.0
         assert context[1].get('data') == 'Book'
 
     def testNewContextWithMetadataSameFrame(self):
@@ -74,4 +110,3 @@ class ContextManagerTest(unittest.TestCase):
         assert context[0].get('data') == 'Book'
         assert context[1].get('confidence') == 0.5
         assert context[1].get('data') == 'Film'
-
