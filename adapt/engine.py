@@ -34,7 +34,7 @@ class IntentDeterminationEngine(pyee.EventEmitter):
     weighted based on the percentage of the utterance (per character) that the entity match represents.
 
     This system makes heavy use of generators to enable greedy algorithms to short circuit large portions of
-    computation.
+    computation, however making use of context or regular expressions prevents these optimizations.
     """
     def __init__(self, tokenizer=None, trie=None):
         """
