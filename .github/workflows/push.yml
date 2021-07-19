@@ -1,0 +1,68 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# In addition it will tag a release if setup.py is updated with a new version
+# and publish a release to pypi from the tag
+
+name: Python package
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ release/* ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python setup.py install
+        python -m pip install -r test-requirements.txt
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        # Code style checks disabled until the style of the project is set.
+        ./run_tests.sh lint
+    - name: Test with pytest
+      run: |
+        ./run_tests.sh test
+
+  tag-release-if-needed:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Tag release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git remote add tag_target "https://$GITHUB_TOKEN@github.com/MycroftAI/adapt.git"
+        VERSION=$(python setup.py --version)
+        git tag -f release/v$VERSION || exit 0
+        git push tag_target --tags || exit 0
+
+  publish:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '/tags/release')
+    needs: build
+    steps:
+    - uses: actions/checkout@v2
+    - name: Push to pypi
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        pip install twine wheel
+        python setup.py sdist bdist_wheel
+        twine check dist/*
+        twine upload dist/*
