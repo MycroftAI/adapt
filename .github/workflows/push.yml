@@ -50,6 +50,7 @@ jobs:
         VERSION=$(python setup.py --version)
         git tag -f release/v$VERSION || exit 0
         git push tag_target --tags || exit 0
+        echo "::set-env name=VERSION::$VERSION"
 
   publish:
     runs-on: ubuntu-latest
@@ -66,3 +67,29 @@ jobs:
         python setup.py sdist bdist_wheel
         twine check dist/*
         twine upload dist/*
+
+  update-mycroft-core:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+    - uses: actions/checkout@v2
+      with: 
+        repository: MycroftAI/mycroft-core
+
+    - name: Update mycroft-core
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config user.name mycroft-devs
+        git config user.email devs@mycroft.ai
+        sed "s/adapt-parser==[0-9].[0-9].[0-9]/adapt-parser==$VERSION/" requirements/requirements.txt > tmp-requirements.txt
+        mv tmp-requirements.txt requirements/requirements.txt
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        commit-message: Update Adapt to v$VERSION
+        branch: feature/update-adapt
+        delete-branch: true
+        title: Update Adapt to v$VERSION
+        body: Automated update from mycroftai/adapt.
