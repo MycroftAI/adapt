@@ -8,7 +8,6 @@ name: Python package
 on:
   push:
     branches: [ master ]
-    tags: [ release/* ]
 
 jobs:
   build:
@@ -45,24 +44,16 @@ jobs:
     - name: Tag release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         git remote add tag_target "https://$GITHUB_TOKEN@github.com/MycroftAI/adapt.git"
         VERSION=$(python setup.py --version)
         git tag -f release/v$VERSION || exit 0
-        git push tag_target --tags || exit 0
-
-  publish:
-    runs-on: ubuntu-latest
-    if: contains(github.ref, '/tags/release')
-    needs: build
-    steps:
-    - uses: actions/checkout@v2
-    - name: Push to pypi
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        pip install twine wheel
-        python setup.py sdist bdist_wheel
-        twine check dist/*
-        twine upload dist/*
+        if git push tag_target --tags; then
+          echo "New tag published on github, push to pypi as well."
+          pip install twine wheel
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+          twine upload dist/*
+        fi
