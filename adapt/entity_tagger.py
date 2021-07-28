@@ -66,14 +66,22 @@ class EntityTagger(object):
         """
         tokens = self.tokenizer.tokenize(utterance)
         entities = []
-        if len(self.regex_entities) > 0:
+        if self.regex_entities:
             for part, idx in self._iterate_subsequences(tokens):
                 local_trie = Trie()
+                print("UTTERANCE PART: ", part)
                 for regex_entity in self.regex_entities:
+                    if 'location' in regex_entity.pattern or 'Location' in regex_entity.pattern:
+                        print('\tREGEX PATTERN: ', regex_entity.pattern)
                     match = regex_entity.match(part)
+                    if 'location' in regex_entity.pattern or 'Location' in regex_entity.pattern:
+                        print("\tMATCH FOUND: ", bool(match))
                     groups = match.groupdict() if match else {}
+                    if 'location' in regex_entity.pattern or 'Location' in regex_entity.pattern:
+                        print("\tMATCH GROUPS: ", groups)
                     for key in list(groups):
                         match_str = groups.get(key)
+                        print("\tREGEX MATCH_STR: ", match_str)
                         local_trie.insert(match_str, (match_str, key))
                 sub_tagger = EntityTagger(local_trie, self.tokenizer, max_tokens=self.max_tokens)
                 for sub_entity in sub_tagger.tag(part):
@@ -116,5 +124,8 @@ class EntityTagger(object):
 
         if additional_sort:
             entities = self._sort_and_merge_tags(entities + context_entities)
+
+        for entity in entities:
+            print(entity)
 
         return entities
