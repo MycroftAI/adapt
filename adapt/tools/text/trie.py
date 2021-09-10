@@ -173,7 +173,7 @@ class Trie(object):
             max_edit_distance(int): values > 0 allow for fuzzy matching
                 with a maximum levenshtein edit distance
                 https://en.wikipedia.org/wiki/Edit_distance
-            match_threshold(int): only return values with a higher confidence
+            match_threshold(float): only return values with a higher confidence
                 than this value
 
     While most frequently used with strings, the Trie can be populated with any
@@ -192,7 +192,7 @@ class Trie(object):
             max_edit_distance(int): values > 0 allow for fuzzy matching
                 with a maximum levenshtein edit distance
                 https://en.wikipedia.org/wiki/Edit_distance
-            match_threshold(int): only return values with a higher confidence
+            match_threshold(float): only return values with a higher confidence
                 than this value
         """
         self.root = TrieNode('root')
