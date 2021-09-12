@@ -8,6 +8,22 @@ EXPECTED_ENGINES = set([
     DomainIntentDeterminationEngine,
 ])
 
+SAFE_CLASSES = [
+    ("adapt.engine", "IntentDeterminationEngine"),
+    ("adapt.engine", "DomainIntentDeterminationEngine"),
+    ("adapt.tools.text.tokenizer", "EnglishTokenizer"),
+    ("adapt.tools.text.trie", "Trie"),
+    ("adapt.tools.text.trie", "TrieNode"),
+    ("adapt.intent", "Intent")
+]
+
+
+class RestrictedUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if (module, name) not in SAFE_CLASSES:
+            raise pickle.UnpicklingError(f"Attempted illegal import: {module}.{name}")
+        return pickle.Unpickler.find_class(self, module, name)
+
 
 def load(filename):
     """
@@ -17,7 +33,7 @@ def load(filename):
         DomainIntentDeterminationEngine
     """
     with open(filename, 'rb') as f:
-        engine = pickle.load(f)
+        engine = RestrictedUnpickler(f).load()
         if engine.__class__ not in EXPECTED_ENGINES:
             raise ValueError(f"Was expecting to instantiate an "
                              f"IntentDeterminationEngine, but instead found "

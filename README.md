@@ -108,6 +108,21 @@ To test any changes before submitting them run
 
 This will run the same checks as the Github actions and verify that your code should pass with flying colours.
 
+Reporting Issues
+================
+It's often difficult to debug issues with adapt without a complete context. To facilitate simpler debugging,
+please include a serialized copy of the intent determination engine using the debug dump
+utilities.
+
+```python
+from adapt.engine import IntentDeterminationEngine
+engine = IntentDeterminationEngine()
+# Load engine with vocabulary and parsers
+
+import adapt.tools.debug as atd
+atd.dump(engine, 'debug.adapt')
+```
+
 Learn More
 ========
 
