@@ -13,8 +13,6 @@
 # limitations under the License.
 #
 
-from six.moves import xrange
-
 __author__ = 'seanfitz'
 
 
@@ -211,14 +209,14 @@ class BronKerboschExpander(object):
 
         """
         graph = SimpleGraph()
-        for tag_index in xrange(len(tags)):
-            for entity_index in xrange(len(tags[tag_index].get('entities'))):
+        for tag_index in range(len(tags)):
+            for entity_index in range(len(tags[tag_index].get('entities'))):
                 a_entity_name = graph_key_from_tag(tags[tag_index], entity_index)
                 tokens = self.tokenizer.tokenize(tags[tag_index].get('entities', [])[entity_index].get('match'))
                 for tag in tags[tag_index + 1:]:
                     start_token = tag.get('start_token')
                     if start_token >= tags[tag_index].get('start_token') + len(tokens):
-                        for b_entity_index in xrange(len(tag.get('entities'))):
+                        for b_entity_index in range(len(tag.get('entities'))):
                             b_entity_name = graph_key_from_tag(tag, b_entity_index)
                             graph.add_edge(a_entity_name, b_entity_name)
 
@@ -238,7 +236,7 @@ class BronKerboschExpander(object):
 
         # name entities
         for tag in tags:
-            for entity_index in xrange(len(tag.get('entities'))):
+            for entity_index in range(len(tag.get('entities'))):
                 node_name = graph_key_from_tag(tag, entity_index)
                 if not node_name in entities:
                     entities[node_name] = []
@@ -283,7 +281,7 @@ class BronKerboschExpander(object):
         def end_token_index():
             return max([t.get('end_token') for t in overlapping_spans])
 
-        for i in xrange(len(tags)):
+        for i in range(len(tags)):
             tag = tags[i]
 
             if len(overlapping_spans) > 0 and end_token_index() >= tag.get('start_token'):
@@ -306,4 +304,3 @@ class BronKerboschExpander(object):
             lattice.append(overlapping_spans)
 
         return lattice.traverse()
-

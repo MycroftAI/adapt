@@ -20,7 +20,6 @@ Notes:
     Comments are subject to evaluation and may not reflect intent.
     Comments should be updated as code is clearly understood.
 """
-from six.moves import xrange
 
 __author__ = "seanfitz, Art McGee"
 
@@ -129,7 +128,7 @@ class ContextManager(object):
 
         missing_entities = list(missing_entities)
         context = []
-        for i in xrange(max_frames):
+        for i in range(max_frames):
             frame_entities = [entity.copy() for entity in self.frame_stack[i].entities]
             for entity in frame_entities:
                 entity['confidence'] = entity.get('confidence', 1.0) / (2.0 + i)

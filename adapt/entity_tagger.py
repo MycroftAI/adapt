@@ -14,7 +14,6 @@
 #
 
 from adapt.tools.text.trie import Trie
-from six.moves import xrange
 
 __author__ = 'seanfitz'
 
@@ -40,8 +39,8 @@ class EntityTagger(object):
         Yields:
             str: ?
         """
-        for start_idx in xrange(len(tokens)):
-            for end_idx in xrange(start_idx + 1, len(tokens) + 1):
+        for start_idx in range(len(tokens)):
+            for end_idx in range(start_idx + 1, len(tokens) + 1):
                 yield ' '.join(tokens[start_idx:end_idx]), start_idx
 
     def _sort_and_merge_tags(self, tags):
@@ -85,7 +84,7 @@ class EntityTagger(object):
         additional_sort = len(entities) > 0
 
         context_entities = []
-        for i in xrange(len(tokens)):
+        for i in range(len(tokens)):
             part = ' '.join(tokens[i:])
 
             for new_entity in self.trie.gather(part):
