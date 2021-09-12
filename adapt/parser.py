@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-import pyee
 import time
 from adapt.expander import BronKerboschExpander
 from adapt.tools.text.trie import Trie
@@ -21,12 +20,11 @@ from adapt.tools.text.trie import Trie
 __author__ = 'seanfitz'
 
 
-class Parser(pyee.EventEmitter):
+class Parser(object):
     """
     Coordinate a tagger and expander to yield valid parse results.
     """
     def __init__(self, tokenizer, tagger):
-        pyee.EventEmitter.__init__(self)
         self._tokenizer = tokenizer
         self._tagger = tagger
 
@@ -45,7 +43,6 @@ class Parser(pyee.EventEmitter):
                 utterance. This might be used to determan the most likely intent.
 
         """
-        start = time.time()
         context_trie = None
         if context and isinstance(context, list):
             # sort by confidence in ascending order, so
@@ -61,12 +58,6 @@ class Parser(pyee.EventEmitter):
                                     weight=entity.get('confidence'))
 
         tagged = self._tagger.tag(utterance.lower(), context_trie=context_trie)
-        self.emit("tagged_entities",
-                  {
-                      'utterance': utterance,
-                      'tags': list(tagged),
-                      'time': time.time() - start
-                  })
         start = time.time()
         bke = BronKerboschExpander(self._tokenizer)
 
