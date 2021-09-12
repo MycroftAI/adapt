@@ -15,7 +15,6 @@
 
 import re
 import heapq
-import pyee
 from adapt.entity_tagger import EntityTagger
 from adapt.parser import Parser
 from adapt.tools.text.tokenizer import EnglishTokenizer
@@ -24,7 +23,7 @@ from adapt.tools.text.trie import Trie
 __author__ = 'seanfitz'
 
 
-class IntentDeterminationEngine(pyee.EventEmitter):
+class IntentDeterminationEngine(object):
     """
     IntentDeterminationEngine
 
@@ -45,12 +44,10 @@ class IntentDeterminationEngine(pyee.EventEmitter):
                 example EnglishTokenizer()
             trie(Trie): tree of matches to Entites
         """
-        pyee.EventEmitter.__init__(self)
         self.tokenizer = tokenizer or EnglishTokenizer()
         self.trie = trie or Trie()
         self.regular_expressions_entities = []
         self._regex_strings = set()
-        self.tagger = EntityTagger(self.trie, self.tokenizer, self.regular_expressions_entities)
         self.intent_parsers = []
 
     def __best_intent(self, parse_result, context=[]):
@@ -102,6 +99,11 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         result_context = [c for c in context if c['key'] not in tags_keys]
         return result_context
 
+    @property
+    def tagger(self):
+        return EntityTagger(self.trie, self.tokenizer,
+                     self.regular_expressions_entities)
+
     def determine_intent(self, utterance, num_results=1, include_tags=False, context_manager=None):
         """
         Given an utterance, provide a valid intent.
@@ -116,9 +118,6 @@ class IntentDeterminationEngine(pyee.EventEmitter):
         Returns: A generator that yields dictionaries.
         """
         parser = Parser(self.tokenizer, self.tagger)
-        parser.on('tagged_entities',
-                  (lambda result:
-                   self.emit("tagged_entities", result)))
 
         context = []
         if context_manager:
@@ -132,7 +131,6 @@ class IntentDeterminationEngine(pyee.EventEmitter):
 
         def generate_intents():
             for result in parser.parse(utterance, N=num_results, context=context):
-                self.emit("parse_result", result)
                 # create a context without entities used in result
                 remaining_context = self.__get_unused_context(result, context)
                 best_intent, tags = self.__best_intent(result, remaining_context)
