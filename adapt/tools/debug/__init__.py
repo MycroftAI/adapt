@@ -21,7 +21,8 @@ SAFE_CLASSES = [
 class RestrictedUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
         if (module, name) not in SAFE_CLASSES:
-            raise pickle.UnpicklingError(f"Attempted illegal import: {module}.{name}")
+            raise pickle.UnpicklingError("Attempted illegal import: "
+                                         "{}.{}".format(module, name))
         return pickle.Unpickler.find_class(self, module, name)
 
 
@@ -35,9 +36,9 @@ def load(filename):
     with open(filename, 'rb') as f:
         engine = RestrictedUnpickler(f).load()
         if engine.__class__ not in EXPECTED_ENGINES:
-            raise ValueError(f"Was expecting to instantiate an "
-                             f"IntentDeterminationEngine, but instead found "
-                             f"{engine.__class__}")
+            raise ValueError("Was expecting to instantiate an "
+                             "IntentDeterminationEngine, but instead found "
+                             "{}".format(engine.__class__))
         return engine
 
 

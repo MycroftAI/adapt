@@ -32,7 +32,7 @@ def required(requirements_file):
 
 setup(
     name="adapt-parser",
-    version="0.6.0",
+    version="0.6.1",
     author="Sean Fitzgerald",
     author_email="sean@fitzgeralds.me",
     description=("A text-to-intent parsing framework."),
@@ -48,6 +48,7 @@ setup(
         'Topic :: Text Processing :: Linguistic',
         'License :: OSI Approved :: Apache Software License',
 
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
