@@ -34,7 +34,7 @@ class ContextManagerFrame(object):
         entities(list): Entities that belong to ContextManagerFrame
         metadata(object): metadata to describe context belonging to ContextManagerFrame
     """
-    def __init__(self, entities=[], metadata={}):
+    def __init__(self, entities=None, metadata=None):
         """
         Initialize ContextManagerFrame
 
@@ -42,10 +42,10 @@ class ContextManagerFrame(object):
             entities(list): List of Entities...
             metadata(object): metadata to describe context?
         """
-        self.entities = entities
-        self.metadata = metadata
+        self.entities = entities or []
+        self.metadata = metadata or {}
 
-    def metadata_matches(self, query={}):
+    def metadata_matches(self, query=None):
         """
         Returns key matches to metadata
 
@@ -64,6 +64,7 @@ class ContextManagerFrame(object):
                     found in self.metadata
 
         """
+        query = query or {}
         result = len(query.keys()) > 0
         for key in query.keys():
             result = result and query[key] == self.metadata.get(key)
@@ -96,7 +97,7 @@ class ContextManager(object):
     def __init__(self):
         self.frame_stack = []
 
-    def inject_context(self, entity, metadata={}):
+    def inject_context(self, entity, metadata=None):
         """
         Args:
             entity(object):
@@ -106,6 +107,7 @@ class ContextManager(object):
                          }
             metadata(object): dict, arbitrary metadata about the entity being added
         """
+        metadata = metadata or {}
         top_frame = self.frame_stack[0] if len(self.frame_stack) > 0 else None
         if top_frame and top_frame.metadata_matches(metadata):
             top_frame.merge_context(entity, metadata)
@@ -113,7 +115,7 @@ class ContextManager(object):
             frame = ContextManagerFrame(entities=[entity], metadata=metadata.copy())
             self.frame_stack.insert(0, frame)
 
-    def get_context(self, max_frames=None, missing_entities=[]):
+    def get_context(self, max_frames=None, missing_entities=None):
         """
         Constructs a list of entities from the context.
 
@@ -124,6 +126,7 @@ class ContextManager(object):
         Returns:
             list: a list of entities
         """
+        missing_entities = missing_entities or []
         if not max_frames or max_frames > len(self.frame_stack):
             max_frames = len(self.frame_stack)
 
