@@ -121,7 +121,9 @@ class TrieNode(object):
             self.children[iterable[index]].insert(iterable, index + 1, data)
 
     def is_prefix(self, iterable, index=0):
-        if iterable[index] in self.children:
+        if index == len(iterable):
+            return True
+        elif iterable[index] in self.children:
             return self.children[iterable[index]].is_prefix(iterable, index + 1)
         else:
             return False
