@@ -187,6 +187,8 @@ class TrieTest(unittest.TestCase):
         trie.insert("barenaked ladies", "Radio Station")
 
         assert trie.root.is_prefix("the")
+        assert trie.root.is_prefix("play")
+        assert not trie.root.is_prefix("Kermit")
 
     def tearDown(self):
         pass
