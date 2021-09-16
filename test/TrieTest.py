@@ -179,5 +179,14 @@ class TrieTest(unittest.TestCase):
         assert "Gonzo" in muppet_names
         assert "Rowlf" in muppet_names
 
+    def test_is_prefix(self):
+        trie = Trie()
+        trie.insert("play", "PlayVerb")
+        trie.insert("the big bang theory", "Television Show")
+        trie.insert("the big", "Not a Thing")
+        trie.insert("barenaked ladies", "Radio Station")
+
+        assert trie.root.is_prefix("the")
+
     def tearDown(self):
         pass
