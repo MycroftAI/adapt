@@ -14,11 +14,7 @@
 #
 
 """
-This is to Manage Context of a Conversation
-
-Notes:
-    Comments are subject to evaluation and may not reflect intent.
-    Comments should be updated as code is clearly understood.
+Context Management code for Adapt (where context ~= persistent session state).
 """
 from six.moves import xrange
 
@@ -49,10 +45,8 @@ class ContextManagerFrame(object):
         """
         Returns key matches to metadata
 
-        This will check every key in query for a matching key in metadata
-        returning true if every key is in metadata.  query without keys
-        return false.
-
+        Asserts that the contents of query exist within (logical subset of)
+        metadata in this frame.
         Args:
             query(object): metadata for matching
 
@@ -99,6 +93,9 @@ class ContextManager(object):
 
     def inject_context(self, entity, metadata=None):
         """
+        Add an entity to the current context.
+        If metadata matches the top of the context frame stack, merge.
+        Else, create a new frame and push it on top of the stack.
         Args:
             entity(object):
                 format {'data': 'Entity tag as <str>',
@@ -117,7 +114,7 @@ class ContextManager(object):
 
     def get_context(self, max_frames=None, missing_entities=None):
         """
-        Constructs a list of entities from the context.
+        Returns context, including decaying weights based on depth in stack.
 
         Args:
             max_frames(int): maximum number of frames to look back

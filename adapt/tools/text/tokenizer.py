@@ -36,7 +36,7 @@ class EnglishTokenizer(object):
         pass
 
     def tokenize(self, string):
-        """Used to parce a string into tokens
+        """Used to parse a string into tokens
 
         This function is to take in a string and return a list of tokens
 

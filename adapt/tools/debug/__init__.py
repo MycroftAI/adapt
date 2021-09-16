@@ -3,6 +3,24 @@ import pickle
 from adapt.engine import DomainIntentDeterminationEngine, \
     IntentDeterminationEngine
 
+"""
+Pickling is not inherently secure, and the documentation for pickle
+recommends never unpickling data from an untrusted source. This makes
+using it for debug reports a little dicey, but fortunately there are 
+some things we can leverage to make things safer.
+
+First, we expect the deserialized object to be an instance of 
+IntentDeterminationEngine or DomainIntentDeterminationEngine as a basic
+sanity check. We also leverage a custom `pickle.Unpickler` implementation
+that only allows specific imports from the adapt namespace, and displays
+a helpful error message if this assumption is validated.
+
+This is a bit of security theater; folks investigating issues have to know to 
+specifically use this library to hydrate any submissions, otherwise it's all 
+for naught. 
+"""
+
+
 EXPECTED_ENGINES = set([
     IntentDeterminationEngine,
     DomainIntentDeterminationEngine,
