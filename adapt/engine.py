@@ -52,7 +52,8 @@ class IntentDeterminationEngine(object):
 
     def __best_intent(self, parse_result, context=[]):
         """
-        Decide the best intent
+        For the specified parse_result, find the intent parser with the
+        highest confidence match.
 
         Args:
             parse_result(list): results used to match the best intent.
@@ -278,11 +279,6 @@ class DomainIntentDeterminationEngine(object):
     def __init__(self):
         """
         Initialize DomainIntentDeterminationEngine.
-
-        Args:
-            tokenizer(tokenizer): The tokenizer you wish to use.
-            trie(Trie): the Trie() you wish to use.
-            domain(str): a string representing the domain you wish to add
         """
         self.domains = {}
 
