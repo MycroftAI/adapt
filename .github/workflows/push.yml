@@ -8,7 +8,6 @@ name: Python package
 on:
   push:
     branches: [ master ]
-    tags: [ release/* ]
 
 jobs:
   build:
@@ -16,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9, 2.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -45,12 +44,21 @@ jobs:
     - name: Tag release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         git remote add tag_target "https://$GITHUB_TOKEN@github.com/MycroftAI/adapt.git"
         VERSION=$(python setup.py --version)
         git tag -f release/v$VERSION || exit 0
-        git push tag_target --tags || exit 0
-        echo "::set-env name=VERSION::$VERSION"
+        if git push tag_target --tags; then
+          echo "New tag published on github, push to PyPI as well."
+          pip install twine wheel
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+          twine upload dist/*
+          echo "Package pushed to PyPI. Prepare for mycroft-core PR."
+          echo "::set-env name=VERSION::$VERSION"
+        fi
 
   publish:
     runs-on: ubuntu-latest
@@ -70,6 +78,7 @@ jobs:
 
   update-mycroft-core:
     runs-on: ubuntu-latest
+    if: ${{ env.VERSION == *"."* }}
     needs: publish
     steps:
     - uses: actions/checkout@v2
