@@ -82,7 +82,7 @@ jobs:
       run: |
         git config user.name mycroft-devs
         git config user.email devs@mycroft.ai
-        sed "s/adapt-parser==[0-9].[0-9].[0-9]/adapt-parser==$VERSION/" requirements/requirements.txt > tmp-requirements.txt
+        sed -E "s/adapt-parser==[0-9]+\.[0-9]+\.[0-9]+/adapt-parser==$VERSION/" requirements/requirements.txt > tmp-requirements.txt
         mv tmp-requirements.txt requirements/requirements.txt
 
     - name: Create Pull Request
