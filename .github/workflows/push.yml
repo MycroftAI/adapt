@@ -51,9 +51,57 @@ jobs:
         VERSION=$(python setup.py --version)
         git tag -f release/v$VERSION || exit 0
         if git push tag_target --tags; then
-          echo "New tag published on github, push to pypi as well."
+          echo "New tag published on github, push to PyPI as well."
           pip install twine wheel
           python setup.py sdist bdist_wheel
           twine check dist/*
           twine upload dist/*
+          echo "Package pushed to PyPI. Prepare for mycroft-core PR."
+          echo "::set-env name=VERSION::$VERSION"
         fi
+
+  publish:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '/tags/release')
+    needs: build
+    steps:
+    - uses: actions/checkout@v2
+    - name: Push to pypi
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        pip install twine wheel
+        python setup.py sdist bdist_wheel
+        twine check dist/*
+        twine upload dist/*
+
+  update-mycroft-core:
+    runs-on: ubuntu-latest
+    if: ${{ env.VERSION == *"."* }}
+    needs: publish
+    steps:
+    - uses: actions/checkout@v2
+      with: 
+        repository: MycroftAI/mycroft-core
+
+    - name: Update mycroft-core
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ $VERSION != *"-"* ]]; then
+          echo No pre-release suffix detected.
+          git config user.name mycroft-devs
+          git config user.email devs@mycroft.ai
+          sed -E "s/adapt-parser==[0-9]+\.[0-9]+\.[0-9]+/adapt-parser==$VERSION/" requirements/requirements.txt > tmp-requirements.txt
+          mv tmp-requirements.txt requirements/requirements.txt
+        fi
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        commit-message: Update Adapt to v$VERSION
+        branch: feature/update-adapt
+        delete-branch: true
+        title: Update Adapt to v$VERSION
+        body: Automated update from mycroftai/adapt.
