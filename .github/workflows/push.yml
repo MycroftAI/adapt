@@ -39,9 +39,12 @@ jobs:
 
   tag-release-if-needed:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
     steps:
     - uses: actions/checkout@v2
-    - name: Tag release
+    - id: tag
+      name: Tag release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TWINE_USERNAME: __token__
@@ -57,7 +60,7 @@ jobs:
           twine check dist/*
           twine upload dist/*
           echo "Package pushed to PyPI. Prepare for mycroft-core PR."
-          echo "::set-env name=VERSION::$VERSION"
+          echo "::set-output name=version::$VERSION"
         fi
 
   publish:
@@ -78,8 +81,7 @@ jobs:
 
   update-mycroft-core:
     runs-on: ubuntu-latest
-    if: ${{ env.VERSION == *"."* }}
-    needs: publish
+    needs: [publish, tag-release-if-needed]
     steps:
     - uses: actions/checkout@v2
       with: 
@@ -89,19 +91,26 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        if [[ $VERSION != *"-"* ]]; then
-          echo No pre-release suffix detected.
-          git config user.name mycroft-devs
-          git config user.email devs@mycroft.ai
+        VERSION=${{needs.tag-release-if-needed.outputs.version}}
+        if [[ $VERSION != *"."* ]]; then
+          echo "Not a valid version number."
+          exit 1
+        elif [[ $VERSION == *"-"* ]]; then
+          echo "Pre-release suffix detected. Not pushing to mycroft-core."
+        else
           sed -E "s/adapt-parser==[0-9]+\.[0-9]+\.[0-9]+/adapt-parser==$VERSION/" requirements/requirements.txt > tmp-requirements.txt
           mv tmp-requirements.txt requirements/requirements.txt
+          echo "ADAPT_VERSION=$VERSION" >> $GITHUB_ENV
         fi
 
     - name: Create Pull Request
+      if: ${{ env.ADAPT_VERSION }}
       uses: peter-evans/create-pull-request@v3
       with:
-        commit-message: Update Adapt to v$VERSION
+        token: ${{ secrets.BOT_TOKEN }}
+        push-to-fork: mycroft-adapt-bot/mycroft-core
+        commit-message: Update Adapt to v${{ env.ADAPT_VERSION }}
         branch: feature/update-adapt
         delete-branch: true
-        title: Update Adapt to v$VERSION
+        title: Update Adapt to v${{ env.ADAPT_VERSION }}
         body: Automated update from mycroftai/adapt.
