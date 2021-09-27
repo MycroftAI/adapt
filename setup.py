@@ -32,7 +32,7 @@ def required(requirements_file):
 
 setup(
     name="adapt-parser",
-    version="0.6.2",
+    version="1.0.0",
     author="Sean Fitzgerald",
     author_email="sean@fitzgeralds.me",
     description=("A text-to-intent parsing framework."),
@@ -43,7 +43,7 @@ setup(
     url="https://github.com/MycroftAI/adapt",
     packages=["adapt", "adapt.tools", "adapt.tools.text", "adapt.tools.debug"],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Stable',
         'Intended Audience :: Developers',
         'Topic :: Text Processing :: Linguistic',
         'License :: OSI Approved :: Apache Software License',
