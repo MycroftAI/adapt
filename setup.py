@@ -43,7 +43,7 @@ setup(
     url="https://github.com/MycroftAI/adapt",
     packages=["adapt", "adapt.tools", "adapt.tools.text", "adapt.tools.debug"],
     classifiers=[
-        'Development Status :: 5 - Stable',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Text Processing :: Linguistic',
         'License :: OSI Approved :: Apache Software License',
