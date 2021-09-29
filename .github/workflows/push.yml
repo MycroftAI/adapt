@@ -63,25 +63,9 @@ jobs:
           echo "::set-output name=version::$VERSION"
         fi
 
-  publish:
-    runs-on: ubuntu-latest
-    if: contains(github.ref, '/tags/release')
-    needs: build
-    steps:
-    - uses: actions/checkout@v2
-    - name: Push to pypi
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        pip install twine wheel
-        python setup.py sdist bdist_wheel
-        twine check dist/*
-        twine upload dist/*
-
   update-mycroft-core:
     runs-on: ubuntu-latest
-    needs: [publish, tag-release-if-needed]
+    needs: tag-release-if-needed
     steps:
     - uses: actions/checkout@v2
       with: 
