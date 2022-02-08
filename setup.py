@@ -18,21 +18,21 @@ __author__ = 'seanfitz'
 import os
 from setuptools import setup
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 
 def required(requirements_file):
     """Read requirements file and remove comments and empty lines."""
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(base_dir, requirements_file), 'r') as f:
+    with open(os.path.join(base_dir, requirements_file), 'r', encoding='utf-8') as f:
         requirements = f.read().splitlines()
         return [pkg for pkg in requirements
                 if pkg.strip() and not pkg.startswith("#")]
 
 setup(
     name="adapt-parser",
-    version="1.0.0",
+    version="1.0.0x",
     author="Sean Fitzgerald",
     author_email="sean@fitzgeralds.me",
     description=("A text-to-intent parsing framework."),
