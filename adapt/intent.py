@@ -117,7 +117,8 @@ def resolve_one_of(tags, at_least_one):
 
 
 class Intent(object):
-    def __init__(self, name, requires, at_least_one, optional, excludes=None):
+    def __init__(self, name, requires, at_least_one, optional,
+                 excludes=None, exactly=False):
         """Create Intent object
 
         Args:
@@ -125,12 +126,15 @@ class Intent(object):
             requires(list): Entities that are required
             at_least_one(list): One of these Entities are required
             optional(list): Optional Entities used by the intent
+            excludes(list): Entities that must not be present
+            exactly(bool): True if match must be exact (1.0 confidence)
         """
         self.name = name
         self.requires = requires
         self.at_least_one = at_least_one
         self.optional = optional
         self.excludes = excludes or []
+        self.exactly = exactly
 
     def validate(self, tags, confidence):
         """Using this method removes tags from the result of validate_with_tags
@@ -161,11 +165,18 @@ class Intent(object):
         local_tags = tags[:]
         used_tags = []
 
-        # Check excludes first
+        if self.exactly:
+            if confidence < 1.0:
+                # Failure: not 100% confident
+                result['confidence'] = 0.0
+                return result, []
+
+        # Check excludes
         for exclude_type in self.excludes:
             exclude_tag, _canonical_form, _tag_confidence = \
                 find_first_tag(local_tags, exclude_type)
             if exclude_tag:
+                # Failure: excluded tag present
                 result['confidence'] = 0.0
                 return result, []
 
@@ -254,6 +265,7 @@ class IntentBuilder(object):
         self.requires = []
         self.excludes = []
         self.optional = []
+        self.exact_match = False
         self.name = intent_name
 
     def one_of(self, *args):
@@ -300,6 +312,16 @@ class IntentBuilder(object):
         self.excludes.append(entity_type)
         return self
 
+    def exactly(self):
+        """
+        The intent parser must match with 100% confidence.
+
+        Returns:
+            self: to continue modifications.
+        """
+        self.exact_match = True
+        return self
+
     def optionally(self, entity_type, attribute_name=None):
         """
         Parsed intents from this parser can optionally include an entity of the
@@ -326,4 +348,4 @@ class IntentBuilder(object):
         """
         return Intent(self.name, self.requires,
                       self.at_least_one, self.optional,
-                      self.excludes)
+                      self.excludes, self.exact_match)

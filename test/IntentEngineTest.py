@@ -226,29 +226,50 @@ class IntentEngineTests(unittest.TestCase):
         assert all(confidences[i] >= confidences[i+1] for i in range(len(confidences)-1))
 
     def testExclude(self):
-        parser1 = IntentBuilder("Parser1").require("Entity1").exclude("Entity2").build()
+        parser1 = IntentBuilder('Parser1').require('Entity1').exclude('Entity2').build()
         self.engine.register_intent_parser(parser1)
 
-        parser2 = IntentBuilder("Parser2").require("Entity1").exclude("Entity3").build()
+        parser2 = IntentBuilder('Parser2').require('Entity1').exclude('Entity3').build()
         self.engine.register_intent_parser(parser2)
 
-        self.engine.register_entity("go", "Entity1")
-        self.engine.register_entity("tree", "Entity2")
-        self.engine.register_entity("house", "Entity3")
+        self.engine.register_entity('go', 'Entity1')
+        self.engine.register_entity('tree', 'Entity2')
+        self.engine.register_entity('house', 'Entity3')
 
         # Parser 1 cannot contain the word tree
-        utterance = "go to the tree"
+        utterance = 'go to the tree'
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser2'
 
         # Parser 2 cannot contain the word house
-        utterance = "go to the house"
+        utterance = 'go to the house'
         intent = next(self.engine.determine_intent(utterance))
         assert intent
         assert intent['intent_type'] == 'Parser1'
 
         # Should fail because both excluded words are present
-        utterance = "go to the tree house"
+        utterance = 'go to the tree house'
         with self.assertRaises(StopIteration):
             intent = next(self.engine.determine_intent(utterance))
+
+    def testExactly(self):
+        parser1 = IntentBuilder('Parser1').require('Entity1').exactly().build()
+        self.engine.register_intent_parser(parser1)
+
+        parser2 = IntentBuilder('Parser2').require('Entity1').build()
+        self.engine.register_intent_parser(parser2)
+
+        self.engine.register_entity('stop', 'Entity1')
+
+        # Parser 1 must match exactly
+        utterance = 'stop'
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser1'
+
+        # Parser 2 is more flexible
+        utterance = 'stop music'
+        intent = next(self.engine.determine_intent(utterance))
+        assert intent
+        assert intent['intent_type'] == 'Parser2'
