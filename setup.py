@@ -18,7 +18,7 @@ __author__ = 'seanfitz'
 import os
 from setuptools import setup
 
-with open("README.md", "r", encoding=utf_8) as fh:
+with open("README.md", "r", encoding="utf_8") as fh:
     long_description = fh.read()
 
 
