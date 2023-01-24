@@ -32,7 +32,7 @@ def required(requirements_file):
 
 setup(
     name="adapt-parser",
-    version="1.0.0x",
+    version="1.0.0.dev1",
     author="Sean Fitzgerald",
     author_email="sean@fitzgeralds.me",
     description=("A text-to-intent parsing framework."),
