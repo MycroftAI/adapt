@@ -117,7 +117,7 @@ def resolve_one_of(tags, at_least_one):
 
 
 class Intent(object):
-    def __init__(self, name, requires, at_least_one, optional):
+    def __init__(self, name, requires, at_least_one, optional, excludes=None):
         """Create Intent object
 
         Args:
@@ -130,6 +130,7 @@ class Intent(object):
         self.requires = requires
         self.at_least_one = at_least_one
         self.optional = optional
+        self.excludes = excludes or []
 
     def validate(self, tags, confidence):
         """Using this method removes tags from the result of validate_with_tags
@@ -159,6 +160,14 @@ class Intent(object):
         intent_confidence = 0.0
         local_tags = tags[:]
         used_tags = []
+
+        # Check excludes first
+        for exclude_type in self.excludes:
+            exclude_tag, _canonical_form, _tag_confidence = \
+                find_first_tag(local_tags, exclude_type)
+            if exclude_tag:
+                result['confidence'] = 0.0
+                return result, []
 
         for require_type, attribute_name in self.requires:
             required_tag, canonical_form, tag_confidence = \
@@ -243,6 +252,7 @@ class IntentBuilder(object):
         """
         self.at_least_one = []
         self.requires = []
+        self.excludes = []
         self.optional = []
         self.name = intent_name
 
@@ -277,6 +287,19 @@ class IntentBuilder(object):
         self.requires += [(entity_type, attribute_name)]
         return self
 
+    def exclude(self, entity_type):
+        """
+        The intent parser must not contain an entity of the provided type.
+
+        Args:
+            entity_type(str): an entity type
+
+        Returns:
+            self: to continue modifications.
+        """
+        self.excludes.append(entity_type)
+        return self
+
     def optionally(self, entity_type, attribute_name=None):
         """
         Parsed intents from this parser can optionally include an entity of the
@@ -302,4 +325,5 @@ class IntentBuilder(object):
         :return: an Intent instance.
         """
         return Intent(self.name, self.requires,
-                      self.at_least_one, self.optional)
+                      self.at_least_one, self.optional,
+                      self.excludes)
